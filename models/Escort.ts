@@ -1,0 +1,297 @@
+// import mongoose, { Schema, Document, Types } from "mongoose";
+
+// export interface OpeningHour {
+//   day: string;
+//   open: string;
+//   close: string;
+//   closed: boolean;
+// }
+
+// export interface Rate {
+//   label: string; // e.g., "1 Hour", "Overnight", "Weekend"
+//   amount: string; // e.g., "KES 5,000" or "USD 100"
+//   currency?: string; // Optional: "KES", "USD", etc.
+// }
+
+// export const defaultOpeningHours = [
+//   {
+//     day: "Monday",
+//     open: "Not Specified",
+//     close: "Not Specified",
+//     closed: true,
+//   },
+//   {
+//     day: "Tuesday",
+//     open: "Not Specified",
+//     close: "Not Specified",
+//     closed: true,
+//   },
+//   {
+//     day: "Wednesday",
+//     open: "Not Specified",
+//     close: "Not Specified",
+//     closed: true,
+//   },
+//   {
+//     day: "Thursday",
+//     open: "Not Specified",
+//     close: "Not Specified",
+//     closed: true,
+//   },
+//   {
+//     day: "Friday",
+//     open: "Not Specified",
+//     close: "Not Specified",
+//     closed: true,
+//   },
+//   {
+//     day: "Saturday",
+//     open: "Not Specified",
+//     close: "Not Specified",
+//     closed: true,
+//   },
+//   {
+//     day: "Sunday",
+//     open: "Not Specified",
+//     close: "Not Specified",
+//     closed: true,
+//   },
+// ];
+
+// const OpeningHourSchema = new Schema<OpeningHour>(
+//   {
+//     day: { type: String, required: true },
+//     open: { type: String, required: true },
+//     close: { type: String, required: true },
+//     closed: { type: Boolean, required: true },
+//   },
+//   { _id: false } // Prevents Mongoose from auto-generating _id for subdocuments
+// );
+
+// export interface EscortDoc extends Document {
+//   name: string;
+//   labels: string[];
+//   age: string;
+//   telephone: string;
+//   whatsappPhone: string;
+//   images: string[];
+//   videos: string[]; // new field
+//   about: string;
+//   availability: string;
+//   ethnicity: string;
+//   nationality: string;
+//   bustSize: string;
+//   weight: string;
+//   zodiacSign: string;
+//   sexualOrientation: string;
+//   languages: Record<string, string>;
+//   clerkUserId: string; // ID from Clerk auth provider
+//   avatar?: string; // profile image URL
+//   estate: string;
+//   city: string;
+//   slug: String;
+//   address: string; // new field
+//   services: string[];
+//   //   user: Types.ObjectId; // reference to User schema
+//   role: "escort" | "business" | "admin"; // RBAC-ready
+//   openingHours: OpeningHour[]; // ✅ New field
+//   rates: Rate[];
+// }
+
+// const RateSchema = new Schema<Rate>(
+//   {
+//     label: { type: String, required: true },
+//     amount: { type: String, required: true },
+//     currency: { type: String }, // Optional
+//   },
+//   { _id: false }
+// );
+
+// const EscortSchema = new Schema<EscortDoc>(
+//   {
+//     name: { type: String, required: true },
+//     clerkUserId: { type: String },
+//     avatar: { type: String, trim: true },
+//     labels: { type: [String], default: [] },
+//     age: { type: String },
+//     telephone: { type: String },
+//     whatsappPhone: { type: String },
+//     images: { type: [String], default: [] },
+//     videos: { type: [String], default: [] }, // store video URLs or file paths
+//     about: { type: String },
+//     availability: { type: String },
+//     ethnicity: { type: String },
+//     nationality: { type: String },
+//     bustSize: { type: String },
+//     weight: { type: String },
+//     zodiacSign: { type: String },
+//     sexualOrientation: { type: String },
+//     languages: { type: Map, of: String, default: {} },
+//     estate: { type: String },
+//     city: { type: String },
+//     address: { type: String }, // could be a detailed street address
+//     services: { type: [String], default: [] },
+//     slug: { type: String },
+
+//     openingHours: { type: [OpeningHourSchema], default: defaultOpeningHours }, // ✅ New field
+//     rates: { type: [RateSchema], default: [] },
+//     // user: { type: Schema.Types.ObjectId, ref: "User", required: false },
+//   },
+//   { timestamps: true }
+// );
+
+// export default mongoose.models.Escort ||
+//   mongoose.model<EscortDoc>("Escort", EscortSchema);
+
+import mongoose, { Schema, Document, Types } from "mongoose";
+
+export interface OpeningHour {
+  day: string;
+  open: string;
+  close: string;
+  closed: boolean;
+}
+
+export interface Rate {
+  duration: string;
+  incall: string;
+  outcall?: string;
+}
+
+export interface EscortDoc extends Document {
+  name: string;
+  clerkUserId?: string;
+  avatar?: string;
+  labels: string[];
+  age?: string;
+  telephone?: string;
+  whatsappPhone?: string;
+  images: string[];
+  videos: string[];
+  about?: string;
+  availability?: string;
+  ethnicity?: string;
+  nationality?: string;
+  bustSize?: string;
+  weight?: string;
+  zodiacSign?: string;
+  sexualOrientation?: string;
+  languages: Record<string, string>;
+  estate?: string;
+  city?: string;
+  address?: string;
+  services: string[];
+  extraServices: string[];
+  slug: string;
+  openingHours: OpeningHour[];
+  rates: Rate[];
+  role: "escort" | "business" | "admin";
+  // user?: Types.ObjectId;
+}
+
+export const defaultOpeningHours: OpeningHour[] = [
+  {
+    day: "Monday",
+    open: "Not Specified",
+    close: "Not Specified",
+    closed: true,
+  },
+  {
+    day: "Tuesday",
+    open: "Not Specified",
+    close: "Not Specified",
+    closed: true,
+  },
+  {
+    day: "Wednesday",
+    open: "Not Specified",
+    close: "Not Specified",
+    closed: true,
+  },
+  {
+    day: "Thursday",
+    open: "Not Specified",
+    close: "Not Specified",
+    closed: true,
+  },
+  {
+    day: "Friday",
+    open: "Not Specified",
+    close: "Not Specified",
+    closed: true,
+  },
+  {
+    day: "Saturday",
+    open: "Not Specified",
+    close: "Not Specified",
+    closed: true,
+  },
+  {
+    day: "Sunday",
+    open: "Not Specified",
+    close: "Not Specified",
+    closed: true,
+  },
+];
+
+const OpeningHourSchema = new Schema<OpeningHour>(
+  {
+    day: { type: String, required: true },
+    open: { type: String, required: true },
+    close: { type: String, required: true },
+    closed: { type: Boolean, required: true },
+  },
+  { _id: false }
+);
+
+const EscortSchema = new Schema<EscortDoc>(
+  {
+    name: { type: String, required: true, trim: true },
+    clerkUserId: { type: String, index: true },
+    avatar: { type: String, trim: true },
+    labels: { type: [String], default: [] },
+    age: { type: String },
+    telephone: { type: String },
+    whatsappPhone: { type: String },
+    images: { type: [String], default: [] },
+    videos: { type: [String], default: [] },
+    about: { type: String },
+    availability: { type: String },
+    ethnicity: { type: String },
+    nationality: { type: String },
+    bustSize: { type: String },
+    weight: { type: String },
+    zodiacSign: { type: String },
+    sexualOrientation: { type: String },
+    languages: { type: Map, of: String, default: {} },
+    estate: { type: String },
+    city: { type: String },
+    address: { type: String },
+    services: { type: [String], default: [] },
+    extraServices: { type: [String], default: [] },
+    slug: { type: String, required: true, unique: true, index: true },
+    role: {
+      type: String,
+      enum: ["escort", "business", "admin"],
+      default: "escort",
+    },
+    openingHours: {
+      type: [OpeningHourSchema],
+      default: defaultOpeningHours,
+    },
+
+    rates: [
+      {
+        duration: { type: String, required: true },
+        incall: { type: String, default: "" },
+        outcall: { type: String, default: "" },
+      },
+    ],
+
+    // user: { type: Schema.Types.ObjectId, ref: "User" },
+  },
+  { timestamps: true }
+);
+
+export default mongoose.models.Escort ||
+  mongoose.model<EscortDoc>("Escort", EscortSchema);

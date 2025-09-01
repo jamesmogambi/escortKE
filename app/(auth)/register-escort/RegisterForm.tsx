@@ -1,0 +1,243 @@
+"use client";
+import SectionCard from "@/components/SectionCard";
+import { cn } from "@/lib/utils";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { boolean, z } from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
+
+interface Prop {
+  className?: String;
+}
+
+const items = [
+  {
+    id: "terms",
+    label: "Terms",
+  },
+] as const;
+export const registrationSchema = z
+  .object({
+    username: z
+      .string()
+      .min(3, "Username must be at least 3 characters long")
+      .max(30, "Username must be at most 30 characters long"),
+
+    email: z.string().email("Invalid email address"),
+
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters long")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number")
+      .regex(
+        /[^A-Za-z0-9]/,
+        "Password must contain at least one special character"
+      ),
+
+    confirmPassword: z.string(),
+
+    agreeTerms: z.literal(true, {
+      error: "You must accept the terms and condition",
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords do not match",
+  });
+
+const RegisterForm = ({ className }: Prop) => {
+  const router = useRouter();
+  // 1. Define your form.
+  const form = useForm<z.infer<typeof registrationSchema>>({
+    resolver: zodResolver(registrationSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      //   agreeTerms:t
+      //   terms: false,
+    },
+  });
+
+  // 2. Define a submit handler.
+  function onSubmit(values: z.infer<typeof registrationSchema>) {
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values);
+
+    // upon successful registration user should be redirected to /new profile
+    router.push("/new-profile");
+  }
+
+  return (
+    <div className={cn("", className)}>
+      <SectionCard>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+            <h3 className="text-2xl font-semibold text-white mb-8">
+              Registration Escort - Enter your login details
+            </h3>
+            {/* section 1 */}
+            <div className="flex flex-col lg:flex-row gap-6">
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem className="w-full lg:w-1/2 border-none">
+                    <FormLabel className=" font-semibold mb-2 text-white/40 text-base">
+                      Username *
+                    </FormLabel>
+                    <FormControl className="">
+                      <Input
+                        placeholder=""
+                        {...field}
+                        className="bg-white text-black px-6 h-14 text-2xl focus-visible:ring-0 "
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem className="w-full lg:w-1/2 border-none">
+                    <FormLabel className=" font-semibold mb-2 text-white/40 text-base">
+                      Login email *
+                    </FormLabel>
+                    <FormControl className="">
+                      <Input
+                        placeholder=""
+                        {...field}
+                        className="bg-white text-black px-6 h-14 text-2xl focus-visible:ring-0 "
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            {/* section 2 */}
+            <div className="flex  flex-col lg:flex-row gap-6">
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem className="w-full lg:w-1/2 border-none">
+                    <FormLabel className=" font-semibold mb-2 text-white/40 text-base">
+                      Password *
+                    </FormLabel>
+                    <FormControl className="">
+                      <Input
+                        placeholder=""
+                        {...field}
+                        className="bg-white text-black px-6 h-14 text-2xl focus-visible:ring-0 "
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem className="w-full lg:w-1/2 border-none">
+                    <FormLabel className=" font-semibold mb-2 text-white/40 text-base">
+                      Password again *
+                    </FormLabel>
+                    <FormControl className="">
+                      <Input
+                        placeholder=""
+                        {...field}
+                        className="bg-white text-black px-6 h-14 text-2xl focus-visible:ring-0 "
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            {/* section 3 */}
+
+            <div>
+              <FormField
+                control={form.control}
+                name="agreeTerms"
+                render={({ field }) => (
+                  <FormItem className="w-full  border-none">
+                    {/* <FormLabel className=" font-semibold mb-2 text-white/40 text-base">
+                      Password *
+                    </FormLabel> */}
+                    <FormControl className=" w-full">
+                      <div className="flex flex-row mt-6 mb-12  items-center gap-3">
+                        <Checkbox
+                          className="bg-white"
+                          //   id="terms"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          id="acceptTerms"
+                        />
+                        <Label
+                          htmlFor="terms"
+                          className="text-white/50 text-wrap text-lg font-normal"
+                        >
+                          <p className="">
+                            {" "}
+                            I agree to the{" "}
+                            <span className="text-primary">
+                              processing of personal data
+                            </span>{" "}
+                            and to the{" "}
+                            <span className="text-primary">
+                              terms and conditions.
+                            </span>
+                          </p>
+                        </Label>
+                      </div>
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full cursor-pointer hover:bg-primary/70 h-16 text-lg py-4 bg-primary font-semibold text-white uppercase"
+            >
+              complete registration
+            </Button>
+          </form>
+        </Form>
+      </SectionCard>
+    </div>
+  );
+};
+
+export default RegisterForm;
