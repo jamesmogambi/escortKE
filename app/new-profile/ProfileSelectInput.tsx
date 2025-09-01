@@ -50,7 +50,7 @@ const ProfileSelectInput = ({
   //   };
 
   return (
-    <div className={cn("", className)}>
+    <div className={cn("w-full", className)}>
       <label className="mb-3">{label}</label>
 
       <Select
@@ -60,29 +60,28 @@ const ProfileSelectInput = ({
       >
         <SelectTrigger
           className={cn(
-            "mt-3 py-6 w-full outline-none rounded-none border-0  bg-purple-darker",
+            " py-6 w-full  ring-white outline-0 ring-0 border-white  focus-visible:ring-0 focus-visible:border-0 text-xl border-none outline-none text-black rounded-none  bg-white",
             inputClass
           )}
         >
-          <SelectValue placeholder={placeholder} />
+          <SelectValue
+            className="text-base text-black/80"
+            placeholder={placeholder}
+          />
         </SelectTrigger>
-        <SelectContent className="rounded-none outline-none border-0 text-white bg-purple-darker ">
+        <SelectContent className="rounded-none outline-none border-0 bg-white text-black/80 text-xl ">
           <SelectGroup>
-            <SelectLabel>Select</SelectLabel>
-            <SelectItem
-              className="rounded-none focus:text-white focus:bg-purple-dark"
-              value={"namem"}
-            >
-              james Mogambi
-            </SelectItem>
-            {/* {options.map((i) => (
+            <SelectLabel className="text-lg">Select</SelectLabel>
+
+            {options.map((i, k) => (
               <SelectItem
-                className="rounded-none focus:text-white focus:bg-purple-dark"
-                value={i}
+                className="rounded-none text-black/90  text-lg"
+                value={i.name}
+                key={k}
               >
                 {i.name}
               </SelectItem>
-            ))} */}
+            ))}
           </SelectGroup>
         </SelectContent>
       </Select>

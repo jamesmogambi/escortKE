@@ -42,6 +42,8 @@ import QuillEditor from "./RichEditor";
 import { WorkingHoursField } from "./WorkingHoursField";
 import WorkHoursForm from "./WorkHoursForm";
 import SettingsForm from "./SettingsForm";
+import AboutMeForm from "./AboutMeForm";
+import PreviewPhoto from "./PreviewPhoto";
 // import RichTextEditor from "./RichEditor";
 
 const RichTextEditor = dynamic(() => import("./RichEditor"), {
@@ -124,6 +126,12 @@ export const formSchema = z.object({
   variantNationality: z.string(),
   variantHairColor: z.string(),
   variantLanguages: z.string(),
+  variantExperience: z.string(),
+  myAge: z.string(),
+  myHeight: z.string(),
+  myBreasts: z.string(),
+  myWeight: z.string(),
+
   variantAvailability: z.array(z.string().min(1, "Tag cannot be empty")),
 });
 const NewEscortForm = ({ className }: Prop) => {
@@ -131,29 +139,15 @@ const NewEscortForm = ({ className }: Prop) => {
   const [regionOpen, setRegionOpen] = React.useState<boolean>(false);
   const [cityOpen, setCityOpen] = React.useState<boolean>(false);
 
+  // TODO: store the user preview image
+  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
+
   const router = useRouter();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       monday: "8:00-17:00",
-      // username: "",
-      // email: "",
-      // password: "",
-      // confirmPassword: "",
-      //   agreeTerms:t
-      //   terms: false,
-      // workingHours: Object.fromEntries(
-      //   [
-      //     "monday",
-      //     "tuesday",
-      //     "wednesday",
-      //     "thursday",
-      //     "friday",
-      //     "saturday",
-      //     "sunday",
-      //   ].map((day) => [day, { enabled: false, start: "", end: "" }])
-      // ),
     },
   });
 
@@ -469,12 +463,19 @@ const NewEscortForm = ({ className }: Prop) => {
 
                 <WorkHoursForm form={form} className={" mt-5"} />
 
-                <SettingsForm form={form} className="mt-10" />
+                <SettingsForm form={form} className="mt-14 w-full" />
+
+                <AboutMeForm form={form} />
+
+                <PreviewPhoto className="my-10 w-3/4" form={form} />
               </div>
 
               {/* 2 */}
 
-              <div className="basis-1/2"></div>
+              <div className="basis-1/2 border-4 border-green-600">
+                {" "}
+                {/* <SelectPackagesForm form={form}/> */}
+              </div>
             </section>
           </form>
         </Form>

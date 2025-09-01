@@ -62,3 +62,11 @@ export function getFirstName(fullName: string): string {
 //     return { day, start: val.start, end: val.end };
 //   });
 // };
+
+export function formatCategory(input: string): string {
+  return input
+    .split(/[^a-zA-Z0-9]+/) // Split by non-word characters
+    .filter((word) => word.length > 0) // Remove empty fragments
+    .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase()) // Capitalize
+    .join(" ");
+}
