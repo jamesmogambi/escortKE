@@ -55,3 +55,10 @@ export function formatKenyanPhoneNumber(phoneNumber: string): string {
 export function getFirstName(fullName: string): string {
   return fullName.trim().split(" ")[0];
 }
+
+// const normalizeWorkingHours = (data: any["workingHours"]) => {
+//   return Object.entries(data).map(([day, val]) => {
+//     if (!val.enabled) return { day, off: true };
+//     return { day, start: val.start, end: val.end };
+//   });
+// };

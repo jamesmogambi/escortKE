@@ -5,6 +5,7 @@ import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MessageAlert from "@/components/MessageAlert";
+import "quill/dist/quill.core.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
