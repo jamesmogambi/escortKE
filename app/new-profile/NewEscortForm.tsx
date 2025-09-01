@@ -44,6 +44,9 @@ import WorkHoursForm from "./WorkHoursForm";
 import SettingsForm from "./SettingsForm";
 import AboutMeForm from "./AboutMeForm";
 import PreviewPhoto from "./PreviewPhoto";
+import SelectPackagesForm from "./SelectPackagesForm";
+import { ArrowBigDown, ArrowDown } from "lucide-react";
+import PhotoVideoUploads from "./PhotoVideoUploads";
 // import RichTextEditor from "./RichEditor";
 
 const RichTextEditor = dynamic(() => import("./RichEditor"), {
@@ -61,32 +64,6 @@ interface Prop {
 
 const timeRangeRegex =
   /^([01]\d|2[0-3])[-:]([0-5]\d)\s*-\s*([01]\d|2[0-3])[-:]([0-5]\d)$/;
-
-// const daySchema = z
-//   .object({
-//     enabled: z.boolean(),
-//     range: z.string().regex(timeRangeRegex, "Invalid time range").optional(),
-//   })
-//   .refine(
-//     (data) => {
-//       if (!data.enabled || !data.range) return true;
-
-//       const [startRaw, endRaw] = data.range
-//         .split("-")
-//         .map((part) => part.trim());
-//       const [startHour, startMin] = startRaw.split(/[-:]/).map(Number);
-//       const [endHour, endMin] = endRaw.split(/[-:]/).map(Number);
-
-//       const start = startHour * 60 + startMin;
-//       const end = endHour * 60 + endMin;
-
-//       return start < end;
-//     },
-//     {
-//       message: "End time must be after start time",
-//       path: ["range"],
-//     }
-//   );
 
 const daySchema = z.string().regex(timeRangeRegex, "Invalid time range");
 
@@ -436,7 +413,6 @@ const NewEscortForm = ({ className }: Prop) => {
                 />
               </div>
             </section>
-
             {/* description and setting section */}
             <section className="flex mt-12 gap-6">
               {/* 1 */}
@@ -472,11 +448,25 @@ const NewEscortForm = ({ className }: Prop) => {
 
               {/* 2 */}
 
-              <div className="basis-1/2 border-4 border-green-600">
-                {" "}
-                {/* <SelectPackagesForm form={form}/> */}
+              <div className="basis-1/2 relative border-4 border-green-600">
+                <SelectPackagesForm form={form} />
               </div>
             </section>
+            {/*TODO: //implement upload media section */}
+            <PhotoVideoUploads form={form} />
+
+            {/* // submit button */}
+            <div className="flex justify-center ">
+              <Button
+                className="flex w-1/4 rounded-none  items-center  gap-2 p-12 text-white bg-primary"
+                type="submit"
+              >
+                <ArrowDown className="size-8" strokeWidth={4} />
+                <span className="uppercase font-semibold text-2xl">
+                  create profile
+                </span>
+              </Button>
+            </div>
           </form>
         </Form>
       </SectionCard>

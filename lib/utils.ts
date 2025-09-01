@@ -1,3 +1,4 @@
+import { localeToFlagEmoji } from "@/fixtures/flags";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -70,3 +71,16 @@ export function formatCategory(input: string): string {
     .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase()) // Capitalize
     .join(" ");
 }
+
+export function splitIntoThreeColumns<T>(items: T[]): [T[], T[], T[]] {
+  const columns: [T[], T[], T[]] = [[], [], []];
+
+  items.forEach((item, index) => {
+    columns[index % 3].push(item);
+  });
+
+  return columns;
+}
+
+export const getFlagEmoji = (locale: string): string =>
+  localeToFlagEmoji[locale] ?? "🏳️"; // fallback to white flag

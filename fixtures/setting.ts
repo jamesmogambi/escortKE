@@ -1,3 +1,5 @@
+import { practices } from "./practice";
+
 export const variantSettings = {
   age: [
     {
@@ -65,4 +67,38 @@ export const variantSettings = {
       name: "Professional",
     },
   ],
+  languages: [
+    {
+      name: "English",
+      flag: "US",
+    },
+    {
+      name: "French",
+      flag: "FR",
+    },
+
+    {
+      name: "Japanese",
+      flag: "JP",
+    },
+    {
+      name: "Swahili",
+      flag: "KE",
+    },
+  ],
+  categories: ["Sex", "Massages", "BDSM"],
+  practices: Array.from({ length: 40 }, (_, i) => ({
+    id: i + 1,
+    name: `practice ${i + 1}`,
+  })),
+
+  bdsm: Array.from({ length: 30 }, (_, i) => ({
+    id: i + 1,
+    name: `bdsm ${i + 1}`,
+  })),
+
+  massage: Array.from({ length: 30 }, (_, i) => ({
+    id: i + 1,
+    name: `massage ${i + 1}`,
+  })),
 };
