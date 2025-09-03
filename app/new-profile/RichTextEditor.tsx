@@ -25,7 +25,7 @@ const RichTextEditor = ({ className }: Prop) => {
         onChange={setDescription}
         // textareaClassName="h-48"
         placeholder="Write something about you ..."
-        style={{ height: "200px", fontSize: "18px" }}
+        style={{ height: "200px", fontSize: "20px" }}
       />
     </div>
   );

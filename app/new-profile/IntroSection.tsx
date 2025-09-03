@@ -20,6 +20,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { regions, towns } from "@/fixtures/location";
 import { useFormStore } from "@/store/formStore";
+import { variantSettings } from "@/fixtures/setting";
+// import { Checkbox } from "@radix-ui/react-checkbox";
+import { useSettingStore } from "@/store/settingStore";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Prop {
   className?: string;
@@ -32,6 +36,9 @@ const IntroSection = ({ form, className }: Prop) => {
   const { watch, setValue } = form;
 
   const { city, region, setCity, setRegion } = useFormStore();
+
+  const { languages, setLanguage, availability, setAvailability } =
+    useSettingStore();
 
   return (
     <section className={cn("flex gap-2 lg:gap-10", className)}>
@@ -193,6 +200,28 @@ const IntroSection = ({ form, className }: Prop) => {
             </>
           )}
         />
+
+        {/* TODO: AVAILABILITY */}
+        <div className="flex  mt-12  justify-end items-center gap-3">
+          <label className="text-white/50 text-base font-medium">
+            Availability:
+          </label>
+          {variantSettings.availability.map((i) => (
+            <div>
+              <div key={i} className="flex items-center gap-2">
+                <Checkbox
+                  id={i}
+                  className="size-7 cursor-pointer data-[state=checked]:bg-primary bg-white rounded-md   outline-none border-0 border-primary"
+                  checked={availability.includes(i)}
+                  onCheckedChange={(checked) =>
+                    setAvailability(i, checked === true)
+                  }
+                />
+                <label className="text-primary text-lg  font-bold">{i}</label>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* 3 */}

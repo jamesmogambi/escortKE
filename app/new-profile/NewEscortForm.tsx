@@ -32,27 +32,36 @@ interface Prop {
 const timeRangeRegex =
   /^([01]\d|2[0-3])[-:]([0-5]\d)\s*-\s*([01]\d|2[0-3])[-:]([0-5]\d)$/;
 
-const daySchema = z.string().regex(timeRangeRegex, "Invalid time range");
+const daySchema = z
+  .string()
+  .regex(timeRangeRegex, "Invalid time range")
+  .optional();
 
 export const formSchema = z.object({
   name: z
-    .string()
+    .string({ error: "Name is required" })
     .min(2, "Name must be at least 2 characters")
     .max(50, "Name must be at most 50 characters"),
 
-  email: z.string().email("Invalid email address"),
+  email: z.email({ error: "Invalid email address" }),
 
-  street: z.string().min(3, "Street name must be at least 3 characters"),
+  street: z
+    .string({ error: "Street is required" })
+    .min(3, "Street name must be at least 3 characters"),
 
   whatsappNumber: z
-    .string()
+    .string({ error: "WhatsApp number is required" })
     .regex(/^\+?[0-9]{7,15}$/, "Invalid WhatsApp number"),
 
-  phone: z.string().regex(/^\+?[0-9]{7,15}$/, "Invalid phone number"),
+  phone: z
+    .string({ error: "Phone number is required" })
+    .regex(/^\+?[0-9]{7,15}$/, "Invalid phone number"),
 
-  address: z.string().min(5, "Address must be at least 5 characters"),
+  address: z
+    .string({ error: "Address is required" })
+    .min(5, "Address must be at least 5 characters"),
 
-  description: z.string().min(10, "Description must be at least 10 characters"),
+  // description: z.string({}).min(10, "Description must be at least 10 characters"),
   monday: daySchema,
   tuesday: daySchema,
   wednesday: daySchema,
@@ -125,7 +134,7 @@ const NewEscortForm = ({ className }: Prop) => {
 
               {/* 2 */}
 
-              <div className="basis-1/2 relative border-4 border-green-600">
+              <div className="basis-1/2 relative  border-green-600">
                 <SelectPackagesForm form={form} />
               </div>
             </section>

@@ -13,6 +13,9 @@ interface SettingStore {
   tab: string;
   setTab: (value: string) => void;
   languages: string[];
+  availability: string[];
+  setAvailability: (name: string, checked: boolean) => void;
+
   setLanguage: (name: string, checked: boolean) => void;
   clearLanguages: () => void;
   categories: string[];
@@ -30,6 +33,14 @@ export const useSettingStore = create<SettingStore>()(
       setTab: (value) => set({ tab: value }),
       categories: [],
       languages: [],
+      availability: [],
+      setAvailability: (name, checked) => {
+        const current = get().availability;
+        const updated = checked
+          ? [...new Set([...current, name])]
+          : current.filter((l) => l !== name);
+        set({ availability: updated });
+      },
       setLanguage: (name, checked) => {
         const current = get().languages;
         const updated = checked
