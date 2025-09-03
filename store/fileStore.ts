@@ -5,9 +5,25 @@ type FileMeta = {
   id: string;
   name: string;
   type: "image" | "video" | "file";
-  previewUrl?: string;
+  previewUrl?: any;
 };
 
+function generateThumbnail(videoFile: File): Promise<string> {
+  return new Promise((resolve) => {
+    const video = document.createElement("video");
+    video.src = URL.createObjectURL(videoFile);
+    video.currentTime = 5; // snapshot at 5 seconds
+
+    video.onloadeddata = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL("image/jpeg"));
+    };
+  });
+}
 interface FileStore {
   files: FileMeta[];
   fileMap: Map<string, File>; // not persisted
@@ -34,7 +50,11 @@ export const useFileStore = create<FileStore>()(
           const isVideo = mime.startsWith("video/");
           const previewUrl =
             isImage || isVideo ? URL.createObjectURL(file) : undefined;
-
+          // const previewUrl = isImage
+          //   ? URL.createObjectURL(file)
+          //   : isVideo
+          //   ? generateThumbnail(file)
+          //   : undefined;
           newMeta.push({
             id,
             name: file.name,

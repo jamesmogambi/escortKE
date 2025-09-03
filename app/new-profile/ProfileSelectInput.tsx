@@ -22,7 +22,8 @@ interface Props {
   label?: string;
   options: any[];
   placeholder?: string;
-  onChange: (value: any, name: any) => void;
+  // onChange: (value: any, name: any) => void;
+  onChange: (value: any) => void;
   value?: any;
   defaultValue?: any;
   inputClass?: string;
@@ -56,7 +57,8 @@ const ProfileSelectInput = ({
       <Select
         defaultValue={defaultValue}
         value={value}
-        onValueChange={(val) => onChange(val, name)}
+        // onValueChange={(val) => onChange(val, name)}
+        onValueChange={onChange}
       >
         <SelectTrigger
           className={cn(

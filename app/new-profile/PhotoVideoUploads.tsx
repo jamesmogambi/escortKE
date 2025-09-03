@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useFileStore } from "@/store/fileStore";
+import Image from "next/image";
 import React, { useRef } from "react";
 
 interface Prop {
@@ -56,21 +57,26 @@ const PhotoVideoUploads = ({ form, className }: Prop) => {
         </div>
 
         {/* section 2- display file thumbnails */}
-        <div className="flex-1 border-4 border-blue-600 flex flex-wrap gap-4 ml-10">
+        <div className="flex-1  border-blue-600 flex flex-wrap gap-4 ml-10">
           {files.map(({ id, name, type, previewUrl }) => (
-            <div key={id} className="relative border p-2 rounded shadow">
+            <div
+              key={id}
+              className="relative overflow-hidden  h-[200px] w-[200px]  p-2 rounded-lg shadow"
+            >
               {type === "image" && previewUrl && (
-                <img
+                <Image
                   src={previewUrl}
                   alt={name}
-                  className="w-full h-32 object-cover rounded"
+                  className=" object-cover rounded"
+                  quality={100}
+                  fill
                 />
               )}
               {type === "video" && previewUrl && (
                 <video
                   src={previewUrl}
                   // controls
-                  className="w-full h-32 object-cover rounded"
+                  className="w-full absolute h-full object-cover overflow-hidden rounded-lg"
                 />
               )}
               {type === "file" && (
@@ -80,7 +86,7 @@ const PhotoVideoUploads = ({ form, className }: Prop) => {
               )}
               <button
                 onClick={() => removeFile(id)}
-                className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 text-xs"
+                className="absolute top-1 right-1 bg-red-500 text-white rounded-full size-7 cursor-pointer text-xs"
               >
                 ×
               </button>

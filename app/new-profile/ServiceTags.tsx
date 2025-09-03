@@ -37,12 +37,12 @@ export const ServiceTags = forwardRef<HTMLInputElement, InputTagsProps>(
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => {
-              if (["Enter", ",", " "].includes(e.key)) {
+              if (["Enter"].includes(e.key)) {
                 e.preventDefault();
                 addTag();
               }
             }}
-            placeholder="Type and press Enter"
+            placeholder="Type other categories"
             className={cn(
               "w-full py-6  rounded-none bg-purple-darker text-xl shadow-none focus-visible:ring-0 border-0",
               inputClass

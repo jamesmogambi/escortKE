@@ -1,27 +1,11 @@
 import { cn } from "@/lib/utils";
 import React, { useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+
 import ProfileGallery from "../girl/ProfileGallery";
 import ProfileSelectInput from "./ProfileSelectInput";
 import { variantSettings } from "@/fixtures/setting";
 import { ServiceTags } from "./ServiceTags";
+import { useFormStore } from "@/store/formStore";
 interface Prop {
   className?: string;
   form: any;
@@ -29,142 +13,100 @@ interface Prop {
 const SettingsForm = ({ form, className }: Prop) => {
   const { setValue } = form;
 
-  const [tags, setTags] = useState<string[]>([]);
+  const {
+    age,
+    setAge,
+    breast,
+    setBreast,
+    character,
+    setCharacter,
+    hairColor,
+    setHairColor,
+    nationality,
+    setNationality,
+    experience,
+    setExperience,
+    tags,
+    setTags,
+  } = useFormStore();
 
-  const handleSelectChange = (value: any, name: keyof FormData) => {
-    setValue(name, value);
-  };
-
-  const ageValue = form.watch("variantAge");
-  const breastValue = form.watch("variantBreast");
-  const characterValue = form.watch("variantCharacter");
-  const hairColorValue = form.watch("variantHairColor");
-  const nationalityValue = form.watch("variantNationality");
-
-  const { age, breast, character, hairColor, nationality, experience } =
-    variantSettings;
+  // const { hairColor, nationality, experience } = variantSettings;
   return (
-    <div className={cn("space-y-2 w-full", className)}>
-      <FormField
-        control={form.control}
-        name="variantAge"
-        render={({ field }) => (
-          <FormItem className=" flex-row  w-full justify-between flex gap-2  border-none">
-            <FormControl className="border  border-primary">
-              <ProfileSelectInput
-                onChange={handleSelectChange}
-                value={ageValue}
-                name="variantAge"
-                options={age}
-                placeholder="Select age"
-              />
-            </FormControl>
+    <section className={cn("space-y-2 w-full", className)}>
+      <div className=" flex-row  w-full justify-between flex gap-2  border-none">
+        <div className=" w-full  border-primary">
+          <ProfileSelectInput
+            onChange={setAge}
+            value={age}
+            name="variantAge"
+            options={variantSettings.age}
+            placeholder="Select age"
+          />
+        </div>
+      </div>
 
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className=" flex-row  w-full justify-between flex gap-2  border-none">
+        <div className=" w-full  border-primary">
+          <ProfileSelectInput
+            onChange={setBreast}
+            value={breast}
+            name="variantBreast"
+            options={variantSettings.breast}
+            placeholder="Select age"
+          />
+        </div>
+      </div>
 
-      <FormField
-        control={form.control}
-        name="variantBreast"
-        render={({ field }) => (
-          <FormItem className=" flex-row  w-full justify-between flex gap-2  border-none">
-            <FormControl className="border  border-primary">
-              <ProfileSelectInput
-                onChange={handleSelectChange}
-                value={breastValue}
-                name="variantBreast"
-                options={breast}
-                placeholder="Select breast"
-              />
-            </FormControl>
+      <div className=" flex-row  w-full justify-between flex gap-2  border-none">
+        <div className=" w-full  border-primary">
+          <ProfileSelectInput
+            onChange={setCharacter}
+            value={character}
+            name="variantCharacter"
+            options={variantSettings.character}
+            placeholder="Select a character"
+          />
+        </div>
+      </div>
 
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className=" flex-row  w-full justify-between flex gap-2  border-none">
+        <div className=" w-full  border-primary">
+          <ProfileSelectInput
+            onChange={setHairColor}
+            value={hairColor}
+            name="variantHairColor"
+            options={variantSettings.hairColor}
+            placeholder="Select hair color"
+          />
+        </div>
+      </div>
 
-      <FormField
-        control={form.control}
-        name="variantCharacter"
-        render={({ field }) => (
-          <FormItem className=" flex-row  w-full justify-between flex gap-2  border-none">
-            <FormControl className="border  border-primary">
-              <ProfileSelectInput
-                onChange={handleSelectChange}
-                value={breastValue}
-                name="variantCharacter"
-                options={character}
-                placeholder="Select a character"
-              />
-            </FormControl>
+      <div className=" flex-row  w-full justify-between flex gap-2  border-none">
+        <div className=" w-full  border-primary">
+          <ProfileSelectInput
+            onChange={setNationality}
+            value={nationality}
+            name="variantNationality"
+            options={variantSettings.nationality}
+            placeholder="Select Nationality"
+          />
+        </div>
+      </div>
 
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="variantHairColor"
-        render={({ field }) => (
-          <FormItem className=" flex-row  w-full justify-between flex gap-2  border-none">
-            <FormControl className="border  border-primary">
-              <ProfileSelectInput
-                onChange={handleSelectChange}
-                value={hairColorValue}
-                name="variantHairColor"
-                options={hairColor}
-                placeholder="Select hair color"
-              />
-            </FormControl>
-
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="variantNationality"
-        render={({ field }) => (
-          <FormItem className=" flex-row  w-full justify-between flex gap-2  border-none">
-            <FormControl className="border  border-primary">
-              <ProfileSelectInput
-                onChange={handleSelectChange}
-                value={nationalityValue}
-                name="variantNationality"
-                options={nationality}
-                placeholder="Select Nationality"
-              />
-            </FormControl>
-
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="variantExperience"
-        render={({ field }) => (
-          <FormItem className=" flex-row  w-full justify-between flex gap-2  border-none">
-            <FormControl className="border  border-primary">
-              <ProfileSelectInput
-                onChange={handleSelectChange}
-                value={nationalityValue}
-                name="variantExperience"
-                options={experience}
-                placeholder="Select Experience"
-              />
-            </FormControl>
-
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className=" flex-row  w-full justify-between flex gap-2  border-none">
+        <div className=" w-full  border-primary">
+          <ProfileSelectInput
+            onChange={setExperience}
+            value={experience}
+            name="variantExperience"
+            options={variantSettings.experience}
+            placeholder="Select Experience"
+          />
+        </div>
+      </div>
 
       <ServiceTags value={tags} onChange={setTags} />
-    </div>
+    </section>
   );
 };
 

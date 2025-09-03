@@ -25,45 +25,49 @@ const WorkHoursForm = ({ control, form, className }: Prop) => {
       <div className="flex w-full gap-10">
         {/* monday - thursdaye working hours */}
         <div className="basis-1/2 space-y-6">
-          <FormField
-            control={form.control}
-            name="monday"
-            render={({ field }) => (
-              <FormItem className=" flex-row justify-between   flex gap-4  border-none">
-                <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
-                  Monday:
-                </FormLabel>
-                <FormControl className="border w-[200px] border-primary">
-                  <Input
-                    placeholder=""
-                    {...field}
-                    className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
-                  />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <>
+            <FormField
+              control={form.control}
+              name="monday"
+              render={({ field }) => (
+                <>
+                  <FormItem className=" flex-row justify-between   flex gap-4  border-none">
+                    <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
+                      Monday:
+                    </FormLabel>
+                    <FormControl className="border w-[200px] border-primary">
+                      <Input
+                        placeholder="08:00 - 20:00"
+                        {...field}
+                        className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
+                      />
+                    </FormControl>
+                  </FormItem>
+                  <FormMessage className="-mt-4" />
+                </>
+              )}
+            />
+          </>
 
           <FormField
             control={form.control}
             name="tuesday"
             render={({ field }) => (
-              <FormItem className=" flex-row justify-between   flex gap-4  border-none">
-                <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
-                  Tuesday:
-                </FormLabel>
-                <FormControl className="border w-[200px] border-primary">
-                  <Input
-                    placeholder=""
-                    {...field}
-                    className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
-                  />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
+              <>
+                <FormItem className=" flex-row justify-between   flex gap-4  border-none">
+                  <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
+                    Tuesday:
+                  </FormLabel>
+                  <FormControl className="border w-[200px] border-primary">
+                    <Input
+                      placeholder="08:00 - 20:00"
+                      {...field}
+                      className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
+                    />
+                  </FormControl>
+                </FormItem>
+                <FormMessage className="-mt-4" />
+              </>
             )}
           />
 
@@ -71,20 +75,21 @@ const WorkHoursForm = ({ control, form, className }: Prop) => {
             control={form.control}
             name="wednesday"
             render={({ field }) => (
-              <FormItem className=" flex-row justify-between   flex gap-4  border-none">
-                <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
-                  Wednesday:
-                </FormLabel>
-                <FormControl className="border w-[200px] border-primary">
-                  <Input
-                    placeholder=""
-                    {...field}
-                    className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
-                  />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
+              <>
+                <FormItem className=" flex-row justify-between   flex gap-4  border-none">
+                  <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
+                    Wednesday:
+                  </FormLabel>
+                  <FormControl className="border w-[200px] border-primary">
+                    <Input
+                      placeholder="08:00 - 20:00"
+                      {...field}
+                      className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
+                    />
+                  </FormControl>
+                </FormItem>
+                <FormMessage className="-mt-4" />
+              </>
             )}
           />
 
@@ -92,20 +97,21 @@ const WorkHoursForm = ({ control, form, className }: Prop) => {
             control={form.control}
             name="thursday"
             render={({ field }) => (
-              <FormItem className=" flex-row justify-between   flex gap-4  border-none">
-                <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
-                  Thursday:
-                </FormLabel>
-                <FormControl className="border w-[200px] border-primary">
-                  <Input
-                    placeholder=""
-                    {...field}
-                    className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
-                  />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
+              <>
+                <FormItem className=" flex-row justify-between   flex gap-4  border-none">
+                  <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
+                    Thursday:
+                  </FormLabel>
+                  <FormControl className="border w-[200px] border-primary">
+                    <Input
+                      placeholder="08:00 - 20:00"
+                      {...field}
+                      className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
+                    />
+                  </FormControl>
+                </FormItem>
+                <FormMessage className="-mt-4" />
+              </>
             )}
           />
         </div>
@@ -117,60 +123,63 @@ const WorkHoursForm = ({ control, form, className }: Prop) => {
             control={form.control}
             name="friday"
             render={({ field }) => (
-              <FormItem className=" flex-row justify-between   flex gap-4  border-none">
-                <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
-                  Friday:
-                </FormLabel>
-                <FormControl className="border w-[200px] border-primary">
-                  <Input
-                    placeholder=""
-                    {...field}
-                    className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
-                  />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
+              <>
+                <FormItem className=" flex-row justify-between   flex gap-4  border-none">
+                  <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
+                    Friday:
+                  </FormLabel>
+                  <FormControl className="border w-[200px] border-primary">
+                    <Input
+                      placeholder="08:00 - 20:00"
+                      {...field}
+                      className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
+                    />
+                  </FormControl>
+                </FormItem>
+                <FormMessage className="-mt-4" />
+              </>
             )}
           />
           <FormField
             control={form.control}
             name="saturday"
             render={({ field }) => (
-              <FormItem className=" flex-row justify-between   flex gap-4  border-none">
-                <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
-                  Saturday:
-                </FormLabel>
-                <FormControl className="border w-[200px] border-primary">
-                  <Input
-                    placeholder=""
-                    {...field}
-                    className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
-                  />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
+              <>
+                <FormItem className=" flex-row justify-between   flex gap-4  border-none">
+                  <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
+                    Saturday:
+                  </FormLabel>
+                  <FormControl className="border w-[200px] border-primary">
+                    <Input
+                      placeholder="08:00 - 20:00"
+                      {...field}
+                      className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
+                    />
+                  </FormControl>
+                </FormItem>
+                <FormMessage className="-mt-4" />
+              </>
             )}
           />
           <FormField
             control={form.control}
             name="sunday"
             render={({ field }) => (
-              <FormItem className=" flex-row justify-between   flex gap-4  border-none">
-                <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
-                  Sunday:
-                </FormLabel>
-                <FormControl className="border w-[200px] border-primary">
-                  <Input
-                    placeholder=""
-                    {...field}
-                    className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
-                  />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
+              <>
+                <FormItem className=" flex-row justify-between   flex gap-4  border-none">
+                  <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
+                    Sunday:
+                  </FormLabel>
+                  <FormControl className="border w-[200px] border-primary">
+                    <Input
+                      placeholder="08:00 - 20:00"
+                      {...field}
+                      className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
+                    />
+                  </FormControl>
+                </FormItem>
+                <FormMessage className="-mt-4" />
+              </>
             )}
           />
         </div>

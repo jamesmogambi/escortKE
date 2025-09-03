@@ -169,6 +169,7 @@ const SelectPackagesForm = ({ form, className }: Prop) => {
         ))}
       </div>
 
+      {/* TODO:// FIX LANGUAGES */}
       {/* languages */}
       <div className=" px-4 flex absolute top-[80%]  flex-wrap">
         <span className="text-white/50 font-bold  text-lg">Languages:</span>
