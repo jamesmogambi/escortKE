@@ -39,9 +39,10 @@ const MenuSection = () => {
                 href="/register-escort"
               >
                 <p>Register</p>
+
                 <ArrowRight
-                  className="text-white h-7 w-10 mt-2 "
-                  strokeWidth={8}
+                  className="text-white h-10 w-14 mt-2 "
+                  strokeWidth={4}
                 />
               </Link>
             </div>
@@ -81,8 +82,8 @@ const MenuSection = () => {
               >
                 <p>Register</p>
                 <ArrowRight
-                  className="text-white h-7 w-10 mt-2 "
-                  strokeWidth={8}
+                  className="text-white h-10 w-14 mt-2 "
+                  strokeWidth={4}
                 />
               </Link>
             </div>

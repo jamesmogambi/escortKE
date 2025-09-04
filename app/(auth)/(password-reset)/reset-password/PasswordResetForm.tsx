@@ -48,7 +48,7 @@ export const schema = z
 type FormData = z.infer<typeof schema>;
 
 const PasswordResetForm = () => {
-  const { code, email } = useUserInputStore();
+  const { code, email, resetAll } = useUserInputStore();
 
   const router = useRouter();
 
@@ -106,7 +106,7 @@ const PasswordResetForm = () => {
           <SuccessToast message="✅ Password reset successful! " />
         ));
         // setShowPasswordResetForm(true);
-
+        resetAll();
         // redirect user  to home page
         router.push("/");
         router.refresh();

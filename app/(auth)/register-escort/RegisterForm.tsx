@@ -105,7 +105,12 @@ const RegisterForm = ({ className }: Prop) => {
     setLoader(true);
 
     try {
-      await signUp.create({ emailAddress: email, password, username });
+      await signUp.create({
+        emailAddress: email,
+        password,
+        username,
+        unsafeMetadata: { role: "user" },
+      });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setMessage("Email verification code has been sent to your email.");
       //  toast.custom(() => (
