@@ -14,6 +14,7 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -75,6 +76,7 @@ export default function RootLayout({
           <main className="  bg-black/80 flex-1 py-4  w-full ">{children}</main>
 
           <Footer />
+          <Toaster position="bottom-left" />
         </body>
       </html>
     </ClerkProvider>
