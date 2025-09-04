@@ -6,6 +6,14 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MessageAlert from "@/components/MessageAlert";
 import "quill/dist/quill.core.css";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,45 +36,47 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased text-white bg-dark-slate min-h-screen flex flex-col`}
-      >
-        {/* Fixed Grayscale Background */}
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            zIndex: -1,
-            overflow: "hidden",
-          }}
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased text-white bg-dark-slate min-h-screen flex flex-col`}
         >
-          <Image
-            src="/background.jpg"
-            alt="Grayscale Background"
-            fill
-            priority
-            quality={100}
+          {/* Fixed Grayscale Background */}
+          <div
             style={{
-              objectFit: "cover",
-              filter: "grayscale(100%)",
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              zIndex: -1,
+              overflow: "hidden",
             }}
-          />
-        </div>
+          >
+            <Image
+              src="/background.jpg"
+              alt="Grayscale Background"
+              fill
+              priority
+              quality={100}
+              style={{
+                objectFit: "cover",
+                filter: "grayscale(100%)",
+              }}
+            />
+          </div>
 
-        <header>
-          <Header />
-        </header>
-        {/* <MessageAlert /> */}
+          <header>
+            <Header />
+          </header>
+          {/* <MessageAlert /> */}
 
-        {/* Main Content Scrolls Above */}
-        <main className="  bg-black/80 flex-1 py-4  w-full ">{children}</main>
+          {/* Main Content Scrolls Above */}
+          <main className="  bg-black/80 flex-1 py-4  w-full ">{children}</main>
 
-        <Footer />
-      </body>
-    </html>
+          <Footer />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

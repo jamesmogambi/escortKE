@@ -6,7 +6,7 @@ export interface UserDoc extends Document {
   username?: string;
   fullName?: string;
   avatar?: string; // profile image URL
-  role: "user" | "admin"; // RBAC-ready
+  role: "user" | "admin" | "escort" | "business"; // RBAC-ready
 }
 
 const UserSchema = new Schema<UserDoc>(
@@ -18,7 +18,7 @@ const UserSchema = new Schema<UserDoc>(
     avatar: { type: String, trim: true },
     role: {
       type: String,
-      enum: ["user", "admin"],
+      enum: ["user", "admin", "escort", "business"],
       default: "user",
     },
   },
@@ -26,8 +26,8 @@ const UserSchema = new Schema<UserDoc>(
 );
 
 // Optional: speed up lookups by clerkUserId or email
-UserSchema.index({ clerkUserId: 1 });
-UserSchema.index({ email: 1 });
+// UserSchema.index({ clerkUserId: 1 });
+// UserSchema.index({ email: 1 });
 
 export default mongoose.models.User ||
   mongoose.model<UserDoc>("User", UserSchema);

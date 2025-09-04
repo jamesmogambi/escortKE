@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import React from "react";
 import NavMenu from "./NavMenu";
@@ -6,9 +7,11 @@ import { Search } from "lucide-react";
 import NavActions from "./NavActions";
 import MobileHeader from "./MobileHeader";
 import SearchSheet from "./SearchSheet";
+import { useUser } from "@clerk/nextjs";
 
 const Header = () => {
-  const isLoggedIn = false;
+  const { isSignedIn } = useUser();
+
   return (
     <>
       <MobileHeader />
@@ -32,7 +35,7 @@ const Header = () => {
 
           {/* actions */}
 
-          {isLoggedIn ? (
+          {isSignedIn ? (
             <NavActions />
           ) : (
             <div className="flex gap-3 items-center">
