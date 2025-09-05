@@ -146,6 +146,7 @@ const IntroSection = ({ form, className }: Prop) => {
                   <DropdownMenu
                     open={regionOpen}
                     onOpenChange={setRegionOpen}
+
                     // onOpenChange={(val) =>
                     //   onHandleRegion(val, field.onChange)
                     // }
@@ -206,9 +207,9 @@ const IntroSection = ({ form, className }: Prop) => {
           <label className="text-white/50 text-base font-medium">
             Availability:
           </label>
-          {variantSettings.availability.map((i) => (
-            <div>
-              <div key={i} className="flex items-center gap-2">
+          {variantSettings.availability.map((i, k) => (
+            <div key={i}>
+              <div className="flex items-center gap-2">
                 <Checkbox
                   id={i}
                   className="size-7 cursor-pointer data-[state=checked]:bg-primary bg-white rounded-md   outline-none border-0 border-primary"
@@ -239,6 +240,7 @@ const IntroSection = ({ form, className }: Prop) => {
                 <FormControl className="border w-1/2 border-primary">
                   <Input
                     placeholder=""
+                    type="tel"
                     {...field}
                     className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
                   />

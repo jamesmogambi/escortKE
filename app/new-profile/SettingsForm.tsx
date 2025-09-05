@@ -52,7 +52,7 @@ const SettingsForm = ({ form, className }: Prop) => {
             value={breast}
             name="variantBreast"
             options={variantSettings.breast}
-            placeholder="Select age"
+            placeholder="Select breasts"
           />
         </div>
       </div>

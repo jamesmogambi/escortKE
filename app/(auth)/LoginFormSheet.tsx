@@ -64,13 +64,6 @@ const LoginFormSheet = ({ className, children }: Prop) => {
   });
 
   const { handleSubmit } = form;
-  //  const {
-  //    register,
-  //    handleSubmit,
-  //    formState: { errors, isSubmitting },
-  //  } = useForm<FormData>({
-  //    resolver: zodResolver(LoginSchema),
-  //  });
 
   const onSubmit = async (data: FormData) => {
     console.log("login form data", data);
@@ -117,7 +110,10 @@ const LoginFormSheet = ({ className, children }: Prop) => {
         <DialogOverlay className="bg-white/80" />
 
         <DialogTrigger>{children}</DialogTrigger>
-        <DialogContent className=" border-0 border-green-600 top-[40%]  ">
+        <DialogContent
+          onInteractOutside={(event: any) => event.preventDefault()}
+          className=" border-0 border-green-600 top-[40%]  "
+        >
           <DialogClose asChild>
             <button className="absolute -top-6 right-4 p-2 rounded-sm overflow-hidden cursor-pointer z-20 bg-primary text-white">
               <XIcon className="size-8" />
@@ -154,6 +150,7 @@ const LoginFormSheet = ({ className, children }: Prop) => {
                             <Input
                               placeholder="Email"
                               {...field}
+                              type="email"
                               className="bg-white  flex-1 flex border-0 text-black  h-14  focus-visible:ring-0 "
                             />
                           </div>

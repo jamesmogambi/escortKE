@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+
 import { cn, getFlagEmoji, splitIntoThreeColumns } from "@/lib/utils";
 import ReactCountryFlag from "react-country-flag";
 
@@ -175,7 +167,7 @@ const SelectPackagesForm = ({ form, className }: Prop) => {
         <span className="text-white/50 font-bold  text-lg">Languages:</span>
 
         {variantSettings.languages.map((lang: any) => (
-          <div key={lang} className="flex items-center mx-4 mr-6 gap-2">
+          <div key={lang.name} className="flex items-center mx-4 mr-6 gap-2">
             <Checkbox
               id={lang}
               className="size-6 bg-white border-primary"

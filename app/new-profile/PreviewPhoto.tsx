@@ -1,32 +1,59 @@
 "use client";
 import { cn } from "@/lib/utils";
+import { useFileStore } from "@/store/fileStore";
+import { useFormStore } from "@/store/formStore";
 import React, { useEffect, useRef, useState } from "react";
 
 interface Prop {
   className?: string;
   form?: any;
 }
+
+// TODO:// HOOK TO GLOBAL STORE
 const PreviewPhoto = ({ className, form }: Prop) => {
-  const [preview, setPreview] = useState<string | null>(null);
-  const url = "husbjbjsbdjsbdsj";
+  // const [preview, setPreview] = useState<string | null>const preview = files?.[0] ? URL.createObjectURL(files[0]) : "No file selected";
+  null;
   const { watch, setValue } = form;
+  const { setFiles, files } = useFormStore();
+  // const preview = files?.[0]
+  //   ? URL.createObjectURL(files[0])
+  //   : "No file selected";
+  const preview =
+    files && files.length > 0
+      ? URL.createObjectURL(files.item(0)!)
+      : "No file selected";
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const photoFile = watch("photo");
+  // useEffect(() => {
+  //   return () => {
+  //     if (files?.[0]) URL.revokeObjectURL(URL.createObjectURL(files[0]));
+  //   };
+  // }, [files]);
 
-  useEffect(() => {
-    if (photoFile && photoFile.length > 0) {
-      const file = photoFile[0];
-      const objectUrl = URL.createObjectURL(file);
-      setPreview(objectUrl);
+  // const photoFile = watch("photo");
 
-      return () => URL.revokeObjectURL(objectUrl); // Clean up
-    }
-  }, [photoFile]);
+  // useEffect(() => {
+  //   if (photoFile && photoFile.length > 0) {
+  //     const file = photoFile[0];
+  //     setValue(file);
+  //     const objectUrl = URL.createObjectURL(file);
+  //     setPreview(objectUrl);
+
+  //     return () => URL.revokeObjectURL(objectUrl); // Clean up
+  //   }
+  // }, [photoFile]);
 
   const triggerFileSelect = () => {
     inputRef.current?.click();
+  };
+
+  const handleChange = (e: any) => {
+    const selectedFiles = e.target.files;
+    if (selectedFiles && selectedFiles.length > 0) {
+      setFiles(selectedFiles); // ✅ Store the files
+      // setValue("photo", selectedFiles); // Optional: still update form
+    }
   };
 
   return (
@@ -41,7 +68,7 @@ const PreviewPhoto = ({ className, form }: Prop) => {
         // {...register("photo")}
         ref={inputRef}
         className="hidden"
-        onChange={(e) => setValue("photo", e.target.files as FileList)}
+        onChange={handleChange}
       />
 
       <div

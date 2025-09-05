@@ -185,7 +185,10 @@ export interface EscortDoc extends Document {
   slug: string;
   openingHours: OpeningHour[];
   rates: Rate[];
-  role: "escort" | "business" | "admin";
+  role: "escort" | "business" | "admin" | "user";
+  isActive?: boolean;
+  isVerified?: boolean;
+  street?: string;
   // user?: Types.ObjectId;
 }
 
@@ -272,7 +275,7 @@ const EscortSchema = new Schema<EscortDoc>(
     slug: { type: String, required: true, unique: true, index: true },
     role: {
       type: String,
-      enum: ["escort", "business", "admin"],
+      enum: ["escort", "business", "admin", "user"],
       default: "escort",
     },
     openingHours: {
@@ -287,6 +290,11 @@ const EscortSchema = new Schema<EscortDoc>(
         outcall: { type: String, default: "" },
       },
     ],
+
+    // ✅ Newly added fields
+    isActive: { type: Boolean, default: true },
+    isVerified: { type: Boolean, default: false },
+    street: { type: String, trim: true },
 
     // user: { type: Schema.Types.ObjectId, ref: "User" },
   },

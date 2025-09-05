@@ -14,6 +14,9 @@ type State = {
   nationality: string;
   experience: string;
   tags: string[];
+  files: FileList | null;
+  setFiles: (files: FileList) => void;
+  clearFiles: () => void;
 
   setRegion: (region: string) => void;
   setCity: (city: string) => void;
@@ -33,6 +36,7 @@ type State = {
   reset: () => void;
 };
 
+// N/B: 'City belongs to region e.g Umoje, Buru Buru cities belong to Nairobi region'
 export const useFormStore = create(
   persist<State>(
     (set) => ({
@@ -46,6 +50,9 @@ export const useFormStore = create(
       nationality: "",
       experience: "",
       tags: [],
+      files: null,
+      setFiles: (files) => set({ files }),
+      clearFiles: () => set({ files: null }),
 
       setRegion: (region) => set({ region, city: "" }),
       setCity: (city) => set({ city }),

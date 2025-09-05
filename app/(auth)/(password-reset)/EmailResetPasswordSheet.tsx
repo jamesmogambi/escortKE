@@ -107,7 +107,10 @@ const EmailResetPasswordSheet = ({ children, className }: Prop) => {
         <DialogOverlay className="bg-white/90" />
 
         <DialogTrigger>{children}</DialogTrigger>
-        <DialogContent className=" border-0 border-green-600 top-[40%]  ">
+        <DialogContent
+          onInteractOutside={(e) => e.preventDefault()}
+          className=" border-0 border-green-600 top-[40%]  "
+        >
           <DialogClose asChild>
             <button className="absolute -top-6 right-4 p-2 rounded-sm overflow-hidden cursor-pointer z-20 bg-primary text-white">
               <XIcon className="size-8" />

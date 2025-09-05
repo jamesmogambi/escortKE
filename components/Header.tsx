@@ -55,7 +55,8 @@ const Header = () => {
                   className="text-white p-2 text-nowrap   px-4 font-medium rounded-sm   bg-primary"
                   href="/private-escort-record"
                 >
-                  register escort
+                  {/* register escort */}
+                  join as escort
                 </Link>
               </div>
             </div>
