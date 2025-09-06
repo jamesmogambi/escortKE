@@ -15,7 +15,7 @@ import SettingsForm from "./SettingsForm";
 import AboutMeForm from "./AboutMeForm";
 import PreviewPhoto from "./PreviewPhoto";
 import SelectPackagesForm from "./SelectPackagesForm";
-import { ArrowBigDown, ArrowDown } from "lucide-react";
+import { ArrowBigDown, ArrowDown, Weight } from "lucide-react";
 import PhotoVideoUploads from "./PhotoVideoUploads";
 import IntroSection from "./IntroSection";
 import RichTextEditor from "./RichTextEditor";
@@ -24,6 +24,8 @@ import { useSettingStore } from "@/store/settingStore";
 import { categories } from "@/fixtures/categories";
 import { useFileStore } from "@/store/fileStore";
 import { createNewEscort } from "@/actions/escort";
+import { useUser } from "@clerk/nextjs";
+import { practices } from "@/fixtures/practice";
 
 // Define the RichTextEditorHandle type
 type RichTextEditorHandle = {
@@ -39,7 +41,7 @@ const timeRangeRegex =
 
 // const daySchema = z.string().regex(timeRangeRegex, "Invalid time range");
 // .default('');
-const defaultDay = "08:00-17:00";
+const defaultDay = "";
 
 const daySchema = z
   .string()
@@ -84,12 +86,16 @@ export const formSchema = z.object({
 });
 const NewEscortForm = ({ className }: Prop) => {
   // TODO: store the user preview image
-  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
+  // const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
 
   const router = useRouter();
 
   const [error, setError] = useState<any>(null);
   const [loading, setLoader] = useState<any>(false);
+
+  const { user, isLoaded, isSignedIn } = useUser();
+
+  console.log("user - role", user);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -128,7 +134,7 @@ const NewEscortForm = ({ className }: Prop) => {
     nationality,
     experience,
     tags,
-    files: selectedFiles,
+    files: selectedFiles = [],
   } = useFormStore();
 
   const {
@@ -149,26 +155,27 @@ const NewEscortForm = ({ className }: Prop) => {
 
   //   console.log(form.getValues());
   //   console.log("--on submit values", values);
-  //   const {
-  //     address,
-  //     name,
-  //     email,
-  //     whatsappNumber,
-  //     street,
-  //     phone,
-  //     monday,
-  //     tuesday,
-  //     wednesday,
-  //     thursday,
-  //     friday,
-  //     saturday,
-  //     sunday,
-  //     myAge,
-  //     myHeight,
-  //     myBreasts,
-  //     myWeight,
-  //     // photo,
-  //   } = values;
+  // const values = form.getValues()
+  // const {
+  //   address,
+  //   name,
+  //   email,
+  //   whatsappNumber,
+  //   street,
+  //   phone,
+  //   monday,
+  //   tuesday,
+  //   wednesday,
+  //   thursday,
+  //   friday,
+  //   saturday,
+  //   sunday,
+  //   myAge,
+  //   myHeight,
+  //   myBreasts,
+  //   myWeight,
+  //   // photo,
+  // } = values;
   //   // TODO"// RENDER VALUES
   //   console.log({
   //     name,
@@ -216,9 +223,33 @@ const NewEscortForm = ({ className }: Prop) => {
   // Save user data to the database
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log("hi there");
+    const {
+      address,
+      name,
+      email,
+      whatsappNumber,
+      street,
+      phone,
+      monday,
+      tuesday,
+      wednesday,
+      thursday,
+      friday,
+      saturday,
+      sunday,
+      myAge,
+      myHeight,
+      myBreasts,
+      myWeight,
+      // photo,
+    } = values;
     // form.handleSubmit(onSubmit, (errors) => {
     //   console.error("Validation errors:", errors);
     // });
+
+    // if (!isLoaded || !isSignedIn) {
+    //   return;
+    // }
 
     startTransition(async () => {
       setLoader(true);
@@ -267,13 +298,142 @@ const NewEscortForm = ({ className }: Prop) => {
         // extract only images from gallery
         const allFiles = Array.from(useFileStore.getState().fileMap.values());
         console.log("file-map values", allFiles);
-        const imageFiles = allFiles.filter((file) => file.type === "image");
+        const imageFiles = allFiles.filter((file) =>
+          file.type.startsWith("image/")
+        );
+        console.log("front-end image files----", imageFiles);
 
-        await createNewEscort({
-          imageFiles,
-          videoFiles: [],
-          previewPhoto: selectedFiles?.[0],
+        let imgGalleryUrls;
+        let videoGalleryUrls;
+        let previewPhotoUrl = "";
+
+        // TODO: 1- UPLOAD IMAGES TO S3
+
+        const formData = new FormData();
+        imageFiles.forEach((file) => {
+          formData.append("images", file); // must match `formData.getAll("images")` on server
         });
+        // attach preview photo
+
+        if (selectedFiles && selectedFiles.length > 0) {
+          formData.append("images", selectedFiles[0]);
+        }
+
+        const res = await fetch("/api/s3/upload-escort-images", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (res.status === 201) {
+          const { imageUrls } = await res.json();
+          console.log("✅ Uploaded:", imageUrls);
+          imgGalleryUrls = imageUrls;
+          if (selectedFiles && selectedFiles.length > 0) {
+            previewPhotoUrl = imageUrls?.at?.(-1);
+          }
+          // Optionally show placeholders or start polling for status
+        } else {
+          console.error("❌ Upload failed:", res.status);
+        }
+
+        // if (!res.ok) {
+        //   console.error("Upload failed");
+        //   return;
+        // }
+
+        // TODO: 2- UPLOAD videos to MUX
+
+        const videoFiles = allFiles.filter((file) =>
+          file.type.startsWith("video/")
+        );
+
+        console.log("all video files", videoFiles);
+
+        const videoFormData = new FormData();
+
+        videoFiles.forEach((file) => {
+          videoFormData.append("videos", file); // must match `formData.getAll("images")` on server
+        });
+
+        const clerkId: any = user?.id;
+        console.log("clerk-id", clerkId);
+        videoFormData.append("clerkUserID", clerkId);
+
+        const videoRes = await fetch("/api/mux/upload-videos", {
+          method: "POST",
+          body: videoFormData,
+        });
+
+        if (videoRes.status === 201) {
+          // const { uploads } = await res.json();
+          console.log("✅ Upload initiated:");
+          // for videos webhook will update the record
+          // Optionally show placeholders or start polling for status
+        } else {
+          console.error("❌ Upload failed:", res.status);
+        }
+
+        // TODO: 3- Update clerk user role = 'escort'
+
+        // TODO: 4-create and save profile in Escorts schmea = 'escort'
+        const escortImages = imgGalleryUrls.filter(
+          (item: any) => item !== previewPhotoUrl
+        );
+        const escortData = {
+          name,
+          clerkUserid: clerkId,
+          avatar: imgGalleryUrls.at(-1),
+          // age,
+          telephone: phone,
+          whatsappPhone: whatsappNumber,
+          // exclude the last item if previewPhoto is their
+          images: escortImages,
+          // videos will be handled by mux webhook
+          // videos
+          about: description,
+          availability,
+          // ethnicity
+          nationality,
+          bustSize: breast,
+          // Weight,
+          // zodiacSign,
+          // sexualOrientation,
+          languages,
+          // estate
+          city,
+          region,
+          practices: selected,
+          bdsm,
+          massages,
+          extraServices: tags,
+          role: "escort",
+          openingHours: {
+            monday,
+            tuesday,
+            wednesday,
+            thursday,
+            friday,
+            saturday,
+            sunday,
+          },
+          ageCategory: age,
+          character,
+          hairColor,
+          experience,
+          age: myAge,
+          breasts: myBreasts,
+          weight: myWeight,
+          height: myHeight,
+          categories: settingCategories,
+          address,
+        };
+
+        const escortRes = await createNewEscort(escortData);
+        // await createNewEscort({
+        //   imageFiles: allFiles,
+        //   videoFiles: [],
+        //   previewPhoto: selectedFiles?.[0],
+        // });
         //  if all is well proceed
 
         // alert("submit form");

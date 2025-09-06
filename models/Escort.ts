@@ -180,7 +180,9 @@ export interface EscortDoc extends Document {
   estate?: string;
   city?: string;
   address?: string;
-  services: string[];
+  practices: string[];
+  bdsm: string[];
+  massage: string[];
   extraServices: string[];
   slug: string;
   openingHours: OpeningHour[];
@@ -189,7 +191,15 @@ export interface EscortDoc extends Document {
   isActive?: boolean;
   isVerified?: boolean;
   street?: string;
-  // user?: Types.ObjectId;
+  region?: string;
+  user?: Types.ObjectId;
+  // added fields
+  breastSize?: string;
+  ageCategory?: string;
+  character?: string;
+  hairColor?: string;
+  experience?: string;
+  categories?: string[];
 }
 
 export const defaultOpeningHours: OpeningHour[] = [
@@ -265,24 +275,35 @@ const EscortSchema = new Schema<EscortDoc>(
     bustSize: { type: String },
     weight: { type: String },
     zodiacSign: { type: String },
-    sexualOrientation: { type: String },
+    sexualOrientation: { type: String, default: null },
     languages: { type: Map, of: String, default: {} },
     estate: { type: String },
+    region: { type: String },
     city: { type: String },
     address: { type: String },
-    services: { type: [String], default: [] },
+    practices: { type: [String], default: [] },
+    bdsm: { type: [String], default: [] },
+    massage: { type: [String], default: [] },
     extraServices: { type: [String], default: [] },
-    slug: { type: String, required: true, unique: true, index: true },
+    slug: { type: String, required: false, unique: true, index: true },
     role: {
       type: String,
       enum: ["escort", "business", "admin", "user"],
       default: "escort",
     },
+    // openingHours: {
+    //   type: [OpeningHourSchema],
+    //   default: defaultOpeningHours,
+    // },
     openingHours: {
-      type: [OpeningHourSchema],
-      default: defaultOpeningHours,
+      monday: "",
+      tuesday: "",
+      wednesday: "",
+      thursday: "",
+      friday: "",
+      saturday: "",
+      sunday: "",
     },
-
     rates: [
       {
         duration: { type: String, required: true },
@@ -296,7 +317,14 @@ const EscortSchema = new Schema<EscortDoc>(
     isVerified: { type: Boolean, default: false },
     street: { type: String, trim: true },
 
-    // user: { type: Schema.Types.ObjectId, ref: "User" },
+    user: { type: Schema.Types.ObjectId, ref: "User" },
+
+    breastSize: { type: String },
+    ageCategory: { type: String },
+    character: { type: String },
+    hairColor: { type: String },
+    experience: { type: String },
+    categories: { type: String, default: [] },
   },
   { timestamps: true }
 );

@@ -1,7 +1,10 @@
 "use server";
 
 import { connectToDB } from "@/lib/mongoose";
+import Escort from "@/models/Escort";
+import User from "@/models/User";
 import axios from "axios";
+import { success } from "zod";
 
 interface CreateNewEscortParam {
   imageFiles: any;
@@ -11,60 +14,32 @@ interface CreateNewEscortParam {
 
 const baseURL = `${process.env.NEXT_PUBLIC_SITE_URL}`;
 
-export async function createNewEscort({
-  imageFiles,
-  videoFiles,
-
-  previewPhoto,
-}: CreateNewEscortParam) {
+export async function createNewEscort(escortData: any) {
   await connectToDB();
 
+  const { clerkUserId } = escortData;
+
   try {
-    console.log("Uploading to:", `${baseURL}/api/s3/upload-escort-images`);
-    //    1. upload images to s3
-    const formData = new FormData();
+    // console.log("Uploading to:", `${baseURL}/api/s3/upload-escort-images`);
+    console.log("escord---data>>>", { ...escortData });
+    // 1// SAVE ESCORT TO ESCORT SCHEMA
 
-    imageFiles.forEach((file: any, index: any) => {
-      formData.append(`images`, file); // or just "images" if backend accepts array
-    });
+    const escort = await Escort.create(escortData);
 
-    formData.append(`images`, previewPhoto);
+    // 2// UPDATE USER ROLE TO 'escort' in USER SCHEMA
+    const user = await User.findOneAndUpdate(
+      { clerkUserId: clerkUserId },
+      { role: "escort" },
+      { new: true }
+    );
 
-    console.log("image-files", formData);
-
-    // imageFiles.forEach((file: any, i: any) => {
-    //   console.log(`Image ${i}:`, {
-    //     name: file.name,
-    //     type: file.type,
-    //     size: file.size,
-    //     lastModified: file.lastModified,
-    //   });
-    // });
-
-    // const s3Res = await axios.post(
-    //   `${baseURL}/api/s3/upload-escort-images`, // ✅ fixed
-    //   formData,
-    //   {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   }
-    // );
-
-    // const s3Res = await axios.post(
-    //   `${baseURL}/api/s3/upload-escort-images`,
-    //   formData,
-    //   {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   }
-    // );
+    // 3. mux will call webhook to save video playback ids to db
 
     // console.log("imgUrls", s3Res);
-    return true;
-
-    // 2. upload videos to mux
+    return {
+      success: true,
+      escort,
+    };
 
     // return newUser;
   } catch (err: any) {
