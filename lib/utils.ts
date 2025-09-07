@@ -1,6 +1,10 @@
 import { localeToFlagEmoji } from "@/fixtures/flags";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import mongoose from "mongoose";
+import { User } from "@/models/User";
+// import { User } from "@clerk/nextjs/server";
+// import User from "@/models/User";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -84,3 +88,21 @@ export function splitIntoThreeColumns<T>(items: T[]): [T[], T[], T[]] {
 
 export const getFlagEmoji = (locale: string): string =>
   localeToFlagEmoji[locale] ?? "🏳️"; // fallback to white flag
+
+// utils/getMongoUserIdByClerkId.ts
+
+/**
+ * Finds a user's MongoDB _id using their Clerk userId.
+ * Throws if no user is found.
+ */
+export async function getMongoUserIdByClerkId(
+  clerkUserId: string
+): Promise<mongoose.Types.ObjectId> {
+  const user = await User.findOne({ clerkUserId }).select("_id");
+
+  if (!user) {
+    throw new Error(`No user found with Clerk ID: ${clerkUserId}`);
+  }
+
+  return user._id;
+}

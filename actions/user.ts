@@ -1,6 +1,8 @@
 "use server";
 import { connectToDB } from "@/lib/mongoose";
-import User from "@/models/User"; // Import User model
+import { User } from "@/models/User";
+// import User from "@/models/User";
+// import User from "@/models/User"; // Import User model
 import { auth } from "@clerk/nextjs/server";
 
 interface CreateUserParams {

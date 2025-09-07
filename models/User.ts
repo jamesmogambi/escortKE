@@ -29,5 +29,8 @@ const UserSchema = new Schema<UserDoc>(
 // UserSchema.index({ clerkUserId: 1 });
 // UserSchema.index({ email: 1 });
 
-export default mongoose.models.User ||
-  mongoose.model<UserDoc>("User", UserSchema);
+// export default mongoose.models.User ||
+//   mongoose.model<UserDoc>("User", UserSchema);
+
+export const User = mongoose.models.User || mongoose.model("User", UserSchema);
+// export const UserModel = models.User || model<UserDoc>("User", UserSchema);

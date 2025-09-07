@@ -113,9 +113,6 @@ const NewEscortForm = ({ className }: Prop) => {
       myHeight: "67",
       variantAge: "",
       variantAvailability: ["incall", "outcall"],
-
-      // monday: "8:00-17:00",
-      // region: "",
     },
   });
 
@@ -147,78 +144,6 @@ const NewEscortForm = ({ className }: Prop) => {
   } = useSettingStore();
 
   const { files: gallery } = useFileStore();
-
-  // 2. Define a submit handler.
-  // function onSubmit(values: z.infer<typeof formSchema>) {
-  //   // Do something with the form values.
-  //   // ✅ This will be type-safe and validated.
-
-  //   console.log(form.getValues());
-  //   console.log("--on submit values", values);
-  // const values = form.getValues()
-  // const {
-  //   address,
-  //   name,
-  //   email,
-  //   whatsappNumber,
-  //   street,
-  //   phone,
-  //   monday,
-  //   tuesday,
-  //   wednesday,
-  //   thursday,
-  //   friday,
-  //   saturday,
-  //   sunday,
-  //   myAge,
-  //   myHeight,
-  //   myBreasts,
-  //   myWeight,
-  //   // photo,
-  // } = values;
-  //   // TODO"// RENDER VALUES
-  //   console.log({
-  //     name,
-  //     email,
-  //     address,
-  //     whatsappNumber,
-  //     phone,
-  //     street,
-  //     description,
-  //     region,
-  //     city,
-  //     monday,
-  //     tuesday,
-  //     wednesday,
-  //     thursday,
-  //     friday,
-  //     saturday,
-  //     sunday,
-  //     age,
-  //     breast,
-  //     character,
-  //     hairColor,
-  //     nationality,
-  //     experience,
-  //     tags,
-  //     myAge,
-  //     myWeight,
-  //     myBreasts,
-  //     myHeight,
-  //     previewPhoto: "",
-  //     practices: selected,
-  //     typeMassage: massages,
-  //     selectedBDSM: bdsm,
-  //     selectedCategories: settingCategories,
-  //     selectedLanguages: languages,
-  //     selectedFiles: {
-  //       files,
-  //     },
-  //   });
-
-  //   // upon successful registration user should be redirected to /new profile
-  //   // router.push("/new-profile");
-  // }
 
   // Save user data to the database
   const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -253,6 +178,7 @@ const NewEscortForm = ({ className }: Prop) => {
 
     startTransition(async () => {
       setLoader(true);
+      setError(null);
       try {
         // Update username in Clerk
         console.log("form-values", {
@@ -382,7 +308,7 @@ const NewEscortForm = ({ className }: Prop) => {
         const escortData = {
           name,
           clerkUserid: clerkId,
-          avatar: imgGalleryUrls.at(-1),
+          previewPhoto: imgGalleryUrls.at(-1),
           // age,
           telephone: phone,
           whatsappPhone: whatsappNumber,
@@ -426,6 +352,7 @@ const NewEscortForm = ({ className }: Prop) => {
           height: myHeight,
           categories: settingCategories,
           address,
+          email,
         };
 
         const escortRes = await createNewEscort(escortData);
@@ -438,11 +365,12 @@ const NewEscortForm = ({ className }: Prop) => {
 
         // alert("submit form");
         // Save user info in the database
-
+        router.push("/administration");
         // Scroll user to the top after successful update
         // window.scrollTo({ top: 0, behavior: "smooth" });
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error saving profile", error);
+        setError(error?.message || "Something went wrong");
       } finally {
         setLoader(false);
       }
@@ -458,9 +386,10 @@ const NewEscortForm = ({ className }: Prop) => {
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit, (errors) => {
-              console.error("Validation errors:", errors);
-            })}
+            onSubmit={form.handleSubmit(onSubmit)}
+            // onSubmit={form.handleSubmit(onSubmit, (errors) => {
+            //   console.error("Validation errors:", errors);
+            // })}
             className="space-y-3"
           >
             {/* about section */}
@@ -489,7 +418,7 @@ const NewEscortForm = ({ className }: Prop) => {
             <PhotoVideoUploads form={form} />
 
             {error && (
-              <p className="p-3 bg-primary text-white py-2 text-center my-4">
+              <p className="p-3 bg-primary text-base text-white py-2 text-center my-4">
                 {error}
               </p>
             )}
