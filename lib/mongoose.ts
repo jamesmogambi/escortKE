@@ -41,3 +41,14 @@ export async function getTotalPages(itemsPerPage = 50, modelName = "Video") {
     return 1; // Default to 1 page if there's an error
   }
 }
+
+/**
+ * Safely serializes MongoDB documents for client-side consumption.
+ * Converts ObjectId, Date, and other BSON types to plain JSON.
+ *
+ * @param docs - Array of MongoDB documents
+ * @returns Deep-cloned, JSON-safe data
+ */
+export function serializeMongoDocs<T>(docs: T[]): T[] {
+  return JSON.parse(JSON.stringify(docs));
+}

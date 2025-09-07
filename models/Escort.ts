@@ -30,12 +30,13 @@ export interface EscortDoc extends Document {
   nationality?: string;
   bustSize?: string;
   weight?: string;
+  source?: string;
   zodiacSign?: string;
   sexualOrientation?: string;
   languages: string[];
   categories: string[];
   estate?: string;
-  city?: string;
+  town?: string;
   address?: string;
   practices: string[];
   bdsm: string[];
@@ -146,8 +147,11 @@ const EscortSchema = new Schema<EscortDoc>(
     languages: { type: [String], default: [] },
     estate: { type: String },
     region: { type: String },
-    city: { type: String },
+    town: { type: String },
     address: { type: String },
+    // custom means the escort created her own a/c
+    source: { type: String, default: "custom" },
+
     practices: { type: [String], default: [] },
     bdsm: { type: [String], default: [] },
     massage: { type: [String], default: [] },

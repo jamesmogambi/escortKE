@@ -1,5 +1,6 @@
+"use client";
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   FormControl,
@@ -18,12 +19,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { regions, towns } from "@/fixtures/location";
+// import { towns } from "@/fixtures/location";
 import { useFormStore } from "@/store/formStore";
 import { variantSettings } from "@/fixtures/setting";
 // import { Checkbox } from "@radix-ui/react-checkbox";
 import { useSettingStore } from "@/store/settingStore";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useLocationStore } from "@/store/locationStore";
+import { getRegions, getTowns } from "@/actions/location";
+import { Town } from "@/types/globals";
 
 interface Prop {
   className?: string;
@@ -33,12 +37,56 @@ const IntroSection = ({ form, className }: Prop) => {
   const [regionOpen, setRegionOpen] = React.useState<boolean>(false);
   const [cityOpen, setCityOpen] = React.useState<boolean>(false);
 
+  const [regionTowns, setRegionTowns] = useState<Town[]>([]);
+
   const { watch, setValue } = form;
 
-  const { city, region, setCity, setRegion } = useFormStore();
+  const { town, region, setTown, setRegion } = useFormStore();
 
   const { languages, setLanguage, availability, setAvailability } =
     useSettingStore();
+
+  // const setRegions = useLocationStore((s) => s.setRegions);
+  const { setRegions, setTowns, regions, towns } = useLocationStore();
+
+  useEffect(() => {
+    async function fetchRegions() {
+      try {
+        const res: any = await getRegions();
+        console.log("fetched regions", res);
+        setRegions(res);
+      } catch (err) {
+        console.error("Failed to load regions:", err);
+      }
+    }
+
+    fetchRegions();
+  }, [setRegions]);
+
+  useEffect(() => {
+    async function fetchTowns() {
+      try {
+        const res: any = await getTowns();
+        console.log("fetched towns", res);
+        setTowns(res);
+      } catch (err) {
+        console.error("Failed to load towns:", err);
+      }
+    }
+
+    fetchTowns();
+  }, [setTowns]);
+
+  const handleSelectRegion = (region: string) => {
+    setRegion(region);
+
+    // TODO:// get the towns belonging to the given
+    const filteredTowns = towns.filter(
+      (town: any) => town.region.name === region
+    );
+    console.log("filteredTowns", filteredTowns);
+    setRegionTowns(filteredTowns);
+  };
 
   return (
     <section className={cn("flex gap-2 lg:gap-10", className)}>
@@ -179,17 +227,19 @@ const IntroSection = ({ form, className }: Prop) => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       //   side="left"
-                      className="flex border-0 flex-col outline-none p-2 gap-3 w-screen  lg:max-w-[900px] bg-gray-1 "
+                      className="flex border-0 flex-col outline-none p-5 gap-3 w-screen  lg:max-w-[900px] bg-gray-1 "
                     >
-                      <div className="flex flex-row w-full gap-1.5  flex-wrap">
+                      <div className="flex flex-row w-full gap-1.5 gap-y-2.5  flex-wrap">
                         {regions.map((item) => (
                           <DropdownMenuItem
-                            className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
+                            className="rounded-lg  cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
                             // onSelect={(e) => setRegion(item.location)}
-                            onSelect={(val: any) => setRegion(item.location)}
+                            onSelect={(val: any) =>
+                              handleSelectRegion(item.name)
+                            }
                             key={item.id}
                           >
-                            {item.location}
+                            {item.name}
                           </DropdownMenuItem>
                         ))}
                       </div>
@@ -266,13 +316,13 @@ const IntroSection = ({ form, className }: Prop) => {
                     // }
                   >
                     <DropdownMenuTrigger className=" outline-0  self-end  cursor-pointer border-0 flex w-full lg:w-[250px] justify-between items-center p-2 text-base px-5 bg-gray-1 rounded-md ">
-                      {city ? (
+                      {town ? (
                         <span className="text-white/50 text-base font-semibold">
-                          {city}
+                          {town}
                         </span>
                       ) : (
                         <span className="text-white/50 text-base font-semibold">
-                          City
+                          Area or Town
                         </span>
                       )}
 
@@ -293,17 +343,17 @@ const IntroSection = ({ form, className }: Prop) => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       //   side="left"
-                      className="flex border-0 flex-col outline-none p-2 gap-3 w-screen  lg:max-w-[900px] bg-gray-1 "
+                      className="flex border-0 flex-col outline-none p-4 gap-3 w-screen  lg:max-w-[900px] bg-gray-1 "
                     >
-                      <div className="flex flex-row w-full gap-1.5  flex-wrap">
-                        {towns.map((item) => (
+                      <div className="flex flex-row w-full gap-1.5 gap-y-2.5  flex-wrap">
+                        {regionTowns.map((item) => (
                           <DropdownMenuItem
                             className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
                             // onSelect={(e) => setRegion(item.location)}
-                            onSelect={(val: any) => setCity(item.location)}
+                            onSelect={(val: any) => setTown(item.name)}
                             key={item.id}
                           >
-                            {item.location}
+                            {item.name}
                           </DropdownMenuItem>
                         ))}
                       </div>

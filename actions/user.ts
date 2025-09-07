@@ -4,6 +4,7 @@ import { User } from "@/models/User";
 // import User from "@/models/User";
 // import User from "@/models/User"; // Import User model
 import { auth } from "@clerk/nextjs/server";
+import mongoose from "mongoose";
 
 interface CreateUserParams {
   clerkUserId: string;
@@ -11,36 +12,6 @@ interface CreateUserParams {
   username?: string;
 }
 
-// export async function createUser({
-//   clerkUserId,
-//   email,
-//   username,
-// }: CreateUserParams) {
-//   await connectToDB();
-
-//   try {
-//     // Check if user already exists
-//     const existingUser = await User.findOne({ clerkUserId });
-//     if (existingUser) {
-//       return { success: false, message: "User already exists." };
-//     }
-
-//     // Create new user
-//     const newUser = await User.create({
-//       clerkUserId,
-//       email,
-//       username,
-//     });
-
-//     return { success: true, user: newUser };
-//   } catch (error: any) {
-//     console.error("Error creating user:", error);
-//     return {
-//       success: false,
-//       message: error.message || "Failed to create user.",
-//     };
-//   }
-// }
 export async function createUser({
   clerkUserId,
   email,
@@ -72,4 +43,22 @@ export async function createUser({
   } catch (err: any) {
     throw new Error(`Failed to create user: ${err.message}`);
   }
+}
+
+// utils/getMongoUserIdByClerkId.ts
+
+/**
+ * Finds a user's MongoDB _id using their Clerk userId.
+ * Throws if no user is found.
+ */
+export async function getMongoUserIdByClerkId(
+  clerkUserId: string
+): Promise<mongoose.Types.ObjectId> {
+  const user = await User.findOne({ clerkUserId }).select("_id");
+
+  if (!user) {
+    throw new Error(`No user found with Clerk ID: ${clerkUserId}`);
+  }
+
+  return user._id;
 }

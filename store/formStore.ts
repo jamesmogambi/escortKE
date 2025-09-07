@@ -5,7 +5,7 @@ import { persist } from "zustand/middleware";
 
 type State = {
   region: string;
-  city: string;
+  town: string;
   description: string;
   age: string;
   breast: string;
@@ -19,7 +19,7 @@ type State = {
   clearFiles: () => void;
 
   setRegion: (region: string) => void;
-  setCity: (city: string) => void;
+  setTown: (town: string) => void;
   setDescription: (description: string) => void;
   setAge: (age: string) => void;
   setBreast: (breast: string) => void;
@@ -41,7 +41,7 @@ export const useFormStore = create(
   persist<State>(
     (set) => ({
       region: "",
-      city: "",
+      town: "",
       description: "",
       age: "",
       breast: "",
@@ -54,8 +54,8 @@ export const useFormStore = create(
       setFiles: (files) => set({ files }),
       clearFiles: () => set({ files: null }),
 
-      setRegion: (region) => set({ region, city: "" }),
-      setCity: (city) => set({ city }),
+      setRegion: (region) => set({ region, town: "" }),
+      setTown: (town) => set({ town }),
       setDescription: (description) => set({ description }),
       setAge: (age) => set({ age }),
       setBreast: (breast) => set({ breast }),
@@ -82,7 +82,7 @@ export const useFormStore = create(
       reset: () =>
         set({
           region: "",
-          city: "",
+          town: "",
           description: "",
           age: "",
           breast: "",

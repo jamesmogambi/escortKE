@@ -10,3 +10,16 @@ declare global {
     };
   }
 }
+
+export type Region = {
+  id: string;
+  name: string;
+  country: string;
+};
+
+export type Town = {
+  id: string;
+  name: string;
+  region: string; // relational link
+  country: string;
+};

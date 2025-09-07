@@ -1,7 +1,6 @@
 "use server";
 
 import { connectToDB } from "@/lib/mongoose";
-import { getMongoUserIdByClerkId } from "@/lib/utils";
 import Escort from "@/models/Escort";
 import { User } from "@/models/User";
 // import User from "@/models/User";
@@ -9,6 +8,7 @@ import { auth } from "@clerk/nextjs/server";
 // import User from "@/models/User";
 import axios from "axios";
 import { success } from "zod";
+import { getMongoUserIdByClerkId } from "./user";
 
 interface CreateNewEscortParam {
   imageFiles: any;
@@ -42,6 +42,8 @@ export async function createNewEscort(escortData: any) {
 
     const data = {
       user: userRef,
+      source: "custom",
+      ...escortData,
     };
 
     await Escort.create(data);

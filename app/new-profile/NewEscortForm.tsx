@@ -123,7 +123,7 @@ const NewEscortForm = ({ className }: Prop) => {
   const {
     description,
     region,
-    city,
+    town,
     age,
     breast,
     character,
@@ -183,7 +183,7 @@ const NewEscortForm = ({ className }: Prop) => {
         // Update username in Clerk
         console.log("form-values", {
           ...form.getValues(),
-          city,
+          town,
           region,
           selectedAvailabilty: availability,
           description,
@@ -210,8 +210,8 @@ const NewEscortForm = ({ className }: Prop) => {
         }
 
         // 2. validate region
-        if (!city) {
-          setError("Please select your locality");
+        if (!town) {
+          setError("Please select your area or town");
           return;
         }
 
@@ -326,7 +326,7 @@ const NewEscortForm = ({ className }: Prop) => {
           // sexualOrientation,
           languages,
           // estate
-          city,
+          town,
           region,
           practices: selected,
           bdsm,
@@ -418,7 +418,7 @@ const NewEscortForm = ({ className }: Prop) => {
             <PhotoVideoUploads form={form} />
 
             {error && (
-              <p className="p-3 bg-primary text-base text-white py-2 text-center my-4">
+              <p className="p-3 bg-primary text-lg text-white py-2 text-center my-4">
                 {error}
               </p>
             )}
