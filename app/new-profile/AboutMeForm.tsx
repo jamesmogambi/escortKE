@@ -20,8 +20,8 @@ const AboutMeForm = ({ form, className }: Prop) => {
   return (
     <section className={cn("w-full  ", className)}>
       <h4 className="text-lg text-white/50  mb-6 font-bold">About me:</h4>
-      <div className="flex ">
-        <div className="basis-1/2 space-y-5">
+      <div className="flex flex-col gap-6 lg:flex-row ">
+        <div className="lg:basis-1/2 basis-full space-y-5">
           <FormField
             control={form.control}
             name="myAge"
@@ -67,7 +67,7 @@ const AboutMeForm = ({ form, className }: Prop) => {
           />
         </div>
 
-        <div className="basis-1/2 space-y-5">
+        <div className="lg:basis-1/2 basis-full space-y-5">
           <FormField
             control={form.control}
             name="myWeight"

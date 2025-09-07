@@ -9,7 +9,7 @@ import { Form } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import SectionCard from "@/components/SectionCard";
 import { cn } from "@/lib/utils";
-import React, { startTransition, useState } from "react";
+import React, { startTransition, useEffect, useState } from "react";
 import WorkHoursForm from "./WorkHoursForm";
 import SettingsForm from "./SettingsForm";
 import AboutMeForm from "./AboutMeForm";
@@ -21,11 +21,12 @@ import IntroSection from "./IntroSection";
 import RichTextEditor from "./RichTextEditor";
 import { useFormStore } from "@/store/formStore";
 import { useSettingStore } from "@/store/settingStore";
-import { categories } from "@/fixtures/categories";
 import { useFileStore } from "@/store/fileStore";
 import { createNewEscort } from "@/actions/escort";
 import { useUser } from "@clerk/nextjs";
-import { practices } from "@/fixtures/practice";
+import { useVariantStore } from "@/store/variantStore";
+import { getVariantSettings } from "@/actions/variantsetting";
+import { useLocationStore } from "@/store/locationStore";
 
 // Define the RichTextEditorHandle type
 type RichTextEditorHandle = {
@@ -64,9 +65,9 @@ export const formSchema = z.object({
   phone: z
     .string({ error: "Phone number is required" })
     .regex(/^\+?[0-9]{7,15}$/, "Invalid phone number"),
-  address: z
-    .string({ error: "Address is required" })
-    .min(5, "Address must be at least 5 characters"),
+  // address: z
+  //   .string({ error: "Address is required" })
+  //   .min(5, "Address must be at least 5 characters"),
   // description: z.string({}).min(10, "Description must be at least 10 characters"),
   monday: daySchema,
   tuesday: daySchema,
@@ -82,7 +83,9 @@ export const formSchema = z.object({
   myBreasts: z.string(),
   myWeight: z.string(),
   // photo: z.any,
-  variantAvailability: z.array(z.string().min(1, "Tag cannot be empty")),
+  variantAvailability: z
+    .array(z.string().min(1, "Tag cannot be empty"))
+    .default([]),
 });
 const NewEscortForm = ({ className }: Prop) => {
   // TODO: store the user preview image
@@ -95,30 +98,51 @@ const NewEscortForm = ({ className }: Prop) => {
 
   const { user, isLoaded, isSignedIn } = useUser();
 
-  console.log("user - role", user);
+  // console.log("user - role", user);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "James Mogambi",
-      email: "mogambi48@icloud.com",
-      street: "Kirirgiti",
-      phone: "0701694004",
-      whatsappNumber: "0743129621",
-      address: "Kirirnyaga 102",
-      myAge: "20",
-      myBreasts: "45",
-      myWeight: "98",
-      myHeight: "67",
+      name: "",
+      email: "",
+      street: "",
+      phone: "",
+      whatsappNumber: "",
+      // address: "",
+      myAge: "",
+      myBreasts: "",
+      myWeight: "",
+      myHeight: "",
       variantAge: "",
-      variantAvailability: ["incall", "outcall"],
+      // variantAvailability: undefined,
     },
   });
 
   const { watch, setValue, formState } = form;
 
   const { isSubmitting } = formState;
+
+  const { clear } = useLocationStore();
+  const { clearDescription, clearFiles, clearTags } = useFormStore();
+  const { clearCategories, clearLanguages, clearAll } = useSettingStore();
+  const { clearFiles: clearEscortGallery } = useFileStore();
+
+  const hydrate = useVariantStore((s) => s.hydrate);
+  useEffect(() => {
+    async function fetchSettings() {
+      try {
+        const res: any = await getVariantSettings();
+        // const data = await res.json();
+        // console.log("fetched-variant-setting", res);
+        hydrate(res);
+      } catch (err) {
+        console.error("Failed to hydrate variant settings:", err);
+      }
+    }
+
+    fetchSettings();
+  }, [hydrate]);
 
   const {
     description,
@@ -149,7 +173,7 @@ const NewEscortForm = ({ className }: Prop) => {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log("hi there");
     const {
-      address,
+      // address,
       name,
       email,
       whatsappNumber,
@@ -181,27 +205,27 @@ const NewEscortForm = ({ className }: Prop) => {
       setError(null);
       try {
         // Update username in Clerk
-        console.log("form-values", {
-          ...form.getValues(),
-          town,
-          region,
-          selectedAvailabilty: availability,
-          description,
-          age,
-          breast,
-          character,
-          hairColor,
-          nationality,
-          experience,
-          tags,
-          previewPhoto: selectedFiles,
-          selectedPractices: selected,
-          selectedMassage: massages,
-          selectedBDSM: bdsm,
-          selectedCategories: settingCategories,
-          selectedLanguages: languages,
-          selectedGallery: gallery,
-        });
+        // console.log("form-values", {
+        //   ...form.getValues(),
+        //   town,
+        //   region,
+        //   selectedAvailabilty: availability,
+        //   description,
+        //   age,
+        //   breast,
+        //   character,
+        //   hairColor,
+        //   nationality,
+        //   experience,
+        //   tags,
+        //   previewPhoto: selectedFiles,
+        //   selectedPractices: selected,
+        //   selectedMassage: massages,
+        //   selectedBDSM: bdsm,
+        //   selectedCategories: settingCategories,
+        //   selectedLanguages: languages,
+        //   selectedGallery: gallery,
+        // });
 
         // 1 validate region
         if (!region) {
@@ -223,7 +247,7 @@ const NewEscortForm = ({ className }: Prop) => {
 
         // extract only images from gallery
         const allFiles = Array.from(useFileStore.getState().fileMap.values());
-        console.log("file-map values", allFiles);
+        // console.log("file-map values", allFiles);
         const imageFiles = allFiles.filter((file) =>
           file.type.startsWith("image/")
         );
@@ -252,7 +276,7 @@ const NewEscortForm = ({ className }: Prop) => {
 
         if (res.status === 201) {
           const { imageUrls } = await res.json();
-          console.log("✅ Uploaded:", imageUrls);
+          // console.log("✅ Uploaded:", imageUrls);
           imgGalleryUrls = imageUrls;
           if (selectedFiles && selectedFiles.length > 0) {
             previewPhotoUrl = imageUrls?.at?.(-1);
@@ -273,7 +297,7 @@ const NewEscortForm = ({ className }: Prop) => {
           file.type.startsWith("video/")
         );
 
-        console.log("all video files", videoFiles);
+        // console.log("all video files", videoFiles);
 
         const videoFormData = new FormData();
 
@@ -282,7 +306,7 @@ const NewEscortForm = ({ className }: Prop) => {
         });
 
         const clerkId: any = user?.id;
-        console.log("clerk-id", clerkId);
+        // console.log("clerk-id", clerkId);
         videoFormData.append("clerkUserID", clerkId);
 
         const videoRes = await fetch("/api/mux/upload-videos", {
@@ -351,11 +375,11 @@ const NewEscortForm = ({ className }: Prop) => {
           weight: myWeight,
           height: myHeight,
           categories: settingCategories,
-          address,
+          // address,
           email,
         };
 
-        const escortRes = await createNewEscort(escortData);
+        await createNewEscort(escortData);
         // await createNewEscort({
         //   imageFiles: allFiles,
         //   videoFiles: [],
@@ -365,8 +389,18 @@ const NewEscortForm = ({ className }: Prop) => {
 
         // alert("submit form");
         // Save user info in the database
+        // TODO:// CLEAR OR RESET FORM  VALUES
+        clear();
+        clearAll(),
+          clearDescription(),
+          clearLanguages(),
+          clearFiles(),
+          clearTags(),
+          clearCategories();
+        clearEscortGallery();
         router.push("/administration");
         // Scroll user to the top after successful update
+
         // window.scrollTo({ top: 0, behavior: "smooth" });
       } catch (error: any) {
         console.error("Error saving profile", error);
@@ -380,13 +414,15 @@ const NewEscortForm = ({ className }: Prop) => {
     <div className={cn("", className)}>
       <SectionCard className="px-12">
         <h3 className="text-2xl mb-5 font-semibold">
-          New{" "}
-          <span className="text-primary font-semibold">profile of escort</span>
+          New <span className="text-primary font-bold text-xl">girl</span>{" "}
+          profile
         </h3>
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onSubmit, (errors) => {
+              console.error("Validation errors:", errors);
+            })}
             // onSubmit={form.handleSubmit(onSubmit, (errors) => {
             //   console.error("Validation errors:", errors);
             // })}
@@ -395,9 +431,9 @@ const NewEscortForm = ({ className }: Prop) => {
             {/* about section */}
             <IntroSection form={form} />
             {/* description and setting section */}
-            <section className="flex mt-12 gap-6">
+            <section className="flex flex-col lg:flex-row mt-12 gap-6">
               {/* 1 */}
-              <div className=" basis-1/2">
+              <div className=" basis-full lg:basis-1/2">
                 <RichTextEditor />
 
                 <WorkHoursForm form={form} className={" mt-5"} />
@@ -406,12 +442,12 @@ const NewEscortForm = ({ className }: Prop) => {
 
                 <AboutMeForm form={form} className="my-8" />
 
-                <PreviewPhoto className="my-10 w-3/4" form={form} />
+                <PreviewPhoto className="my-10 lg:w-3/4 w-full" form={form} />
               </div>
 
               {/* 2 */}
 
-              <div className="basis-1/2 relative  border-green-600">
+              <div className="lg:basis-1/2 basis-full relative  border-green-600">
                 <SelectPackagesForm form={form} />
               </div>
             </section>
@@ -426,15 +462,15 @@ const NewEscortForm = ({ className }: Prop) => {
             <div className="flex justify-center ">
               <Button
                 disabled={loading}
-                className="flex w-1/4 rounded-none  items-center  gap-2 p-12 text-white bg-primary"
+                className="flex lg:w-1/4 w-3/4 rounded-none  items-center  gap-2 p-12 text-white bg-primary"
                 type="submit"
               >
                 <ArrowDown
                   className={cn("size-8", isSubmitting ? "hidden" : "block")}
                   strokeWidth={4}
                 />
-                <span className="uppercase font-semibold text-2xl">
-                  {loading ? "Submitting..." : "Create Profile"}
+                <span className="uppercase font-semibold text-xl tlg:ext-2xl">
+                  {loading ? "Submitting..." : "Save Changes"}
                 </span>
               </Button>
             </div>

@@ -87,7 +87,7 @@ const PhotoVideoUploads = ({ form, className }: Prop) => {
           (New – you can now upload your videos too!)
         </span>
       </h5>
-      <div className="p-8 flex border-2 rounded-lg border-dashed">
+      <div className="p-8 gap-6 lg:gap-0 flex flex-col lg:flex-row border-2 rounded-lg border-dashed">
         {/* section 1 */}
         <div className="flex flex-col">
           <span className="text-sm">

@@ -57,7 +57,7 @@ const PreviewPhoto = ({ className, form }: Prop) => {
   };
 
   return (
-    <div className={cn("flex items-center gap-3", className)}>
+    <div className={cn("flex items-center gap-3 w-full", className)}>
       <label className=" text-base font-bold text-white/50 ">
         Preview Photo:
       </label>
@@ -75,7 +75,7 @@ const PreviewPhoto = ({ className, form }: Prop) => {
         onClick={triggerFileSelect}
         className="border flex-1 overflow-hidden cursor-pointer flex rounded-full border-primary"
       >
-        <span className="w-2/3 py-3 flex items-center text-nowrap  h-12 text-lg text-white/30">
+        <span className="w-2/3  py-3 pl-3 flex items-center text-nowrap  h-12 text-lg text-white/30">
           {preview}
         </span>
         <span className="flex-1 bg-primary justify-center items-center flex font-bold text-white uppercase  text-center text-xl">

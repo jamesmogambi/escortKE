@@ -46,6 +46,13 @@ export async function createNewEscort(escortData: any) {
       ...escortData,
     };
 
+    // check if escort already exists
+    const existingEscort = await Escort.findOne({ user: userRef });
+
+    if (existingEscort) {
+      throw new Error("Escort profile already exists for this user.");
+    }
+
     await Escort.create(data);
 
     // 2// UPDATE USER ROLE TO 'escort' in USER SCHEMA

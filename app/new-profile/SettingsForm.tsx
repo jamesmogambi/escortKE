@@ -3,9 +3,10 @@ import React, { useState } from "react";
 
 import ProfileGallery from "../girl/ProfileGallery";
 import ProfileSelectInput from "./ProfileSelectInput";
-import { variantSettings } from "@/fixtures/setting";
+// import { variantSettings } from "@/fixtures/setting";
 import { ServiceTags } from "./ServiceTags";
 import { useFormStore } from "@/store/formStore";
+import { useVariantStore } from "@/store/variantStore";
 interface Prop {
   className?: string;
   form: any;
@@ -30,6 +31,7 @@ const SettingsForm = ({ form, className }: Prop) => {
     setTags,
   } = useFormStore();
 
+  const variantSettings = useVariantStore();
   // const { hairColor, nationality, experience } = variantSettings;
   return (
     <section className={cn("space-y-2 w-full", className)}>

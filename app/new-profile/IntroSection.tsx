@@ -21,13 +21,14 @@ import {
 import { Input } from "@/components/ui/input";
 // import { towns } from "@/fixtures/location";
 import { useFormStore } from "@/store/formStore";
-import { variantSettings } from "@/fixtures/setting";
+// import { variantSettings } from "@/fixtures/setting";
 // import { Checkbox } from "@radix-ui/react-checkbox";
 import { useSettingStore } from "@/store/settingStore";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLocationStore } from "@/store/locationStore";
 import { getRegions, getTowns } from "@/actions/location";
 import { Town } from "@/types/globals";
+import { useVariantStore } from "@/store/variantStore";
 
 interface Prop {
   className?: string;
@@ -48,6 +49,7 @@ const IntroSection = ({ form, className }: Prop) => {
 
   // const setRegions = useLocationStore((s) => s.setRegions);
   const { setRegions, setTowns, regions, towns } = useLocationStore();
+  const { availability: variantAvailability } = useVariantStore();
 
   useEffect(() => {
     async function fetchRegions() {
@@ -80,7 +82,6 @@ const IntroSection = ({ form, className }: Prop) => {
   const handleSelectRegion = (region: string) => {
     setRegion(region);
 
-    // TODO:// get the towns belonging to the given
     const filteredTowns = towns.filter(
       (town: any) => town.region.name === region
     );
@@ -89,9 +90,11 @@ const IntroSection = ({ form, className }: Prop) => {
   };
 
   return (
-    <section className={cn("flex gap-2 lg:gap-10", className)}>
+    <section
+      className={cn("flex gap-2 flex-col lg:flex-row lg:gap-10", className)}
+    >
       {/* 1 */}
-      <div className=" space-y-6  basis-1/3">
+      <div className=" space-y-6 basis-full  lg:basis-1/3">
         <FormField
           control={form.control}
           name="name"
@@ -101,11 +104,11 @@ const IntroSection = ({ form, className }: Prop) => {
                 <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
                   Escort's name:
                 </FormLabel>
-                <FormControl className="border w-1/2 border-primary">
+                <FormControl className="border w-2/3 lg:w-1/ border-primary">
                   <Input
                     placeholder=""
                     {...field}
-                    className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
+                    className="bg-white  text-black px-6 h-10 rounded-full text-lg lg:text-xl focus-visible:ring-0 "
                   />
                 </FormControl>
               </FormItem>
@@ -123,11 +126,11 @@ const IntroSection = ({ form, className }: Prop) => {
                 <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
                   Email:
                 </FormLabel>
-                <FormControl className="border w-1/2 border-primary">
+                <FormControl className="border w-2/3 lg:w-1/ border-primary">
                   <Input
                     placeholder=""
                     {...field}
-                    className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
+                    className="bg-white  text-black px-6 h-10 rounded-full text-lg lg:text-xl focus-visible:ring-0 "
                   />
                 </FormControl>
               </FormItem>
@@ -145,11 +148,11 @@ const IntroSection = ({ form, className }: Prop) => {
                 <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
                   Street:
                 </FormLabel>
-                <FormControl className="border w-1/2 border-primary">
+                <FormControl className="border w-2/3 lg:w-1/ border-primary">
                   <Input
                     placeholder=""
                     {...field}
-                    className="bg-white text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
+                    className="bg-white text-black px-6 h-10 rounded-full text-lg lg:text-xl focus-visible:ring-0 "
                   />
                 </FormControl>
               </FormItem>
@@ -161,7 +164,7 @@ const IntroSection = ({ form, className }: Prop) => {
       </div>
       {/* 2 */}
 
-      <div className="  space-y-6  basis-1/3">
+      <div className="  space-y-6 basis-full  lg:basis-1/3">
         <FormField
           control={form.control}
           name="phone"
@@ -171,11 +174,11 @@ const IntroSection = ({ form, className }: Prop) => {
                 <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
                   Phone:
                 </FormLabel>
-                <FormControl className="border w-1/2 border-primary">
+                <FormControl className="border w-2/3 lg:w-1/ border-primary">
                   <Input
                     placeholder=""
                     {...field}
-                    className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
+                    className="bg-white  text-black px-6 h-10 rounded-full text-lg lg:text-xl focus-visible:ring-0 "
                   />
                 </FormControl>
               </FormItem>
@@ -190,7 +193,7 @@ const IntroSection = ({ form, className }: Prop) => {
           render={({ field }) => (
             <>
               <FormItem className=" flex-row   justify-end flex gap-2  ">
-                <FormControl className="border w-1/2  border-primary">
+                <FormControl className="border w-2/3 lg:w-1/  border-primary">
                   <DropdownMenu
                     open={regionOpen}
                     onOpenChange={setRegionOpen}
@@ -253,11 +256,11 @@ const IntroSection = ({ form, className }: Prop) => {
         />
 
         {/* TODO: AVAILABILITY */}
-        <div className="flex  mt-12  justify-end items-center gap-3">
+        <div className="flex  mt-12 mb-6  justify-end items-center gap-3">
           <label className="text-white/50 text-base font-medium">
             Availability:
           </label>
-          {variantSettings.availability.map((i, k) => (
+          {variantAvailability.map((i, k) => (
             <div key={i}>
               <div className="flex items-center gap-2">
                 <Checkbox
@@ -277,7 +280,7 @@ const IntroSection = ({ form, className }: Prop) => {
 
       {/* 3 */}
 
-      <div className="  space-y-6  basis-1/3">
+      <div className="  space-y-6 basis-full  lg:basis-1/3">
         <FormField
           control={form.control}
           name="whatsappNumber"
@@ -287,12 +290,12 @@ const IntroSection = ({ form, className }: Prop) => {
                 <FormLabel className=" font-medium text-nowrap mb-2 text-white/40 text-base">
                   WhatsApp:
                 </FormLabel>
-                <FormControl className="border w-1/2 border-primary">
+                <FormControl className="border w-2/3 lg:w-1/ border-primary">
                   <Input
                     placeholder=""
                     type="tel"
                     {...field}
-                    className="bg-white  text-black px-6 h-10 rounded-full text-2xl focus-visible:ring-0 "
+                    className="bg-white  text-black px-6 h-10 rounded-full text-lg lg:text-xl focus-visible:ring-0 "
                   />
                 </FormControl>
               </FormItem>
@@ -307,7 +310,7 @@ const IntroSection = ({ form, className }: Prop) => {
           render={({ field }) => (
             <>
               <FormItem className=" flex-row   justify-end flex gap-2  ">
-                <FormControl className="border w-1/2  border-primary">
+                <FormControl className="border w-2/3 lg:w-1/  border-primary">
                   <DropdownMenu
                     open={cityOpen}
                     onOpenChange={setCityOpen}

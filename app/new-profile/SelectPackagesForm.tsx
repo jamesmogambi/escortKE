@@ -4,9 +4,10 @@ import { cn, getFlagEmoji, splitIntoThreeColumns } from "@/lib/utils";
 import ReactCountryFlag from "react-country-flag";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { variantSettings } from "@/fixtures/setting";
+// import { variantSettings } from "@/fixtures/setting";
 import { useSettingStore } from "@/store/settingStore";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useVariantStore } from "@/store/variantStore";
 
 interface Prop {
   className?: string;
@@ -15,6 +16,7 @@ interface Prop {
 
 const SelectPackagesForm = ({ form, className }: Prop) => {
   const { setValue, watch } = form;
+  const variantSettings = useVariantStore();
   const { practices, massage } = variantSettings;
 
   const {
@@ -141,8 +143,8 @@ const SelectPackagesForm = ({ form, className }: Prop) => {
         </TabsContent>
       </Tabs>
       {/* // select categories */}
-      <div className="mt-6 px-4 flex  flex-wrap">
-        <span className="text-primary font-bold  text-2xl">
+      <div className="mt-6 px-2 lg:px-4 flex  flex-wrap">
+        <span className="text-primary text-xl text-nowrap  font-bold  lg:text-2xl">
           Categories where I want to appear:
         </span>
 
@@ -154,38 +156,51 @@ const SelectPackagesForm = ({ form, className }: Prop) => {
               checked={categories.includes(cat)}
               onCheckedChange={(checked) => setCategory(cat, checked === true)}
             />
-            <label className="text-2xl text-primary font-bold" htmlFor={cat}>
+            <label
+              className="lg:text-2xl text-xl text-primary font-bold"
+              htmlFor={cat}
+            >
               {cat}
             </label>
           </div>
         ))}
       </div>
 
-      {/* TODO:// FIX LANGUAGES */}
       {/* languages */}
-      <div className=" px-4 flex absolute top-[80%]  flex-wrap">
+      <div className=" lg:px-4 px-1 flex lg:absolute top-[80%] my-5 lg:my-0  flex-wrap">
         <span className="text-white/50 font-bold  text-lg">Languages:</span>
 
-        {variantSettings.languages.map((lang: any) => (
-          <div key={lang.name} className="flex items-center mx-4 mr-6 gap-2">
-            <Checkbox
-              id={lang}
-              className="size-6 bg-white border-primary"
-              checked={languages.includes(lang.name)}
-              onCheckedChange={(checked) =>
-                setLanguage(lang.name, checked === true)
-              }
-            />
-            {/* render flag */}
-            <label>
-              <ReactCountryFlag
-                countryCode={lang.flag}
-                style={{ fontSize: "2em" }}
-                svg
+        <div className="flex-1 flex ">
+          {variantSettings.languages.map((lang: any) => (
+            <div
+              key={lang.name}
+              className="flex flex-row flex-wrap lg:flex-nowrap items-center mx-4 mr-6 lg:gap-2 gap-1"
+            >
+              <Checkbox
+                id={lang}
+                className="size-6  bg-white border-primary"
+                checked={languages.includes(lang.name)}
+                onCheckedChange={(checked) =>
+                  setLanguage(lang.name, checked === true)
+                }
               />
-            </label>
-          </div>
-        ))}
+              <label className="lg:hidden">{lang.name}</label>
+              <label className="hidden lg:inline-block">
+                <ReactCountryFlag
+                  countryCode={lang.flag}
+                  // className="size-2"
+                  // className="size-12"
+                  style={{
+                    fontSize: "2em",
+                    // height: "2em",
+                    // display: "inline-block",
+                  }}
+                  svg
+                />
+              </label>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

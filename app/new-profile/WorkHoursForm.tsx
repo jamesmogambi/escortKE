@@ -22,9 +22,9 @@ const WorkHoursForm = ({ control, form, className }: Prop) => {
       <h4 className="my-4 font-bold text-white/50 text-base underline mb-3">
         Opening Hours
       </h4>
-      <div className="flex w-full gap-10">
+      <div className="flex flex-col lg:flex-row w-full gap-10">
         {/* monday - thursdaye working hours */}
-        <div className="basis-1/2 space-y-6">
+        <div className="lg:basis-1/2 basis-full space-y-6">
           <>
             <FormField
               control={form.control}
@@ -118,7 +118,7 @@ const WorkHoursForm = ({ control, form, className }: Prop) => {
 
         {/* friday - sunday working hours */}
 
-        <div className="basis-1/2 space-y-6">
+        <div className="lg:basis-1/2 basis-full space-y-6">
           <FormField
             control={form.control}
             name="friday"

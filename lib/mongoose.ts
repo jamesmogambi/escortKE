@@ -52,3 +52,11 @@ export async function getTotalPages(itemsPerPage = 50, modelName = "Video") {
 export function serializeMongoDocs<T>(docs: T[]): T[] {
   return JSON.parse(JSON.stringify(docs));
 }
+
+/**
+ * Deep clones a MongoDB document by stripping out non-serializable fields.
+ * Useful for sending clean data to the client.
+ */
+export function safeClone<T>(doc: T): T {
+  return JSON.parse(JSON.stringify(doc));
+}

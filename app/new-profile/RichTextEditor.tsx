@@ -51,17 +51,17 @@ const RichTextEditor = ({ className }: Prop) => {
   const { description, setDescription } = useFormStore();
 
   return (
-    <div className={cn("", className)}>
-      <label className="text-white/50 font-bold mb-4">
+    <div className={cn("w-full", className)}>
+      <label className="text-white/50 text-nowrap font-bold mb-4">
         Description of the girl:
       </label>
       <ReactQuill
-        className="bg-white border-b-0 text-base my-5 rounded-md overflow-hidden text-black"
+        className="bg-white w-full h-[300px] lg:h-[220px] border-b-0 text-base my-5 rounded-md overflow-hidden text-black"
         theme="snow"
         value={description}
         onChange={setDescription}
         placeholder="Write something about you ..."
-        style={{ height: "200px", fontSize: "20px" }}
+        style={{ height: "220px", fontSize: "20px", width: "100%" }}
       />
     </div>
   );
