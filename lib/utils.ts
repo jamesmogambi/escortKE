@@ -5,12 +5,24 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// export function slugify(input: string): string {
+//   return input
+//     .trim()
+//     .toLowerCase()
+//     .replace(/\s+/g, "-") // Replace spaces with hyphens
+//     .replace(/[^a-z0-9-]/g, ""); // Remove non-alphanumeric (except hyphen)
+// }
+
 export function slugify(input: string): string {
   return input
+    .normalize("NFKD") // Decompose accented characters
+    .replace(/[\u0300-\u036f]/g, "") // Remove diacritics
     .trim()
     .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "") // Remove non-alphanumeric except space/hyphen
     .replace(/\s+/g, "-") // Replace spaces with hyphens
-    .replace(/[^a-z0-9-]/g, ""); // Remove non-alphanumeric (except hyphen)
+    .replace(/-+/g, "-") // Collapse multiple hyphens
+    .replace(/^-+|-+$/g, ""); // Trim leading/trailing hyphens
 }
 
 export function convertToLocalPhone(phone: string): string {
@@ -83,3 +95,15 @@ export function splitIntoThreeColumns<T>(items: T[]): [T[], T[], T[]] {
 
 export const getFlagEmoji = (locale: string): string =>
   localeToFlagEmoji[locale] ?? "🏳️"; // fallback to white flag
+
+export function formatSlugToTitle(slug: string) {
+  if (!slug) return "";
+  return slug
+    .split(/[\s-]+/) // Split by spaces or hyphens
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize first letter of each word
+    .join(" "); // Join with space
+}
+
+// Example usage:
+// formatSlugToTitle('big-ass-porn') => "Big Ass Porn"
+// formatSlugToTitle('african porn videos') => "African Porn Videos"

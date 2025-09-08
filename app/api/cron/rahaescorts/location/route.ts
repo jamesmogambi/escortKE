@@ -5,6 +5,7 @@ import * as cheerio from "cheerio";
 import { connectToDB } from "@/lib/mongoose";
 import { Town } from "@/models/Town";
 import { Region as LocationRegion } from "@/models/Region";
+import { slugify } from "@/lib/utils";
 const sourceURL = "https://rahaescorts.com/";
 
 export async function POST(request: NextRequest) {
@@ -23,10 +24,10 @@ export async function POST(request: NextRequest) {
         .find(".children > .cat-item > a")
         .each((_, regionEl) => {
           const regionName = $(regionEl).text().trim();
-          if (regionName) Towns.push(regionName);
+          if (regionName) Towns.push(slugify(regionName));
         });
       if (RegionName) {
-        regionsWithTowns.push({ Region: RegionName, Towns });
+        regionsWithTowns.push({ Region: slugify(RegionName), Towns });
       }
     });
     // Insert towns and regions into the database

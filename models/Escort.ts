@@ -138,8 +138,8 @@ const EscortSchema = new Schema<EscortDoc>(
     videos: { type: [String], default: [] },
     about: { type: String },
     availability: { type: [String], default: [] },
-    ethnicity: { type: String },
-    nationality: { type: String },
+    ethnicity: { type: String, default: "" },
+    nationality: { type: String, default: "" },
     bustSize: { type: String },
     weight: { type: String },
     zodiacSign: { type: String },
@@ -191,11 +191,11 @@ const EscortSchema = new Schema<EscortDoc>(
 
     user: { type: Schema.Types.ObjectId, ref: "User" },
 
-    breastSize: { type: String },
-    ageCategory: { type: String },
-    character: { type: String },
-    hairColor: { type: String },
-    experience: { type: String },
+    breastSize: { type: String, default: "" },
+    ageCategory: { type: String, default: "" },
+    character: { type: String, default: "" },
+    hairColor: { type: String, default: "" },
+    experience: { type: String, default: "" },
     categories: { type: [String], default: [] },
   },
   { timestamps: true }

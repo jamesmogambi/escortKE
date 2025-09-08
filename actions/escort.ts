@@ -80,3 +80,64 @@ export async function createNewEscort(escortData: any) {
     throw new Error(`Failed to create user: ${err.message}`);
   }
 }
+
+interface FetchEscortsParams {
+  town?: string;
+  region?: string;
+  practices?: string[];
+  page?: number;
+  limit?: number;
+}
+// get escorts form DB
+export async function fetchEscorts({
+  town,
+  region,
+  practices,
+  page = 1,
+  limit = 20,
+}: FetchEscortsParams) {
+  try {
+    await connectToDB();
+
+    const query: Record<string, any> = {
+      role: "escort",
+      isActive: true,
+    };
+
+    if (town) {
+      query.town = town;
+    }
+
+    if (region) {
+      query.region = region;
+    }
+
+    if (practices && practices.length > 0) {
+      query.practices = { $in: practices }; // Match escorts with ANY of the selected practices
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [escorts, total] = await Promise.all([
+      Escort.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Escort.countDocuments(query),
+    ]);
+
+    return {
+      data: escorts,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
+  } catch (error) {
+    console.error("fetchEscorts error:", error);
+
+    return {
+      data: [],
+      total: 0,
+      page,
+      totalPages: 0,
+      error: "Failed to fetch escorts",
+    };
+  }
+}

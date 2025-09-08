@@ -5,7 +5,7 @@ const ContactSubmissionSchema = new Schema({
   email: String,
   message: String,
   submittedAt: { type: Date, default: Date.now },
-  clerkUserId: { type: String, required: true },
+  clerkUserId: { type: String },
   ip: String,
   userAgent: String,
   resendId: String,

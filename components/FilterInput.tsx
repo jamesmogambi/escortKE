@@ -1,5 +1,5 @@
 "use client";
-import { cn } from "@/lib/utils";
+import { cn, formatSlugToTitle } from "@/lib/utils";
 import React, { useState } from "react";
 
 import {
@@ -10,33 +10,95 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { regions, towns } from "@/fixtures/location";
+// import { regions, towns } from "@/fixtures/location";
 import Link from "next/link";
 import { X } from "lucide-react";
-import { practices } from "@/fixtures/practice";
+// import { practices } from "@/fixtures/practice";
+import { useFilterInputStore } from "@/app/girls/filterInputStore";
+import LocationInitializer from "./FileInputInitializer";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface Prop {
   className?: string;
 }
 const FilterInput = ({ className }: Prop) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [region, setRegion] = useState("");
   const [open, setOpen] = React.useState(false);
   const [townOpen, setTownOpen] = React.useState(false);
   const [town, setTown] = useState("");
+  const [towns, setTowns] = useState([]);
+
   const [practice, setPractice] = useState("");
   const [practiceOpen, setPracticeOpen] = React.useState(false);
 
+  const { practices, regions, towns: fetchedTowns } = useFilterInputStore();
   const clearFilters = () => {
-    setRegion(""), setTown(""), setPractice("");
+    (setRegion(""), setTown(""), setPractice(""), setTowns([]));
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("region");
+    params.delete("area");
+    params.delete("practice");
+    router.replace(`?${params.toString()}`);
   };
 
+  const handleRegion = (val: string) => {
+    (setTown(""), setTowns([]));
+    // Update region state
+    setRegion(val);
+
+    // Update query params
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("region");
+    params.delete("area"); // Optional: remove stale town param
+    params.delete("practice"); // Optional: remove stale practice param
+    router.replace(`?${params.toString()}`);
+
+    // Filter towns based on selected region
+    const filteredTowns = fetchedTowns.filter(
+      (town: { region: { name: string } }) => town.region.name === val
+    );
+
+    console.log("filteredTowns", filteredTowns);
+    setTowns(filteredTowns);
+  };
+
+  const handlePractice = (val: string) => {
+    // const params = new URLSearchParams(searchParams.toString());
+    setPractice(val);
+    // params.set("practice", val);
+    // router.replace(`?${params.toString()}`);
+  };
+
+  const handleTown = (val: any) => {
+    if (!region) {
+      alert("You must first select region");
+    }
+    setTown(val);
+    // const params = new URLSearchParams(searchParams.toString());
+    // params.set("area", val); // Replace "filter" with your param key
+
+    // router.replace(`?${params.toString()}`);
+  };
+
+  const onFilter = () => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    params.set("region", region);
+    params.set("area", town);
+    params.set("practice", practice);
+    router.replace(`?${params.toString()}`);
+  };
   return (
     <div
       className={cn(
-        " flex justify-center flex-row flex-wrap  border w-full gap-6 ",
+        " flex justify-center flex-row flex-wrap   w-full gap-6 ",
         className
       )}
     >
+      <LocationInitializer />
       {/* regiosn */}
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger className=" self-end  cursor-pointer border-0 flex w-full lg:w-[250px] justify-between items-center p-2 text-base px-5 bg-gray-1 rounded-md ">
@@ -66,20 +128,20 @@ const FilterInput = ({ className }: Prop) => {
           className="flex border-0 flex-col outline-none p-2 gap-3 w-screen  lg:max-w-[900px] bg-gray-1 "
         >
           <div className="flex flex-row w-full gap-1.5  flex-wrap">
-            {regions.map((item) => (
+            {regions.map((item: any) => (
               <DropdownMenuItem
                 className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
-                onSelect={(e) => setRegion(item.location)}
+                onSelect={(e) => handleRegion(item.name)}
                 key={item.id}
               >
-                {item.location}
+                {formatSlugToTitle(item.name)}
               </DropdownMenuItem>
             ))}
           </div>
 
           <button
             onClick={() => {
-              setRegion(""), setOpen(false);
+              (setRegion(""), setOpen(false));
             }}
             className="inline-flex text-primary cursor-pointer  mx-auto items-center gap-2"
           >
@@ -92,11 +154,13 @@ const FilterInput = ({ className }: Prop) => {
       {/* town */}
 
       <DropdownMenu open={townOpen} onOpenChange={setTownOpen}>
-        <DropdownMenuTrigger className="self-end cursor-pointer border-0 flex w-full lg:w-[250px] justify-between items-center p-2 text-base px-5 bg-gray-1 rounded-md ">
+        <DropdownMenuTrigger className="self-end text-nowrap overflow-ellipsis pr-2 cursor-pointer border-0 flex w-full lg:w-[250px] justify-between items-center p-2 text-base px-5 bg-gray-1 rounded-md ">
           {town ? (
             <span className="text-slate-100 text-lg font-bold">{town}</span>
           ) : (
-            <span className="text-white/50 text-lg font-medium">Town</span>
+            <span className="text-white/50 text-lg font-medium">
+              Town or Area
+            </span>
           )}
 
           <svg
@@ -119,20 +183,20 @@ const FilterInput = ({ className }: Prop) => {
           className="flex border-0 flex-col outline-none p-2 gap-3 w-screen  lg:max-w-[900px] bg-gray-1 "
         >
           <div className="flex -2 gap-1.5 flex-wrap">
-            {towns.map((item) => (
+            {towns.map((item: any) => (
               <DropdownMenuItem
                 className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
-                onSelect={(e) => setTown(item.location)}
+                onSelect={(e) => handleTown(item.name)}
                 key={item.id}
               >
-                {item.location}
+                {item.name}
               </DropdownMenuItem>
             ))}
           </div>
 
           <button
             onClick={() => {
-              setTown(""), setTownOpen(false);
+              (setTown(""), setTownOpen(false));
             }}
             className="inline-flex text-primary cursor-pointer  mx-auto items-center gap-2"
           >
@@ -173,20 +237,22 @@ const FilterInput = ({ className }: Prop) => {
           className="flex border-0 flex-col outline-none p-2 gap-3 w-screen  lg:max-w-[900px] bg-gray-1 "
         >
           <div className="flex -2 gap-1.5 flex-wrap">
-            {practices.map((item) => (
+            {practices.map((item: any) => (
               <DropdownMenuItem
                 className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
-                onSelect={(e) => setPractice(item.practice)}
+                onSelect={(e) => {
+                  handlePractice(item.name);
+                }}
                 key={item.id}
               >
-                {item.practice}
+                {item.name}
               </DropdownMenuItem>
             ))}
           </div>
 
           <button
             onClick={() => {
-              setPractice(""), setPracticeOpen(false);
+              (setPractice(""), setPracticeOpen(false));
             }}
             className="inline-flex text-primary cursor-pointer  mx-auto items-center gap-2"
           >
@@ -205,7 +271,10 @@ const FilterInput = ({ className }: Prop) => {
           <span className="font-bold text-base">Cancel Filter</span>
         </button>
 
-        <button className="rounded-md cursor-pointer hover:bg-primary/80 text-white bg-primary text-lg font-medium p-2 px-5">
+        <button
+          onClick={onFilter}
+          className="rounded-md cursor-pointer hover:bg-primary/80 text-white bg-primary text-lg font-medium p-2 px-5"
+        >
           Filter the girls
         </button>
       </div>
