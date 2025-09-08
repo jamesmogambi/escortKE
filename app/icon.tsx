@@ -1,35 +1,36 @@
-import { cn } from "@/lib/utils";
-import Image from "next/image";
-import Link from "next/link";
-import React from "react";
+import { ImageResponse } from "next/og";
 
-interface Prop {
-  className?: string;
-  href?: string;
-  height?: number;
-  width?: number;
-  path?: string;
-}
-const Logo = ({
-  className,
-  height = 100,
-  href,
-  width = 200,
-  path = "/",
-}: Prop) => {
-  return (
-    <Link
-      className={cn("flex flex-row items-center gap-3", className)}
-      href={path}
-    >
-      {/* icon */}
-      <div className="size-14 rounded-sm  flex justify-center items-center bg-primary text-white">
+// Image metadata
+export const size = {
+  width: 36,
+  height: 36,
+};
+export const contentType = "image/png";
+
+// Image generation
+export default function Icon() {
+  return new ImageResponse(
+    (
+      // ImageResponse JSX element
+      <div
+        style={{
+          fontSize: 24,
+          background: "red",
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "white",
+          borderRadius: 5,
+        }}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="72"
-          height="72"
+          width="40"
+          height="40"
           viewBox="0 0 72 72"
-          className="size-16 mx-auto "
+          className=" "
         >
           <path
             fill="#ffffff"
@@ -77,20 +78,12 @@ const Logo = ({
           />
         </svg>
       </div>
-      <h4 className="text-white text-xl uppercase font-semibold">
-        escortke<span className="text-red-700">.com</span>
-      </h4>
-      {/* <Image
-        alt="logo"
-        width={width}
-        height={height}
-        src={"/logo.jpg"}
-        priority
-        quality={100}
-        className=""
-      /> */}
-    </Link>
+    ),
+    // ImageResponse options
+    {
+      // For convenience, we can re-use the exported icons size metadata
+      // config to also set the ImageResponse's width and height.
+      ...size,
+    }
   );
-};
-
-export default Logo;
+}

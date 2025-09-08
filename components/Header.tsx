@@ -9,6 +9,7 @@ import MobileHeader from "./MobileHeader";
 import SearchSheet from "./SearchSheet";
 import { useUser } from "@clerk/nextjs";
 import LoginFormSheet from "@/app/(auth)/LoginFormSheet";
+import Logo from "./Logo";
 
 const Header = () => {
   const { isSignedIn } = useUser();
@@ -18,16 +19,17 @@ const Header = () => {
       <MobileHeader />
       <div className="lg:flex hidden items-center gap-12 w-full px-12 bg-dark-slate">
         {/* logo */}
-        <Link href="/">
+        <Logo />
+        {/* <Link href="/">
           <Image
             alt="logo"
-            width={250}
+            width={250} 
             height={115}
             src={"/logo.jpg"}
             priority
             quality={100}
           />
-        </Link>
+        </Link> */}
 
         <div className=" border-white flex flex-1 items-center justify-between">
           {/* menu */}

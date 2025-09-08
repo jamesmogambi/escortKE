@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import MobileNavMenu from "./MobileNavMenu";
+import Logo from "./Logo";
 
 interface Prop {
   className?: string;
@@ -29,7 +30,8 @@ const MobileHeader = ({}) => {
   return (
     <div className="flex bg-dark-slate lg:hidden items-center w-full justify-between p-4 py-6">
       {/* logo */}
-      <Link href="/">
+      <Logo />
+      {/* <Link href="/">
         <Image
           alt="logo"
           width={200}
@@ -38,7 +40,7 @@ const MobileHeader = ({}) => {
           priority
           quality={100}
         />
-      </Link>
+      </Link> */}
 
       {/* actions */}
       <div className="flex items-center gap-4">

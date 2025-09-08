@@ -27,6 +27,8 @@ import { useUser } from "@clerk/nextjs";
 import { useVariantStore } from "@/store/variantStore";
 import { getVariantSettings } from "@/actions/variantsetting";
 import { useLocationStore } from "@/store/locationStore";
+import { toast } from "sonner";
+import SuccessToast from "@/components/Toasts/SuccessToast";
 
 // Define the RichTextEditorHandle type
 type RichTextEditorHandle = {
@@ -398,6 +400,10 @@ const NewEscortForm = ({ className }: Prop) => {
           clearTags(),
           clearCategories();
         clearEscortGallery();
+        toast.custom(() => (
+          <SuccessToast message="Your profile was created successfully." />
+        ));
+
         router.push("/administration");
         // Scroll user to the top after successful update
 
