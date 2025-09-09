@@ -89,7 +89,13 @@ export async function POST(request: NextRequest) {
       const slug = slugify(girl.name);
 
       try {
-        const profileData = await ScrapGirlandSave(slug);
+        const escortRegion = city;
+        const escortTown = region;
+        const profileData = await ScrapGirlandSave(
+          slug,
+          escortRegion,
+          escortTown
+        );
         // merge basic list data with profile scrape
         fullProfiles.push(profileData);
       } catch (err) {

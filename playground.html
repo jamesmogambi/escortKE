@@ -28,3 +28,27 @@
     </tr>
   </tbody>
 </table>
+export const formSchema = z.object({ name: z .string({ error: "Name is required"
+}) .min(2, "Name must be at least 2 characters") .max(50, "Name must be at most
+50 characters") .default(""), email: z.string({ error: "Invalid email address"
+}).email().default(""), street: z .string({ error: "Street is required" })
+.min(3, "Street name must be at least 3 characters") .default(""),
+whatsappNumber: z .string({ error: "WhatsApp number is required" })
+.regex(/^\+?[0-9]{7,15}$/, "Invalid WhatsApp number") .default(""), phone: z
+.string({ error: "Phone number is required" }) .regex(/^\+?[0-9]{7,15}$/,
+"Invalid phone number") .default(""), address: z .string({ error: "Address is
+required" }) .min(5, "Address must be at least 5 characters") .default(""),
+monday: daySchema, tuesday: daySchema, wednesday: daySchema, thursday:
+daySchema, friday: daySchema, saturday: daySchema, sunday: daySchema,
+description: z.string().min(10, "Description must be at least 10
+characters").default(""), // monday: daySchema.default({ start: "", end: "",
+isActive: false }), // tuesday: daySchema.default({ start: "", end: "",
+isActive: false }), // wednesday: daySchema.default({ start: "", end: "",
+isActive: false }), // thursday: daySchema.default({ start: "", end: "",
+isActive: false }), // friday: daySchema.default({ start: "", end: "", isActive:
+false }), // saturday: daySchema.default({ start: "", end: "", isActive: false
+}), // sunday: daySchema.default({ start: "", end: "", isActive: false }),
+variantAge: z.string().default(""), myAge: z.string().default(""), myHeight:
+z.string().default(""), myBreasts: z.string().default(""), myWeight:
+z.string().default(""), variantAvailability: z .array(z.string().min(1, "Tag
+cannot be empty")) .default([]), });

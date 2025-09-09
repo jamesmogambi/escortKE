@@ -1,7 +1,7 @@
 "use client";
 import SectionCard from "@/components/SectionCard";
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, z } from "zod";
@@ -19,6 +19,8 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
+import { useSignUp } from "@clerk/nextjs";
+import Link from "next/link";
 
 interface Prop {
   className?: String;
@@ -63,6 +65,11 @@ export const registrationSchema = z
 
 const RegisterForm = ({ className }: Prop) => {
   const router = useRouter();
+
+  const [loading, setLoader] = useState(false);
+  const [error, setError] = useState<any>(null);
+  const [message, setMessage] = useState<any>(null);
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof registrationSchema>>({
     resolver: zodResolver(registrationSchema),
@@ -71,19 +78,54 @@ const RegisterForm = ({ className }: Prop) => {
       email: "",
       password: "",
       confirmPassword: "",
-      //   agreeTerms:t
+      // agreeTerms:false
       //   terms: false,
     },
   });
 
+  const { isLoaded, signUp } = useSignUp();
+
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof registrationSchema>) {
+  // TODO:// HANDLE ESCORT REGISRATION
+  async function onSubmit(values: z.infer<typeof registrationSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
 
+    setError(null);
+    const { agreeTerms, confirmPassword, email, password, username } = values;
+
+    if (!isLoaded || !signUp) {
+      setError(
+        "Sign up is not available at the moment. Please try again later."
+      );
+      return;
+    }
+
+    setLoader(true);
+
+    try {
+      await signUp.create({
+        emailAddress: email,
+        password,
+        username,
+        unsafeMetadata: { role: "user" },
+      });
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      setMessage("Email verification code has been sent to your email.");
+      //  toast.custom(() => (
+      //    <SuccessToast message="Email verification code has been sent to your email." />
+      //  ));
+      // router.push("/verify-email");
+    } catch (err: any) {
+      setError(err.errors[0]?.message || "Sign up failed");
+      console.log(err);
+    } finally {
+      setLoader(false);
+    }
+
     // upon successful registration user should be redirected to /new profile
-    router.push("/new-profile");
+    // router.push("/new-profile");
   }
 
   return (
@@ -152,6 +194,7 @@ const RegisterForm = ({ className }: Prop) => {
                       <Input
                         placeholder=""
                         {...field}
+                        type="password"
                         className="bg-white text-black px-6 h-14 text-2xl focus-visible:ring-0 "
                       />
                     </FormControl>
@@ -173,6 +216,7 @@ const RegisterForm = ({ className }: Prop) => {
                       <Input
                         placeholder=""
                         {...field}
+                        type="password"
                         className="bg-white text-black px-6 h-14 text-2xl focus-visible:ring-0 "
                       />
                     </FormControl>
@@ -196,7 +240,7 @@ const RegisterForm = ({ className }: Prop) => {
                     <FormControl className=" w-full">
                       <div className="flex flex-row mt-6 mb-12  items-center gap-3">
                         <Checkbox
-                          className="bg-white"
+                          className="bg-white size-6"
                           //   id="terms"
                           checked={field.value}
                           onCheckedChange={field.onChange}
@@ -221,17 +265,45 @@ const RegisterForm = ({ className }: Prop) => {
                       </div>
                     </FormControl>
 
-                    <FormMessage />
+                    <FormMessage className="-mt-6" />
                   </FormItem>
                 )}
               />
             </div>
 
-            <Button
+            {error && (
+              <p className=" bg-primary text-center p-3 my-3 mb-6 text-lg">
+                {error}
+              </p>
+            )}
+
+            {message && (
+              <p className=" bg-white text-primary p-3 my-3 mb-6 text-lg">
+                {message}{" "}
+                <span>
+                  <Link className="font-medium underline" href="/verify-email">
+                    Verify Email address
+                  </Link>
+                </span>
+              </p>
+            )}
+            {/* <Button
               type="submit"
               className="w-full cursor-pointer hover:bg-primary/70 h-16 text-lg py-4 bg-primary font-semibold text-white uppercase"
             >
               complete registration
+            </Button> */}
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className={`w-full h-16 text-lg py-4 font-semibold uppercase text-white ${
+                loading
+                  ? "bg-primary/50 cursor-not-allowed"
+                  : "bg-primary hover:bg-primary/70 cursor-pointer"
+              }`}
+            >
+              {loading ? "Processing..." : "Complete Registration"}
             </Button>
           </form>
         </Form>

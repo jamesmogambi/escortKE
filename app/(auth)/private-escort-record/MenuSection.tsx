@@ -19,7 +19,7 @@ const MenuSection = () => {
           {/* section 1 */}
           <div className="basis-full border border-primary  lg:basis-1/2">
             <h4 className="text-white bg-primary text-2xl py-4 font-bold text-center">
-              Registration Girl
+              Registration Escort
             </h4>
             <div className="p-8 ">
               <h4 className="text-white font-bold text-2xl">Contains :</h4>
@@ -33,15 +33,16 @@ const MenuSection = () => {
               </ul>
             </div>
 
-            <div className="bg-primary flex justify-center py-7">
+            <div className="bg-primary hover:bg-primary/70 cursor-pointer flex justify-center py-7">
               <Link
                 className="text-center flex items-center  text-white text-2xl font-bold"
                 href="/register-escort"
               >
                 <p>Register</p>
+
                 <ArrowRight
-                  className="text-white h-7 w-10 mt-2 "
-                  strokeWidth={8}
+                  className="text-white h-10 w-14 mt-2 "
+                  strokeWidth={4}
                 />
               </Link>
             </div>
@@ -74,15 +75,15 @@ const MenuSection = () => {
               * This registration is only for private who has at least 2 girls
               under them, not for the girl herself.
             </p>
-            <div className="bg-gray-800/80 flex justify-center py-7">
+            <div className="bg-gray-800/80 hover:bg-gray-800/60 cursor-pointer  flex justify-center py-7">
               <Link
                 className="text-center flex items-center  text-white text-2xl font-bold"
                 href="/register-business"
               >
                 <p>Register</p>
                 <ArrowRight
-                  className="text-white h-7 w-10 mt-2 "
-                  strokeWidth={8}
+                  className="text-white h-10 w-14 mt-2 "
+                  strokeWidth={4}
                 />
               </Link>
             </div>

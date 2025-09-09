@@ -52,6 +52,7 @@ const nextConfig: NextConfig = {
         hostname: "www.kenyahotgirls.com",
       },
     ],
+    // qualities: [25, 50, 75, 100],
   },
 };
 

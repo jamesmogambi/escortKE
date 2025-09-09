@@ -17,8 +17,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 const NavActions = () => {
+  const { signOut } = useAuth();
+
+  const router = useRouter();
+  const handleLogout = async () => {
+    await signOut();
+    router.refresh();
+  };
+
   return (
     <div className="flex items-center gap-4">
       <Dialog>
@@ -204,8 +214,11 @@ const NavActions = () => {
             </Link>
           </DropdownMenuItem>
 
-          <DropdownMenuItem className="text-stone-800 group">
-            <button className="flex items-center gap-2">
+          <DropdownMenuItem
+            onClick={handleLogout}
+            className="text-stone-800 group cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width={30}
@@ -225,7 +238,7 @@ const NavActions = () => {
               <span className="uppercase text-base group-hover:font-bold">
                 check out
               </span>
-            </button>
+            </div>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

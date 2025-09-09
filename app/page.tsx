@@ -4,6 +4,9 @@ import GirlList from "@/components/GirlList";
 import GirlRegions from "@/components/GirlRegions";
 import { girls } from "@/fixtures/girl";
 
+export const metadata = {
+  title: "Over 800 girls for sex from all over Kenya - escortke.com",
+};
 export default function Home() {
   return (
     <>

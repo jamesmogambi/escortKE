@@ -1,16 +1,28 @@
+import { localeToFlagEmoji } from "@/fixtures/flags";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// export function slugify(input: string): string {
+//   return input
+//     .trim()
+//     .toLowerCase()
+//     .replace(/\s+/g, "-") // Replace spaces with hyphens
+//     .replace(/[^a-z0-9-]/g, ""); // Remove non-alphanumeric (except hyphen)
+// }
+
 export function slugify(input: string): string {
   return input
+    .normalize("NFKD") // Decompose accented characters
+    .replace(/[\u0300-\u036f]/g, "") // Remove diacritics
     .trim()
     .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "") // Remove non-alphanumeric except space/hyphen
     .replace(/\s+/g, "-") // Replace spaces with hyphens
-    .replace(/[^a-z0-9-]/g, ""); // Remove non-alphanumeric (except hyphen)
+    .replace(/-+/g, "-") // Collapse multiple hyphens
+    .replace(/^-+|-+$/g, ""); // Trim leading/trailing hyphens
 }
 
 export function convertToLocalPhone(phone: string): string {
@@ -55,3 +67,43 @@ export function formatKenyanPhoneNumber(phoneNumber: string): string {
 export function getFirstName(fullName: string): string {
   return fullName.trim().split(" ")[0];
 }
+
+// const normalizeWorkingHours = (data: any["workingHours"]) => {
+//   return Object.entries(data).map(([day, val]) => {
+//     if (!val.enabled) return { day, off: true };
+//     return { day, start: val.start, end: val.end };
+//   });
+// };
+
+export function formatCategory(input: string): string {
+  return input
+    .split(/[^a-zA-Z0-9]+/) // Split by non-word characters
+    .filter((word) => word.length > 0) // Remove empty fragments
+    .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase()) // Capitalize
+    .join(" ");
+}
+
+export function splitIntoThreeColumns<T>(items: T[]): [T[], T[], T[]] {
+  const columns: [T[], T[], T[]] = [[], [], []];
+
+  items.forEach((item, index) => {
+    columns[index % 3].push(item);
+  });
+
+  return columns;
+}
+
+export const getFlagEmoji = (locale: string): string =>
+  localeToFlagEmoji[locale] ?? "🏳️"; // fallback to white flag
+
+export function formatSlugToTitle(slug: string) {
+  if (!slug) return "";
+  return slug
+    .split(/[\s-]+/) // Split by spaces or hyphens
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize first letter of each word
+    .join(" "); // Join with space
+}
+
+// Example usage:
+// formatSlugToTitle('big-ass-porn') => "Big Ass Porn"
+// formatSlugToTitle('african porn videos') => "African Porn Videos"
