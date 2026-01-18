@@ -52,7 +52,7 @@ const RichTextEditor = ({ className }: Prop) => {
 
   return (
     <div className={cn("w-full", className)}>
-      <label className="text-white/50 text-nowrap font-bold mb-4">
+      <label className="text-primary text-xl text-nowrap font-bold mb-4">
         Description of the girl:
       </label>
       <ReactQuill

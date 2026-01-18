@@ -19,7 +19,7 @@ interface Prop {
 const AboutMeForm = ({ form, className }: Prop) => {
   return (
     <section className={cn("w-full  ", className)}>
-      <h4 className="text-lg text-white/50  mb-6 font-bold">About me:</h4>
+      <h4 className="text-xl text-primary  mb-6 font-bold">About me:</h4>
       <div className="flex flex-col gap-6 lg:flex-row ">
         <div className="lg:basis-1/2 basis-full space-y-5">
           <FormField

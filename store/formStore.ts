@@ -17,7 +17,6 @@ type State = {
   files: FileList | null;
   setFiles: (files: FileList) => void;
   clearFiles: () => void;
-
   setRegion: (region: string) => void;
   setTown: (town: string) => void;
   setDescription: (description: string) => void;
@@ -31,7 +30,6 @@ type State = {
   addTag: (tag: string) => void;
   removeTag: (tag: string) => void;
   clearTags: () => void;
-
   clearDescription: () => void;
   reset: () => void;
 };
@@ -53,7 +51,6 @@ export const useFormStore = create(
       files: null,
       setFiles: (files) => set({ files }),
       clearFiles: () => set({ files: null }),
-
       setRegion: (region) => set({ region, town: "" }),
       setTown: (town) => set({ town }),
       setDescription: (description) => set({ description }),
@@ -64,10 +61,9 @@ export const useFormStore = create(
       setNationality: (nationality) => set({ nationality }),
       setExperience: (experience) => set({ experience }),
       setTags: (tags) => set({ tags }),
-
       addTag: (tag) =>
         set((state) =>
-          state.tags.includes(tag) ? state : { tags: [...state.tags, tag] }
+          state.tags.includes(tag) ? state : { tags: [...state.tags, tag] },
         ),
 
       removeTag: (tag) =>
@@ -95,6 +91,6 @@ export const useFormStore = create(
     }),
     {
       name: "form-store", // localStorage key
-    }
-  )
+    },
+  ),
 );

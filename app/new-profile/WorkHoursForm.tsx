@@ -19,7 +19,7 @@ interface Prop {
 const WorkHoursForm = ({ control, form, className }: Prop) => {
   return (
     <div className={cn("", className)}>
-      <h4 className="my-4 font-bold text-white/50 text-base underline mb-3">
+      <h4 className="my-4 font-bold text-primary text-xl mb-3">
         Opening Hours
       </h4>
       <div className="flex flex-col lg:flex-row w-full gap-10">
