@@ -59,7 +59,7 @@ export async function createNewEscort(escortData: any) {
     const user = await User.findOneAndUpdate(
       { clerkUserId: userId },
       { role: "escort" },
-      { new: true }
+      { new: true },
     );
 
     if (!user) {
@@ -139,5 +139,36 @@ export async function fetchEscorts({
       totalPages: 0,
       error: "Failed to fetch escorts",
     };
+  }
+}
+
+// create escort profile in DB after registration
+export async function createEscort(escortData: any) {
+  await connectToDB();
+
+  const { clerkUserId } = escortData;
+
+  try {
+    console.log("escortData keys:", Object.keys(escortData));
+
+    const data = {
+      source: "custom",
+      ...escortData,
+    };
+
+    // check if escort already exists
+    const existingEscort = await Escort.findOne({ clerkUserId });
+
+    if (existingEscort) {
+      throw new Error("Escort profile already exists for this user.");
+    }
+
+    await Escort.create(data);
+
+    return {
+      success: true,
+    };
+  } catch (err: any) {
+    throw new Error(`Failed to create user: ${err.message}`);
   }
 }

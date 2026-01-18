@@ -27,7 +27,7 @@ const MenuSection = () => {
                 <li className="flex items-center gap-3">
                   <Check className="text-primary" strokeWidth={4} />
                   <span className="font-bold text-lg text-white/50">
-                    Complete profile on dobryprivat.cz
+                    Complete profile on EscortKE.com
                   </span>
                 </li>
               </ul>

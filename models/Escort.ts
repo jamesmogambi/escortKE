@@ -127,8 +127,9 @@ const OpeningHourSchema = new Schema<OpeningHour>(
 
 const EscortSchema = new Schema<EscortDoc>(
   {
-    name: { type: String, required: true, trim: true },
+    name: { type: String, trim: true },
     clerkUserId: { type: String, index: true },
+    username: { type: String, unique: true, trim: true },
     previewPhoto: { type: String, trim: true },
     labels: { type: [String], default: [] },
     email: { type: String },

@@ -23,6 +23,7 @@ import { useSignUp } from "@clerk/nextjs";
 import Link from "next/link";
 import { toast } from "sonner";
 import SuccessToast from "@/components/Toasts/SuccessToast";
+import { createEscort, createNewEscort } from "@/actions/escort";
 
 interface Prop {
   className?: String;
@@ -76,16 +77,16 @@ const RegisterForm = ({ className }: Prop) => {
   const form = useForm<z.infer<typeof registrationSchema>>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
-      username: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+      username: "yeyej",
+      email: "mogambi48@icloud.com",
+      password: "Obama2026@",
+      confirmPassword: "Obama2026@",
       // agreeTerms:false
       //   terms: false,
     },
   });
 
-  const { isLoaded, signUp } = useSignUp();
+  const { isLoaded, signUp, setActive } = useSignUp();
 
   // 2. Define a submit handler.
   // TODO:// HANDLE ESCORT REGISRATION
@@ -112,23 +113,34 @@ const RegisterForm = ({ className }: Prop) => {
         unsafeMetadata: { role: "user" },
       });
 
-      //  TODO: // 2 . Save User to DB via API route
-      // const res = await
+      // 2. Save User to DB
 
-      // 2. Activate session immediately (IMPORTANT)
-      // await signUp.setActive({
-      //   session: result.createdSessionId,
-      // });
+      // 3. Auto-Sign User In
 
-      // 3. Show success message
-      setMessage(
-        "Account created successfully! Redirecting to your profile...",
-      );
+      // Check if sign-up is complete
+      if (result.status === "complete") {
+        // save user to DB
+        const escort = await createEscort({
+          clerkUserId: result.id,
+          email: email,
+          username: username,
+        });
 
-      // 4. Delay redirect (2–3 seconds)
-      setTimeout(() => {
-        router.push("/new-profile");
-      }, 5000);
+        console.log("escort created", escort);
+
+        // Set the session as active
+        await setActive({ session: result.createdSessionId });
+
+        // Show success message
+        setMessage(
+          "Account created successfully! Redirecting to your profile...",
+        );
+
+        // Delay redirect (2–3 seconds)
+        setTimeout(() => {
+          router.push("/new-profile");
+        }, 5000);
+      }
     } catch (err: any) {
       setError(err?.errors?.[0]?.message || "Sign up failed");
       console.error(err);
@@ -287,13 +299,8 @@ const RegisterForm = ({ className }: Prop) => {
             )}
 
             {message && (
-              <p className=" bg-white text-primary p-3 my-3 mb-6 text-lg">
-                {message}{" "}
-                <span>
-                  <Link className="font-medium underline" href="/verify-email">
-                    Verify Email address
-                  </Link>
-                </span>
+              <p className=" bg-primary text-white p-3 my-3 mb-6 text-lg">
+                {message} ...
               </p>
             )}
             {/* <Button
