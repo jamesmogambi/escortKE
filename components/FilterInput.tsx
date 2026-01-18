@@ -237,7 +237,7 @@ const FilterInput = ({ className }: Prop) => {
           className="flex border-0 flex-col outline-none p-2 gap-3 w-screen  lg:max-w-[900px] bg-gray-1 "
         >
           <div className="flex -2 gap-1.5 flex-wrap">
-            {practices.map((item: any) => (
+            {practices?.map((item: any) => (
               <DropdownMenuItem
                 className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
                 onSelect={(e) => {

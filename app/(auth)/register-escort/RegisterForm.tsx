@@ -21,6 +21,8 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useSignUp } from "@clerk/nextjs";
 import Link from "next/link";
+import { toast } from "sonner";
+import SuccessToast from "@/components/Toasts/SuccessToast";
 
 interface Prop {
   className?: String;
@@ -49,7 +51,7 @@ export const registrationSchema = z
       .regex(/[0-9]/, "Password must contain at least one number")
       .regex(
         /[^A-Za-z0-9]/,
-        "Password must contain at least one special character"
+        "Password must contain at least one special character",
       ),
 
     confirmPassword: z.string(),
@@ -88,16 +90,13 @@ const RegisterForm = ({ className }: Prop) => {
   // 2. Define a submit handler.
   // TODO:// HANDLE ESCORT REGISRATION
   async function onSubmit(values: z.infer<typeof registrationSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-
     setError(null);
-    const { agreeTerms, confirmPassword, email, password, username } = values;
+
+    const { email, password, username } = values;
 
     if (!isLoaded || !signUp) {
       setError(
-        "Sign up is not available at the moment. Please try again later."
+        "Sign up is not available at the moment. Please try again later.",
       );
       return;
     }
@@ -105,27 +104,37 @@ const RegisterForm = ({ className }: Prop) => {
     setLoader(true);
 
     try {
-      await signUp.create({
+      // 1. Create user
+      const result = await signUp.create({
         emailAddress: email,
         password,
         username,
         unsafeMetadata: { role: "user" },
       });
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-      setMessage("Email verification code has been sent to your email.");
-      //  toast.custom(() => (
-      //    <SuccessToast message="Email verification code has been sent to your email." />
-      //  ));
-      // router.push("/verify-email");
+
+      //  TODO: // 2 . Save User to DB via API route
+      // const res = await
+
+      // 2. Activate session immediately (IMPORTANT)
+      // await signUp.setActive({
+      //   session: result.createdSessionId,
+      // });
+
+      // 3. Show success message
+      setMessage(
+        "Account created successfully! Redirecting to your profile...",
+      );
+
+      // 4. Delay redirect (2–3 seconds)
+      setTimeout(() => {
+        router.push("/new-profile");
+      }, 5000);
     } catch (err: any) {
-      setError(err.errors[0]?.message || "Sign up failed");
-      console.log(err);
+      setError(err?.errors?.[0]?.message || "Sign up failed");
+      console.error(err);
     } finally {
       setLoader(false);
     }
-
-    // upon successful registration user should be redirected to /new profile
-    // router.push("/new-profile");
   }
 
   return (

@@ -14,8 +14,9 @@ export interface Rate {
 }
 
 export interface EscortDoc extends Document {
-  name: string;
+  name?: string;
   clerkUserId?: string;
+  username?: string;
   previewPhoto?: string;
   email: string;
   labels: string[];
@@ -121,7 +122,7 @@ const OpeningHourSchema = new Schema<OpeningHour>(
     close: { type: String, required: true },
     closed: { type: Boolean, required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const EscortSchema = new Schema<EscortDoc>(
@@ -198,7 +199,7 @@ const EscortSchema = new Schema<EscortDoc>(
     experience: { type: String, default: "" },
     categories: { type: [String], default: [] },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.models.Escort ||
