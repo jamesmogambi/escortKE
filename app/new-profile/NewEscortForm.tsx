@@ -1,11 +1,10 @@
 "use client";
-import { useForm } from "react-hook-form";
+import { FormState, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, z } from "zod";
 import { Button } from "@/components/ui/button";
-
+import useFormPersist from "react-hook-form-persist";
 import { Form } from "@/components/ui/form";
-
 import { useRouter } from "next/navigation";
 import SectionCard from "@/components/SectionCard";
 import { cn } from "@/lib/utils";
@@ -100,6 +99,10 @@ const NewEscortForm = ({ className }: Prop) => {
 
   const { user, isLoaded, isSignedIn } = useUser();
 
+  // if (!isLoaded || !user) {
+  //   return null;
+  // }
+
   // console.log("user - role", user);
 
   // 1. Define your form.
@@ -123,6 +126,13 @@ const NewEscortForm = ({ className }: Prop) => {
 
   const { watch, setValue, formState } = form;
 
+  useFormPersist("storageKey", {
+    watch,
+    setValue,
+  });
+  // Watch all fields
+  // const values = watch();
+
   const { isSubmitting } = formState;
 
   const { clear } = useLocationStore();
@@ -145,6 +155,13 @@ const NewEscortForm = ({ className }: Prop) => {
 
     fetchSettings();
   }, [hydrate]);
+
+  useEffect(() => {
+    if (!isLoaded || !user) return; // just return, no null needed
+
+    // Set email in React Hook Form
+    setValue("email", user.primaryEmailAddress?.emailAddress || "");
+  }, [setValue, user, isLoaded]);
 
   const {
     description,
@@ -251,7 +268,7 @@ const NewEscortForm = ({ className }: Prop) => {
         const allFiles = Array.from(useFileStore.getState().fileMap.values());
         // console.log("file-map values", allFiles);
         const imageFiles = allFiles.filter((file) =>
-          file.type.startsWith("image/")
+          file.type.startsWith("image/"),
         );
         console.log("front-end image files----", imageFiles);
 
@@ -296,7 +313,7 @@ const NewEscortForm = ({ className }: Prop) => {
         // TODO: 2- UPLOAD videos to MUX
 
         const videoFiles = allFiles.filter((file) =>
-          file.type.startsWith("video/")
+          file.type.startsWith("video/"),
         );
 
         // console.log("all video files", videoFiles);
@@ -329,7 +346,7 @@ const NewEscortForm = ({ className }: Prop) => {
 
         // TODO: 4-create and save profile in Escorts schmea = 'escort'
         const escortImages = imgGalleryUrls.filter(
-          (item: any) => item !== previewPhotoUrl
+          (item: any) => item !== previewPhotoUrl,
         );
         const escortData = {
           name,
@@ -393,12 +410,12 @@ const NewEscortForm = ({ className }: Prop) => {
         // Save user info in the database
         // TODO:// CLEAR OR RESET FORM  VALUES
         clear();
-        clearAll(),
+        (clearAll(),
           clearDescription(),
           clearLanguages(),
           clearFiles(),
           clearTags(),
-          clearCategories();
+          clearCategories());
         clearEscortGallery();
         toast.custom(() => (
           <SuccessToast message="Your profile was created successfully." />

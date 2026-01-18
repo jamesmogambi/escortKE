@@ -2,7 +2,7 @@ import React from "react";
 import NewEscortForm from "./NewEscortForm";
 
 export const metadata = {
-  title: "Create Profile - KenyaHot",
+  title: "New Profile - EscortKE",
 };
 const page = () => {
   return (

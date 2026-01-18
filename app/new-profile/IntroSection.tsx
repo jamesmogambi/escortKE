@@ -83,7 +83,7 @@ const IntroSection = ({ form, className }: Prop) => {
     setRegion(region);
 
     const filteredTowns = towns.filter(
-      (town: any) => town.region.name === region
+      (town: any) => town.region.name === region,
     );
     console.log("filteredTowns", filteredTowns);
     setRegionTowns(filteredTowns);
@@ -108,7 +108,7 @@ const IntroSection = ({ form, className }: Prop) => {
                   <Input
                     placeholder=""
                     {...field}
-                    className="bg-white  text-black px-6 h-10 rounded-full text-lg lg:text-xl focus-visible:ring-0 "
+                    className="bg-white  text-black px-6 h-10 rounded-full text-sm lg:text-xl focus-visible:ring-0 "
                   />
                 </FormControl>
               </FormItem>
@@ -130,7 +130,7 @@ const IntroSection = ({ form, className }: Prop) => {
                   <Input
                     placeholder=""
                     {...field}
-                    className="bg-white  text-black px-6 h-10 rounded-full text-lg lg:text-xl focus-visible:ring-0 "
+                    className=" bg-white  text-black px-6 h-10 rounded-full text-sm lg:text-lg focus-visible:ring-0 "
                   />
                 </FormControl>
               </FormItem>

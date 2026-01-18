@@ -49,7 +49,7 @@ const Header = () => {
                     className="text-white cursor-pointer font-medium p-2 px-4 rounded-sm  hover:text-primary  bg-[#343434]"
                     // href=""
                   >
-                    apply for
+                    login
                   </span>
                 </LoginFormSheet>
 
@@ -58,7 +58,7 @@ const Header = () => {
                   href="/private-escort-record"
                 >
                   {/* register escort */}
-                  join as escort
+                  register
                 </Link>
               </div>
             </div>
