@@ -58,8 +58,8 @@ const LoginFormSheet = ({ className, children }: Prop) => {
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "mogambi48@icloud.com",
+      password: "Obama2026@",
     },
   });
 
@@ -122,7 +122,7 @@ const LoginFormSheet = ({ className, children }: Prop) => {
 
           <DialogHeader>
             <DialogTitle className="text-center text-xl text-primary uppercase">
-              enrol
+              log
             </DialogTitle>
             <Form {...form}>
               <form onSubmit={handleSubmit(onSubmit)}>
@@ -236,10 +236,10 @@ const LoginFormSheet = ({ className, children }: Prop) => {
                     "flex w-full mt-4 h-16 text-xl font-bold uppercase justify-center items-center gap-3 transition-colors duration-300",
                     loading
                       ? "bg-primary/60 cursor-not-allowed"
-                      : "bg-primary hover:bg-primary/80 cursor-pointer text-white"
+                      : "bg-primary hover:bg-primary/80 cursor-pointer text-white",
                   )}
                 >
-                  <span>{loading ? "Processing..." : "Enrol"}</span>
+                  <span>{loading ? "Processing..." : "LOg"}</span>
                   {!loading && (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
