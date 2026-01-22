@@ -51,6 +51,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "www.kenyahotgirls.com",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
     ],
     // qualities: [25, 50, 75, 100],
   },

@@ -1,4 +1,5 @@
 "use client";
+
 import { FormState, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, z } from "zod";
@@ -21,7 +22,7 @@ import RichTextEditor from "./RichTextEditor";
 import { useFormStore } from "@/store/formStore";
 import { useSettingStore } from "@/store/settingStore";
 import { useFileStore } from "@/store/fileStore";
-import { createNewEscort } from "@/actions/escort";
+import { saveNewEscortProfile } from "@/actions/escort";
 import { useUser } from "@clerk/nextjs";
 import { useVariantStore } from "@/store/variantStore";
 import { getVariantSettings } from "@/actions/variantsetting";
@@ -187,176 +188,139 @@ const NewEscortForm = ({ className }: Prop) => {
   } = useSettingStore();
 
   const { files: gallery } = useFileStore();
-
-  // Save user data to the database
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log("hi there");
-    const {
-      // address,
-      name,
-      email,
-      whatsappNumber,
-      street,
-      phone,
-      monday,
-      tuesday,
-      wednesday,
-      thursday,
-      friday,
-      saturday,
-      sunday,
-      myAge,
-      myHeight,
-      myBreasts,
-      myWeight,
-      // photo,
-    } = values;
-    // form.handleSubmit(onSubmit, (errors) => {
-    //   console.error("Validation errors:", errors);
-    // });
+    setLoader(true);
+    setError(null);
 
-    // if (!isLoaded || !isSignedIn) {
-    //   return;
-    // }
-
-    startTransition(async () => {
-      setLoader(true);
-      setError(null);
+    (async () => {
       try {
-        // Update username in Clerk
-        // console.log("form-values", {
-        //   ...form.getValues(),
-        //   town,
-        //   region,
-        //   selectedAvailabilty: availability,
-        //   description,
-        //   age,
-        //   breast,
-        //   character,
-        //   hairColor,
-        //   nationality,
-        //   experience,
-        //   tags,
-        //   previewPhoto: selectedFiles,
-        //   selectedPractices: selected,
-        //   selectedMassage: massages,
-        //   selectedBDSM: bdsm,
-        //   selectedCategories: settingCategories,
-        //   selectedLanguages: languages,
-        //   selectedGallery: gallery,
-        // });
+        // Destructure fields you want from values (add more as needed)
+        const {
+          // address,
+          name,
+          email,
+          whatsappNumber,
+          street,
+          phone,
+          monday,
+          tuesday,
+          wednesday,
+          thursday,
+          friday,
+          saturday,
+          sunday,
+          myAge,
+          myHeight,
+          myBreasts,
+          myWeight,
+        } = values;
 
-        // 1 validate region
+        // Validate region and town
         if (!region) {
           setError("Please select your region");
+          setLoader(false);
           return;
         }
-
-        // 2. validate region
         if (!town) {
           setError("Please select your area or town");
+          setLoader(false);
           return;
         }
-
-        // validate your categories
+        // Validate categories
         if (settingCategories.length === 0) {
           setError("Please select categories you want to appear");
+          setLoader(false);
           return;
         }
 
-        // extract only images from gallery
+        // Get all files from your file store
         const allFiles = Array.from(useFileStore.getState().fileMap.values());
-        // console.log("file-map values", allFiles);
+
+        // Filter image files
         const imageFiles = allFiles.filter((file) =>
           file.type.startsWith("image/"),
         );
-        console.log("front-end image files----", imageFiles);
 
-        let imgGalleryUrls;
-        let videoGalleryUrls;
-        let previewPhotoUrl = "";
-
-        // TODO: 1- UPLOAD IMAGES TO S3
-
-        const formData = new FormData();
-        imageFiles.forEach((file) => {
-          formData.append("images", file); // must match `formData.getAll("images")` on server
-        });
-        // attach preview photo
+        // Prepare combined list: image files + preview photo (if exists)
+        const filesToUpload: File[] = [...imageFiles];
 
         if (selectedFiles && selectedFiles.length > 0) {
-          formData.append("images", selectedFiles[0]);
-        }
-
-        const res = await fetch("/api/s3/upload-escort-images", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (res.status === 201) {
-          const { imageUrls } = await res.json();
-          // console.log("✅ Uploaded:", imageUrls);
-          imgGalleryUrls = imageUrls;
-          if (selectedFiles && selectedFiles.length > 0) {
-            previewPhotoUrl = imageUrls?.at?.(-1);
+          const previewFile = selectedFiles[0];
+          // Avoid duplicates
+          if (
+            !filesToUpload.some(
+              (f) => f.name === previewFile.name && f.size === previewFile.size,
+            )
+          ) {
+            filesToUpload.push(previewFile);
           }
-          // Optionally show placeholders or start polling for status
-        } else {
-          console.error("❌ Upload failed:", res.status);
         }
 
-        // if (!res.ok) {
-        //   console.error("Upload failed");
-        //   return;
-        // }
-
-        // TODO: 2- UPLOAD videos to MUX
-
-        const videoFiles = allFiles.filter((file) =>
-          file.type.startsWith("video/"),
-        );
-
-        // console.log("all video files", videoFiles);
-
-        const videoFormData = new FormData();
-
-        videoFiles.forEach((file) => {
-          videoFormData.append("videos", file); // must match `formData.getAll("images")` on server
-        });
-
-        const clerkId: any = user?.id;
-        // console.log("clerk-id", clerkId);
-        videoFormData.append("clerkUserID", clerkId);
-
-        const videoRes = await fetch("/api/mux/upload-videos", {
-          method: "POST",
-          body: videoFormData,
-        });
-
-        if (videoRes.status === 201) {
-          // const { uploads } = await res.json();
-          console.log("✅ Upload initiated:");
-          // for videos webhook will update the record
-          // Optionally show placeholders or start polling for status
-        } else {
-          console.error("❌ Upload failed:", res.status);
+        if (filesToUpload.length === 0) {
+          console.log("No images to upload");
         }
 
-        // TODO: 3- Update clerk user role = 'escort'
+        const uploadedImageUrls: string[] = [];
 
-        // TODO: 4-create and save profile in Escorts schmea = 'escort'
-        const escortImages = imgGalleryUrls.filter(
-          (item: any) => item !== previewPhotoUrl,
+        // Upload each file individually
+        for (const file of filesToUpload) {
+          // Fetch fresh signature & params
+          const { signature, timestamp, cloudName, apiKey, folder } =
+            await fetch("/api/cloudinary-signature").then((res) => res.json());
+
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("api_key", apiKey);
+          formData.append("timestamp", timestamp.toString());
+          formData.append("signature", signature);
+          formData.append("folder", folder);
+
+          const uploadRes = await fetch(
+            `https://api.cloudinary.com/v1_1/${cloudName}/upload`,
+            {
+              method: "POST",
+              body: formData,
+            },
+          );
+
+          if (!uploadRes.ok) {
+            const errText = await uploadRes.text();
+            throw new Error(
+              `Failed to upload image ${file.name}: ${uploadRes.status} - ${errText}`,
+            );
+          }
+
+          const uploadData = await uploadRes.json();
+          uploadedImageUrls.push(uploadData.secure_url);
+          console.log(`Uploaded ${file.name} -> ${uploadData.secure_url}`);
+        }
+
+        console.log("All uploaded image URLs:", uploadedImageUrls);
+
+        // TODO: UPLOAD videos to MUX and get video URLs
+
+        // TODO: Continue with saving the user profile using uploadedImageUrls
+        // save profile with images and preview photo URLs
+
+        // Decide previewPhoto URL (e.g., last uploaded or specifically the preview file URL)
+        const previewPhotoUrl =
+          selectedFiles && selectedFiles.length > 0
+            ? uploadedImageUrls[uploadedImageUrls.length - 1]
+            : "";
+
+        // Filter out preview photo from gallery images
+        const galleryImageUrls = uploadedImageUrls.filter(
+          (url) => url !== previewPhotoUrl,
         );
-        const escortData = {
+        const escortData: any = {
           name,
-          clerkUserid: clerkId,
-          previewPhoto: imgGalleryUrls.at(-1),
+          // clerkUserid: user?.id,
+          previewPhoto: previewPhotoUrl,
           // age,
           telephone: phone,
           whatsappPhone: whatsappNumber,
           // exclude the last item if previewPhoto is their
-          images: escortImages,
+          images: galleryImageUrls,
           // videos will be handled by mux webhook
           // videos
           about: description,
@@ -398,17 +362,9 @@ const NewEscortForm = ({ className }: Prop) => {
           email,
         };
 
-        await createNewEscort(escortData);
-        // await createNewEscort({
-        //   imageFiles: allFiles,
-        //   videoFiles: [],
-        //   previewPhoto: selectedFiles?.[0],
-        // });
-        //  if all is well proceed
-
-        // alert("submit form");
-        // Save user info in the database
-        // TODO:// CLEAR OR RESET FORM  VALUES
+        const res = await saveNewEscortProfile(escortData);
+        console.log("new escort girl created", res);
+        //TODO  Reset form, clear states, notify user etc.
         clear();
         (clearAll(),
           clearDescription(),
@@ -422,17 +378,15 @@ const NewEscortForm = ({ className }: Prop) => {
         ));
 
         router.push("/administration");
-        // Scroll user to the top after successful update
-
-        // window.scrollTo({ top: 0, behavior: "smooth" });
       } catch (error: any) {
-        console.error("Error saving profile", error);
+        console.error("Error saving profile:", error);
         setError(error?.message || "Something went wrong");
       } finally {
         setLoader(false);
       }
-    });
+    })();
   };
+
   return (
     <div className={cn("", className)}>
       <SectionCard className="px-12">
