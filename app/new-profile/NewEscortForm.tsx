@@ -106,23 +106,25 @@ const NewEscortForm = ({ className }: Prop) => {
 
   // console.log("user - role", user);
 
+  const DEFAULT_VALUES = {
+    name: "",
+    email: "",
+    street: "",
+    phone: "",
+    whatsappNumber: "",
+    // address: "",
+    myAge: "",
+    myBreasts: "",
+    myWeight: "",
+    myHeight: "",
+    variantAge: "",
+    // variantAvailability: undefined,
+  };
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      street: "",
-      phone: "",
-      whatsappNumber: "",
-      // address: "",
-      myAge: "",
-      myBreasts: "",
-      myWeight: "",
-      myHeight: "",
-      variantAge: "",
-      // variantAvailability: undefined,
-    },
+    defaultValues: DEFAULT_VALUES,
   });
 
   const { watch, setValue, formState } = form;
@@ -364,6 +366,13 @@ const NewEscortForm = ({ className }: Prop) => {
 
         const res = await saveNewEscortProfile(escortData);
         console.log("new escort girl created", res);
+
+        // ✅ 1. Reset React Hook Form
+        form.reset(DEFAULT_VALUES);
+        localStorage.removeItem("storageKey");
+
+        // ✅ 2. Clear persisted form storage (useFormPersist)
+        localStorage.removeItem("storageKey");
         //TODO  Reset form, clear states, notify user etc.
         clear();
         (clearAll(),

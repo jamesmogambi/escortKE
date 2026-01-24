@@ -153,3 +153,26 @@ export async function saveNewEscortProfile(data: Partial<EscortDoc>) {
     throw new Error(error?.message || "Failed to create escort profile");
   }
 }
+
+export async function getCurrentEscort() {
+  try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      throw new Error("User not authenticated");
+    }
+
+    await connectToDB();
+
+    const escort = await Escort.findOne({ clerkUserId: userId }).lean();
+
+    if (!escort) {
+      return null;
+    }
+
+    return safeClone(escort);
+  } catch (error) {
+    console.error("❌ Error fetching current escort:", error);
+    throw new Error("Failed to fetch current escort");
+  }
+}
