@@ -100,6 +100,8 @@ const NewEscortForm = ({ className }: Prop) => {
 
   const { user, isLoaded, isSignedIn } = useUser();
 
+  const imageFiles = useFileStore((state) => state.files);
+
   // if (!isLoaded || !user) {
   //   return null;
   // }
@@ -236,12 +238,12 @@ const NewEscortForm = ({ className }: Prop) => {
         }
 
         // Get all files from your file store
-        const allFiles = Array.from(useFileStore.getState().fileMap.values());
+        // const allFiles = Array.from(useFileStore.getState().fileMap.values());
 
-        // Filter image files
-        const imageFiles = allFiles.filter((file) =>
-          file.type.startsWith("image/"),
-        );
+        // // Filter image files
+        // const imageFiles = allFiles.filter((file) =>
+        //   file.type.startsWith("image/"),
+        // );
 
         // Prepare combined list: image files + preview photo (if exists)
         const filesToUpload: File[] = [...imageFiles];
@@ -437,7 +439,7 @@ const NewEscortForm = ({ className }: Prop) => {
                 <SelectPackagesForm form={form} />
               </div>
             </section>
-            <PhotoVideoUploads form={form} />
+            <PhotoVideoUploads />
 
             {error && (
               <p className="p-3 bg-primary text-lg text-white py-2 text-center my-4">

@@ -38,9 +38,7 @@ const MyGirls = async ({ girls }: MyGirlsProps) => {
               fill
               className="object-cover overflow-hidden"
             />
-
-            <div className="absolute inset-0 bg-black/40" />
-
+            <div className="absolute inset-0 bg-black/40" />*{" "}
             {/* // content section */}
             <div className="absolute  border-green-400 overflow-hidden  inset-0   bottom-0 z-10  text-white">
               <div className="flex flex-1">
