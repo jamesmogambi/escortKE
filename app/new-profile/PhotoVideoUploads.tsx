@@ -273,7 +273,7 @@ const PhotoVideoUploads = ({ className }: Props) => {
               <button
                 type="button"
                 onClick={() => removeExistingImage(url)}
-                className="absolute top-2 right-2 z-10 rounded-full bg-black/70 p-1.5 text-white opacity-0 group-hover:opacity-100 transition"
+                className="absolute top-2 right-2 z-10 rounded-full bg-red-600 p-1.5 text-white opacity-0 group-hover:opacity-100 transition"
               >
                 <X size={16} />
               </button>

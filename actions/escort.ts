@@ -176,3 +176,38 @@ export async function getCurrentEscort() {
     throw new Error("Failed to fetch current escort");
   }
 }
+
+export async function updateEscortProfile(data: any) {
+  try {
+    // 🔐 Get authenticated user
+    const { userId } = await auth();
+
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    await connectToDB();
+
+    const updatedEscort = await Escort.findOneAndUpdate(
+      { clerkUserId: userId }, // ✅ match by Clerk ID
+      { $set: data },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!updatedEscort) {
+      throw new Error("Escort profile not found");
+    }
+
+    return {
+      success: true,
+      data: updatedEscort,
+    };
+  } catch (error: any) {
+    console.error("❌ Failed to update escort profile:", error);
+
+    throw new Error(error?.message || "Failed to update escort profile");
+  }
+}

@@ -18,9 +18,9 @@ const page = async () => {
     );
   }
   return (
-    <>
+    <div>
       <EditEscortForm initialData={escort} />
-    </>
+    </div>
   );
 };
 

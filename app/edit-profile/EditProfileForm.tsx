@@ -13,7 +13,7 @@ import { ArrowDown, X } from "lucide-react";
 import { toast } from "sonner";
 import SectionCard from "@/components/SectionCard";
 import SuccessToast from "@/components/Toasts/SuccessToast";
-import { saveNewEscortProfile } from "@/actions/escort";
+import { saveNewEscortProfile, updateEscortProfile } from "@/actions/escort";
 import { useUser } from "@clerk/nextjs";
 import { useFormStore } from "@/store/formStore";
 import { useSettingStore } from "@/store/settingStore";
@@ -109,6 +109,8 @@ const EditEscortForm = ({ className, initialData }: Props) => {
     setValue,
   });
 
+  const { isSubmitting } = formState;
+
   /* ----------------------------- hydrate RHF ----------------------------- */
 
   useEffect(() => {
@@ -120,7 +122,6 @@ const EditEscortForm = ({ className, initialData }: Props) => {
       street: initialData.street ?? "",
       phone: initialData.telephone ?? "",
       whatsappNumber: initialData.whatsappPhone ?? "",
-
       monday: initialData.openingHours?.monday ?? "",
       tuesday: initialData.openingHours?.tuesday ?? "",
       wednesday: initialData.openingHours?.wednesday ?? "",
@@ -128,7 +129,6 @@ const EditEscortForm = ({ className, initialData }: Props) => {
       friday: initialData.openingHours?.friday ?? "",
       saturday: initialData.openingHours?.saturday ?? "",
       sunday: initialData.openingHours?.sunday ?? "",
-
       myAge: initialData.age ?? "",
       myHeight: initialData.height ?? "",
       myBreasts: initialData.breasts ?? "",
@@ -177,41 +177,184 @@ const EditEscortForm = ({ className, initialData }: Props) => {
     // });
   }, [initialData]);
 
+  const {
+    description,
+    region,
+    town,
+    age,
+    breast,
+    character,
+    hairColor,
+    nationality,
+    experience,
+    tags,
+    files: selectedFiles = [],
+  } = useFormStore();
+
+  const {
+    selected,
+    massages,
+    bdsm,
+    categories: settingCategories,
+    languages,
+    availability,
+  } = useSettingStore();
+
   /* -------------------------------- submit -------------------------------- */
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setLoading(true);
+    setError(null);
+
     try {
-      setLoading(true);
-      setError(null);
+      /* ---------------------- destructure form values ---------------------- */
+      const {
+        name,
+        email,
+        whatsappNumber,
+        street,
+        phone,
+        monday,
+        tuesday,
+        wednesday,
+        thursday,
+        friday,
+        saturday,
+        sunday,
+        myAge,
+        myHeight,
+        myBreasts,
+        myWeight,
+      } = values;
 
-      const formStore = useFormStore.getState();
-      const settingStore = useSettingStore.getState();
+      /* ---------------------- validations ---------------------- */
+      if (!region) {
+        setError("Please select your region");
+        return;
+      }
 
-      const payload = {
-        ...values,
-        // previewPhoto: useFileStore.getState().previewImage,
-        // images: useFileStore.getState().existingImages,
-        about: formStore.description,
-        region: formStore.region,
-        town: formStore.town,
-        categories: settingStore.categories,
-        languages: settingStore.languages,
-        availability: settingStore.availability,
-        practices: settingStore.selected,
-        bdsm: settingStore.bdsm,
-        massages: settingStore.massages,
+      if (!town) {
+        setError("Please select your area or town");
+        return;
+      }
+
+      if (settingCategories.length === 0) {
+        setError("Please select at least one category");
+        return;
+      }
+
+      /* ---------------------- file store ---------------------- */
+      const { files, existingImages } = useFileStore.getState();
+
+      // Only upload NEW image files
+      const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+
+      const uploadedImageUrls: string[] = [];
+
+      /* ---------------------- upload new images ---------------------- */
+      for (const file of imageFiles) {
+        const { signature, timestamp, cloudName, apiKey, folder } = await fetch(
+          "/api/cloudinary-signature",
+        ).then((res) => res.json());
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("api_key", apiKey);
+        formData.append("timestamp", timestamp.toString());
+        formData.append("signature", signature);
+        formData.append("folder", folder);
+
+        const uploadRes = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/upload`,
+          {
+            method: "POST",
+            body: formData,
+          },
+        );
+
+        if (!uploadRes.ok) {
+          const errText = await uploadRes.text();
+          throw new Error(`Image upload failed: ${errText}`);
+        }
+
+        const uploadData = await uploadRes.json();
+        uploadedImageUrls.push(uploadData.secure_url);
+      }
+
+      /* ---------------------- preview photo logic ---------------------- */
+      let previewPhotoUrl = initialData?.previewPhoto || null;
+
+      // If user selected a new preview photo (stored as first file)
+      if (files.length > 0) {
+        previewPhotoUrl = uploadedImageUrls.at(-1) || previewPhotoUrl;
+      }
+
+      /* ---------------------- merge gallery images ---------------------- */
+      const finalGalleryImages = [
+        ...existingImages,
+        ...uploadedImageUrls,
+      ].filter((url) => url !== previewPhotoUrl);
+
+      /* ---------------------- payload ---------------------- */
+      const escortData = {
+        name,
+        email,
+        street,
+        telephone: phone,
+        whatsappPhone: whatsappNumber,
+        previewPhoto: previewPhotoUrl,
+        images: finalGalleryImages,
+        about: description,
+        region,
+        town,
+        categories: settingCategories,
+        languages,
+        availability,
+        practices: selected,
+        bdsm,
+        massages,
+        extraServices: tags,
+
+        openingHours: {
+          monday,
+          tuesday,
+          wednesday,
+          thursday,
+          friday,
+          saturday,
+          sunday,
+        },
+
+        age: myAge,
+        height: myHeight,
+        breasts: myBreasts,
+        weight: myWeight,
+
+        nationality,
+        character,
+        hairColor,
+        experience,
+
         role: "escort",
-        clerkUserId: user?.id,
       };
 
-      await saveNewEscortProfile(payload);
+      /* ---------------------- server action ---------------------- */
+      await updateEscortProfile(escortData);
 
-      toast.custom(() => <SuccessToast message="Profile saved successfully" />);
-
+      /* ---------------------- success cleanup ---------------------- */
+      form.reset(DEFAULT_VALUES);
       localStorage.removeItem("escort-form");
-      router.push("/administration");
+
+      useFileStore.getState().clearFiles();
+
+      toast.custom(() => (
+        <SuccessToast message="Profile updated successfully" />
+      ));
+
+      router.refresh();
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err: any) {
-      setError(err.message || "Something went wrong");
+      console.error(err);
+      setError(err?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -222,7 +365,7 @@ const EditEscortForm = ({ className, initialData }: Props) => {
   if (!hydrated && initialData) {
     return <div className="p-10">Fetching Profile...</div>;
   }
-
+  // TODO: FIX tHE CATEGORIES SECTION AND LANGUAGES OVERFLOWING
   return (
     <div className={cn(className)}>
       <SectionCard className="px-12">
@@ -236,43 +379,20 @@ const EditEscortForm = ({ className, initialData }: Props) => {
             <IntroSection form={form} />
 
             <section className="flex flex-col lg:flex-row gap-6 mt-10">
-              <div className="lg:w-1/2">
+              <div className="lg:w-1/2 ">
                 <RichTextEditor />
                 <WorkHoursForm form={form} className="mt-6" />
-                <SettingsForm form={form} className="mt-10" />
+                <SettingsForm form={form} className="mt-10 w-full" />
                 <AboutMeForm form={form} className="mt-6" />
 
-                <div>
-                  {/* TODO://Display Preview Photo */}
-                  {previewPhoto && (
-                    <div className="relative mt-6 inline-block">
-                      {/* Delete button */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          // your delete logic here
-                          // e.g. clear preview from zustand or RHF
-                        }}
-                        className="absolute top-2 right-2 z-10 rounded-full bg-primary p-1.5 text-white hover:bg-red-600 transition"
-                      >
-                        <X size={16} />
-                      </button>
-
-                      {/* Preview image */}
-                      <Image
-                        src={previewPhoto}
-                        alt="Preview"
-                        width={200}
-                        height={200}
-                        className="rounded-md object-cover"
-                      />
-                    </div>
-                  )}
-                  <PreviewPhoto form={form} className="mt-10" />
-                </div>
+                <PreviewPhoto
+                  form={form}
+                  storedImageUrl={initialData.previewPhoto}
+                  className="mt-10"
+                />
               </div>
 
-              <div className="lg:w-1/2">
+              <div className="lg:w-1/2 w-full">
                 <SelectPackagesForm form={form} />
               </div>
             </section>
@@ -284,14 +404,20 @@ const EditEscortForm = ({ className, initialData }: Props) => {
               <p className="bg-red-500 text-white p-3 text-center">{error}</p>
             )}
 
-            <div className="flex justify-center">
+            {/* // submit button */}
+            <div className="flex justify-center ">
               <Button
-                type="submit"
                 disabled={loading}
-                className="w-3/4 lg:w-1/4 p-10"
+                className="flex lg:w-1/4 w-3/4 rounded-none  items-center  gap-2 p-12 text-white bg-primary"
+                type="submit"
               >
-                <ArrowDown className="mr-2" />
-                {loading ? "Saving..." : "Save Changes"}
+                <ArrowDown
+                  className={cn("size-8", isSubmitting ? "hidden" : "block")}
+                  strokeWidth={4}
+                />
+                <span className="uppercase font-semibold text-xl tlg:ext-2xl">
+                  {loading ? "Submitting..." : "Save Changes"}
+                </span>
               </Button>
             </div>
           </form>
