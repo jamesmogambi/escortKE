@@ -2,33 +2,34 @@
 "use client";
 
 import { getRegions, getTowns } from "@/actions/location";
+import { getAllCounties, getAllRegions } from "@/actions/region";
 import { getVariantSettings } from "@/actions/variantsetting";
 import { useFilterInputStore } from "@/app/girls/filterInputStore";
 import { useEffect } from "react";
 // import { useLocationStore } from "@/stores/useLocationStore";
 
+// Initialize and fetch locations data for filter inputs
 const LocationInitializer = () => {
-  const { setRegions, setTowns, setPractices } = useFilterInputStore();
+  const { setCounties, setRegions, setPractices } = useFilterInputStore();
 
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const [regionsRes, townsRes, variantRes] = await Promise.all<any>([
-          getRegions(),
-          getTowns(),
+        const [countiesRes, regionsRes, variantRes] = await Promise.all<any>([
+          getAllCounties(),
+          getAllRegions(),
           getVariantSettings(),
         ]);
 
-        // const [regions, towns, practices] = await Promise.all([
-        //   regionsRes.json(),
-        //   townsRes.json(),
-        //   practicesRes.json(),
-        // ]);
-
         const practices = variantRes?.practices;
-        console.log("filter input responses", regionsRes, townsRes, variantRes);
-        setRegions(regionsRes);
-        setTowns(townsRes);
+        console.log(
+          "filter input responses",
+          countiesRes,
+          regionsRes,
+          variantRes,
+        );
+        setCounties(countiesRes.data);
+        setRegions(regionsRes.data);
         setPractices(practices);
       } catch (err) {
         console.error("Failed to fetch filterInput data:", err);
@@ -36,7 +37,7 @@ const LocationInitializer = () => {
     };
 
     fetchLocations();
-  }, [setRegions, setTowns, setPractices]);
+  }, [setCounties, setRegions, setPractices]);
 
   return null;
 };

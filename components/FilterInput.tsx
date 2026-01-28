@@ -10,59 +10,90 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-// import { regions, towns } from "@/fixtures/location";
-import Link from "next/link";
 import { X } from "lucide-react";
 // import { practices } from "@/fixtures/practice";
 import { useFilterInputStore } from "@/app/girls/filterInputStore";
-import LocationInitializer from "./FileInputInitializer";
+import regionInitializer from "./FileInputInitializer";
 import { useRouter, useSearchParams } from "next/navigation";
+import LocationInitializer from "./FileInputInitializer";
 
 interface Prop {
   className?: string;
 }
+
+interface IRegion {
+  _id: string;
+  name: string;
+  countyCode: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ICounty {
+  _id: string;
+  name: string;
+  code: string;
+  description?: string;
+  isPopular?: boolean;
+  population?: number;
+  area?: string;
+  capital?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+// TODO: // UPDATE TO RENDER UPDATAED regionS AND PRACTICES FROM DB
 const FilterInput = ({ className }: Prop) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [region, setRegion] = useState("");
+  const [county, setCounty] = useState<ICounty | null>(null);
   const [open, setOpen] = React.useState(false);
-  const [townOpen, setTownOpen] = React.useState(false);
-  const [town, setTown] = useState("");
-  const [towns, setTowns] = useState([]);
+  const [regionOpen, setRegionOpen] = React.useState(false);
+  const [region, setRegion] = useState<IRegion | null>(null);
+  const [regions, setRegions] = useState<IRegion[]>([]);
 
   const [practice, setPractice] = useState("");
   const [practiceOpen, setPracticeOpen] = React.useState(false);
 
-  const { practices, regions, towns: fetchedTowns } = useFilterInputStore();
+  const {
+    practices,
+    counties,
+    regions: fetchedRegions,
+  } = useFilterInputStore();
   const clearFilters = () => {
-    (setRegion(""), setTown(""), setPractice(""), setTowns([]));
+    (setCounty(null), setRegion(null), setPractice(""), setRegions([]));
     const params = new URLSearchParams(searchParams.toString());
+    params.delete("county");
     params.delete("region");
-    params.delete("area");
     params.delete("practice");
     router.replace(`?${params.toString()}`);
   };
 
-  const handleRegion = (val: string) => {
-    (setTown(""), setTowns([]));
+  const handleCounty = (val: any) => {
+    (setRegion(null), setRegions([]));
     // Update region state
-    setRegion(val);
+    setCounty(val);
 
     // Update query params
     const params = new URLSearchParams(searchParams.toString());
     params.delete("region");
-    params.delete("area"); // Optional: remove stale town param
+    params.delete("region"); // Optional: remove stale region param
     params.delete("practice"); // Optional: remove stale practice param
     router.replace(`?${params.toString()}`);
 
-    // Filter towns based on selected region
-    const filteredTowns = fetchedTowns.filter(
-      (town: { region: { name: string } }) => town.region.name === val
-    );
+    // Filter regions based on selected region
+    // const filteredRegions = fetchedRegions.filter(
+    //   (region: { region: { name: string } }) => region.region.name === val.code,
+    // );
 
-    console.log("filteredTowns", filteredTowns);
-    setTowns(filteredTowns);
+    console.log("regions from store", fetchedRegions);
+    console.log("seleceted value", val);
+    const filteredRegions = fetchedRegions.filter(
+      (region: any) => region.countyCode === val.code,
+    );
+    console.log("filteredregions", filteredRegions);
+    setRegions(filteredRegions);
   };
 
   const handlePractice = (val: string) => {
@@ -72,22 +103,18 @@ const FilterInput = ({ className }: Prop) => {
     // router.replace(`?${params.toString()}`);
   };
 
-  const handleTown = (val: any) => {
-    if (!region) {
+  const handleRegion = (val: any) => {
+    if (!county) {
       alert("You must first select region");
     }
-    setTown(val);
-    // const params = new URLSearchParams(searchParams.toString());
-    // params.set("area", val); // Replace "filter" with your param key
-
-    // router.replace(`?${params.toString()}`);
+    setRegion(val);
   };
 
   const onFilter = () => {
     const params = new URLSearchParams(searchParams.toString());
 
-    params.set("region", region);
-    params.set("area", town);
+    params.set("county", county?.name || "");
+    params.set("region", region?.name || "");
     params.set("practice", practice);
     router.replace(`?${params.toString()}`);
   };
@@ -95,17 +122,19 @@ const FilterInput = ({ className }: Prop) => {
     <div
       className={cn(
         " flex justify-center flex-row flex-wrap   w-full gap-6 ",
-        className
+        className,
       )}
     >
       <LocationInitializer />
-      {/* regiosn */}
+      {/* Counties */}
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger className=" self-end  cursor-pointer border-0 flex w-full lg:w-[250px] justify-between items-center p-2 text-base px-5 bg-gray-1 rounded-md ">
-          {region ? (
-            <span className="text-slate-100 text-lg font-bold">{region}</span>
+          {county ? (
+            <span className="text-slate-100 text-lg font-bold">
+              {county.name}
+            </span>
           ) : (
-            <span className="text-white/50 text-lg font-medium">Region</span>
+            <span className="text-white/50 text-lg font-medium">County</span>
           )}
 
           <svg
@@ -128,11 +157,11 @@ const FilterInput = ({ className }: Prop) => {
           className="flex border-0 flex-col outline-none p-2 gap-3 w-screen  lg:max-w-[900px] bg-gray-1 "
         >
           <div className="flex flex-row w-full gap-1.5  flex-wrap">
-            {regions.map((item: any) => (
+            {counties.map((item: any) => (
               <DropdownMenuItem
                 className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
-                onSelect={(e) => handleRegion(item.name)}
-                key={item.id}
+                onSelect={(e) => handleCounty(item)}
+                key={item.code}
               >
                 {formatSlugToTitle(item.name)}
               </DropdownMenuItem>
@@ -141,7 +170,7 @@ const FilterInput = ({ className }: Prop) => {
 
           <button
             onClick={() => {
-              (setRegion(""), setOpen(false));
+              (setCounty(null), setOpen(false));
             }}
             className="inline-flex text-primary cursor-pointer  mx-auto items-center gap-2"
           >
@@ -151,15 +180,17 @@ const FilterInput = ({ className }: Prop) => {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* town */}
+      {/* region, city or region */}
 
-      <DropdownMenu open={townOpen} onOpenChange={setTownOpen}>
+      <DropdownMenu open={regionOpen} onOpenChange={setRegionOpen}>
         <DropdownMenuTrigger className="self-end text-nowrap overflow-ellipsis pr-2 cursor-pointer border-0 flex w-full lg:w-[250px] justify-between items-center p-2 text-base px-5 bg-gray-1 rounded-md ">
-          {town ? (
-            <span className="text-slate-100 text-lg font-bold">{town}</span>
+          {region ? (
+            <span className="text-slate-100 text-lg font-bold">
+              {region.name}
+            </span>
           ) : (
             <span className="text-white/50 text-lg font-medium">
-              Town or Area
+              City or region
             </span>
           )}
 
@@ -183,11 +214,12 @@ const FilterInput = ({ className }: Prop) => {
           className="flex border-0 flex-col outline-none p-2 gap-3 w-screen  lg:max-w-[900px] bg-gray-1 "
         >
           <div className="flex -2 gap-1.5 flex-wrap">
-            {towns.map((item: any) => (
+            {/* TODO: RENDER REGIONS BASED ON SELECTED COUNTY */}
+            {regions.map((item: IRegion) => (
               <DropdownMenuItem
                 className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
-                onSelect={(e) => handleTown(item.name)}
-                key={item.id}
+                onSelect={(e) => handleRegion(item)}
+                key={item._id}
               >
                 {item.name}
               </DropdownMenuItem>
@@ -196,7 +228,7 @@ const FilterInput = ({ className }: Prop) => {
 
           <button
             onClick={() => {
-              (setTown(""), setTownOpen(false));
+              (setRegion(null), setRegionOpen(false));
             }}
             className="inline-flex text-primary cursor-pointer  mx-auto items-center gap-2"
           >

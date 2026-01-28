@@ -1,49 +1,425 @@
 [
-  { "name": "Mombasa", "code": "001" },
-  { "name": "Kwale", "code": "002" },
-  { "name": "Kilifi", "code": "003" },
-  { "name": "Tana River", "code": "004" },
-  { "name": "Lamu", "code": "005" },
-  { "name": "Taita–Taveta", "code": "006" },
-  { "name": "Garissa", "code": "007" },
-  { "name": "Wajir", "code": "008" },
-  { "name": "Mandera", "code": "009" },
-  { "name": "Marsabit", "code": "010" },
-  { "name": "Isiolo", "code": "011" },
-  { "name": "Meru", "code": "012" },
-  { "name": "Tharaka-Nithi", "code": "013" },
-  { "name": "Embu", "code": "014" },
-  { "name": "Kitui", "code": "015" },
-  { "name": "Machakos", "code": "016" },
-  { "name": "Makueni", "code": "017" },
-  { "name": "Nyandarua", "code": "018" },
-  { "name": "Nyeri", "code": "019" },
-  { "name": "Kirinyaga", "code": "020" },
-  { "name": "Murang’a", "code": "021" },
-  { "name": "Kiambu", "code": "022" },
-  { "name": "Turkana", "code": "023" },
-  { "name": "West Pokot", "code": "024" },
-  { "name": "Samburu", "code": "025" },
-  { "name": "Trans-Nzoia", "code": "026" },
-  { "name": "Uasin Gishu", "code": "027" },
-  { "name": "Elgeyo-Marakwet", "code": "028" },
-  { "name": "Nandi", "code": "029" },
-  { "name": "Baringo", "code": "030" },
-  { "name": "Laikipia", "code": "031" },
-  { "name": "Nakuru", "code": "032" },
-  { "name": "Narok", "code": "033" },
-  { "name": "Kajiado", "code": "034" },
-  { "name": "Kericho", "code": "035" },
-  { "name": "Bomet", "code": "036" },
-  { "name": "Kakamega", "code": "037" },
-  { "name": "Vihiga", "code": "038" },
-  { "name": "Bungoma", "code": "039" },
-  { "name": "Busia", "code": "040" },
-  { "name": "Siaya", "code": "041" },
-  { "name": "Kisumu", "code": "042" },
-  { "name": "Homa Bay", "code": "043" },
-  { "name": "Migori", "code": "044" },
-  { "name": "Kisii", "code": "045" },
-  { "name": "Nyamira", "code": "046" },
-  { "name": "Nairobi City", "code": "047" }
+  {
+    "name": "Nairobi",
+    "code": "047",
+    "description": "Capital city and economic hub of Kenya. Known as the 'Green City in the Sun' with vibrant nightlife, business centers, and diverse entertainment options.",
+    "isPopular": true,
+    "population": 4397073,
+    "area": "696 km²",
+    "capital": "Nairobi City"
+  },
+  {
+    "name": "Mombasa",
+    "code": "001",
+    "description": "Coastal city and major port. Famous for beautiful beaches, historical sites like Fort Jesus, and Swahili culture. Tourism hotspot.",
+    "isPopular": true,
+    "population": 1208333,
+    "area": "294.7 km²",
+    "capital": "Mombasa City"
+  },
+  {
+    "name": "Kiambu",
+    "code": "022",
+    "description": "Part of Nairobi Metropolitan Region. Known for coffee farming, affluent suburbs, and proximity to the capital.",
+    "isPopular": true,
+    "population": 2417735,
+    "area": "2,543 km²",
+    "capital": "Kiambu Town"
+  },
+  {
+    "name": "Nakuru",
+    "code": "032",
+    "description": "Home to Lake Nakuru National Park (flamingos) and Menengai Crater. Major agricultural and tourism county.",
+    "isPopular": true,
+    "population": 2164793,
+    "area": "7,509 km²",
+    "capital": "Nakuru City"
+  },
+  {
+    "name": "Kisumu",
+    "code": "042",
+    "description": "Third largest city in Kenya. Located on the shores of Lake Victoria. Known for fishing industry and vibrant lakeside culture.",
+    "isPopular": true,
+    "population": 1133670,
+    "area": "2,085 km²",
+    "capital": "Kisumu City"
+  },
+  {
+    "name": "Uasin Gishu",
+    "code": "027",
+    "description": "Home to Eldoret town, known as the 'City of Champions' for producing world-class athletes. Major agricultural region.",
+    "isPopular": true,
+    "population": 1163186,
+    "area": "3,345 km²",
+    "capital": "Eldoret"
+  },
+  {
+    "name": "Meru",
+    "code": "012",
+    "description": "Agricultural county known for miraa (khat), coffee, and tea. Rich cultural heritage of the Meru people.",
+    "isPopular": true,
+    "population": 1545714,
+    "area": "7,003 km²",
+    "capital": "Meru Town"
+  },
+  {
+    "name": "Machakos",
+    "code": "016",
+    "description": "Part of Nairobi Metropolitan. Known for sandstone hills, vibrant markets, and growing urban centers.",
+    "isPopular": true,
+    "population": 1421932,
+    "area": "6,208 km²",
+    "capital": "Machakos Town"
+  },
+  {
+    "name": "Kakamega",
+    "code": "037",
+    "description": "Home to Kakamega Forest, the only tropical rainforest in Kenya. Known for sugarcane farming and Luhya culture.",
+    "isPopular": true,
+    "population": 1867579,
+    "area": "3,033 km²",
+    "capital": "Kakamega Town"
+  },
+  {
+    "name": "Kisii",
+    "code": "045",
+    "description": "Densely populated county known for soapstone carvings, banana farming, and the Gusii people's rich culture.",
+    "isPopular": true,
+    "population": 1266860,
+    "area": "1,317 km²",
+    "capital": "Kisii Town"
+  },
+  {
+    "name": "Kilifi",
+    "code": "003",
+    "description": "Coastal county with popular tourist destinations like Malindi and Watamu. Known for beautiful beaches and marine parks.",
+    "isPopular": true,
+    "population": 1453787,
+    "area": "12,246 km²",
+    "capital": "Kilifi Town"
+  },
+  {
+    "name": "Kericho",
+    "code": "035",
+    "description": "Tea-growing capital of Kenya. Famous for vast tea plantations and cool climate.",
+    "isPopular": true,
+    "population": 901777,
+    "area": "2,479 km²",
+    "capital": "Kericho Town"
+  },
+  {
+    "name": "Bungoma",
+    "code": "039",
+    "description": "Agricultural county known for sugarcane farming. Home to the famous bullfighting tradition.",
+    "isPopular": true,
+    "population": 1670570,
+    "area": "3,032 km²",
+    "capital": "Bungoma Town"
+  },
+  {
+    "name": "Murang'a",
+    "code": "021",
+    "description": "Central Kenya county known as the 'heartland of the Kikuyu'. Famous for coffee and fresh produce.",
+    "isPopular": true,
+    "population": 1054664,
+    "area": "2,558 km²",
+    "capital": "Murang'a Town"
+  },
+  {
+    "name": "Nyeri",
+    "code": "019",
+    "description": "Home to Mount Kenya and Aberdare Ranges. Rich agricultural land and historical significance.",
+    "isPopular": true,
+    "population": 759164,
+    "area": "3,337 km²",
+    "capital": "Nyeri Town"
+  },
+  {
+    "name": "Kajiado",
+    "code": "034",
+    "description": "Maasai county bordering Tanzania. Known for wildlife, Maasai culture, and growing urban centers.",
+    "isPopular": true,
+    "population": 1117840,
+    "area": "21,901 km²",
+    "capital": "Kajiado Town"
+  },
+  {
+    "name": "Narok",
+    "code": "033",
+    "description": "Home to Maasai Mara National Reserve, famous for the Great Wildebeest Migration.",
+    "isPopular": true,
+    "population": 1157873,
+    "area": "17,921 km²",
+    "capital": "Narok Town"
+  },
+  {
+    "name": "Kwale",
+    "code": "002",
+    "description": "Coastal county with Diani Beach and Shimba Hills National Reserve. Known for pristine beaches and coral reefs.",
+    "isPopular": false,
+    "population": 866820,
+    "area": "8,270 km²",
+    "capital": "Kwale Town"
+  },
+  {
+    "name": "Tana River",
+    "code": "004",
+    "description": "County along the Tana River, known for irrigation agriculture and wildlife reserves.",
+    "isPopular": false,
+    "population": 315943,
+    "area": "35,376 km²",
+    "capital": "Hola"
+  },
+  {
+    "name": "Lamu",
+    "code": "005",
+    "description": "Archipelago county with UNESCO World Heritage site Lamu Old Town. Known for Swahili architecture and culture.",
+    "isPopular": false,
+    "population": 143920,
+    "area": "6,273 km²",
+    "capital": "Lamu Town"
+  },
+  {
+    "name": "Taita-Taveta",
+    "code": "006",
+    "description": "Known for Tsavo National Parks, wildlife conservation, and scenic Taita Hills.",
+    "isPopular": false,
+    "population": 340671,
+    "area": "17,084 km²",
+    "capital": "Wundanyi"
+  },
+  {
+    "name": "Garissa",
+    "code": "007",
+    "description": "Northeastern county and commercial hub. Known for Somali culture and Tana River delta.",
+    "isPopular": false,
+    "population": 841353,
+    "area": "45,720 km²",
+    "capital": "Garissa Town"
+  },
+  {
+    "name": "Wajir",
+    "code": "008",
+    "description": "Largest county in Northeastern Kenya. Known for livestock keeping and pastoralist communities.",
+    "isPopular": false,
+    "population": 781263,
+    "area": "56,686 km²",
+    "capital": "Wajir Town"
+  },
+  {
+    "name": "Mandera",
+    "code": "009",
+    "description": "Border county with Ethiopia and Somalia. Known for livestock trade and pastoralist lifestyle.",
+    "isPopular": false,
+    "population": 867457,
+    "area": "25,798 km²",
+    "capital": "Mandera Town"
+  },
+  {
+    "name": "Marsabit",
+    "code": "010",
+    "description": "County with Marsabit National Park and Lake Turkana. Known for diverse ethnic communities.",
+    "isPopular": false,
+    "population": 459785,
+    "area": "70,961 km²",
+    "capital": "Marsabit Town"
+  },
+  {
+    "name": "Isiolo",
+    "code": "011",
+    "description": "Gateway to Northern Kenya. Known for wildlife conservation and diverse cultures.",
+    "isPopular": false,
+    "population": 268002,
+    "area": "25,336 km²",
+    "capital": "Isiolo Town"
+  },
+  {
+    "name": "Tharaka-Nithi",
+    "code": "013",
+    "description": "Agricultural county known for miraa, coffee, and fruit farming along the Tana River.",
+    "isPopular": false,
+    "population": 393177,
+    "area": "2,609 km²",
+    "capital": "Kathwana"
+  },
+  {
+    "name": "Embu",
+    "code": "014",
+    "description": "Agricultural county on the slopes of Mount Kenya. Known for coffee, tea, and macadamia nuts.",
+    "isPopular": false,
+    "population": 608599,
+    "area": "2,818 km²",
+    "capital": "Embu Town"
+  },
+  {
+    "name": "Kitui",
+    "code": "015",
+    "description": "Semi-arid county known for livestock keeping, mining, and traditional crafts.",
+    "isPopular": false,
+    "population": 1136187,
+    "area": "30,497 km²",
+    "capital": "Kitui Town"
+  },
+  {
+    "name": "Makueni",
+    "code": "017",
+    "description": "Eastern Kenya county known for fruit farming (mangoes, oranges) and vibrant markets.",
+    "isPopular": false,
+    "population": 987653,
+    "area": "8,008 km²",
+    "capital": "Wote"
+  },
+  {
+    "name": "Nyandarua",
+    "code": "018",
+    "description": "Agricultural county in the Aberdare Ranges. Known for potato farming and dairy production.",
+    "isPopular": false,
+    "population": 638289,
+    "area": "3,304 km²",
+    "capital": "Ol Kalou"
+  },
+  {
+    "name": "Kirinyaga",
+    "code": "020",
+    "description": "County on the slopes of Mount Kenya. Known for rice farming in Mwea and coffee production.",
+    "isPopular": false,
+    "population": 610411,
+    "area": "1,478 km²",
+    "capital": "Kerugoya"
+  },
+  {
+    "name": "Turkana",
+    "code": "023",
+    "description": "Largest county in Kenya. Known for Lake Turkana, oil discoveries, and Turkana people's rich culture.",
+    "isPopular": false,
+    "population": 926976,
+    "area": "71,597 km²",
+    "capital": "Lodwar"
+  },
+  {
+    "name": "West Pokot",
+    "code": "024",
+    "description": "County with Cherangani Hills. Known for pastoralism and vibrant cultural festivals.",
+    "isPopular": false,
+    "population": 621241,
+    "area": "9,169 km²",
+    "capital": "Kapenguria"
+  },
+  {
+    "name": "Samburu",
+    "code": "025",
+    "description": "Home to Samburu National Reserve. Known for the colorful Samburu culture and wildlife.",
+    "isPopular": false,
+    "population": 310327,
+    "area": "21,022 km²",
+    "capital": "Maralal"
+  },
+  {
+    "name": "Trans Nzoia",
+    "code": "026",
+    "description": "Breadbasket of Kenya. Known for large-scale wheat and maize farming.",
+    "isPopular": false,
+    "population": 990341,
+    "area": "2,470 km²",
+    "capital": "Kitale"
+  },
+  {
+    "name": "Elgeyo-Marakwet",
+    "code": "028",
+    "description": "County with Kerio Valley. Known for athletics champions and scenic landscapes.",
+    "isPopular": false,
+    "population": 454480,
+    "area": "3,030 km²",
+    "capital": "Iten"
+  },
+  {
+    "name": "Nandi",
+    "code": "029",
+    "description": "Home of champions. Known for producing world-class athletes and tea farming.",
+    "isPopular": false,
+    "population": 885711,
+    "area": "2,884 km²",
+    "capital": "Kapsabet"
+  },
+  {
+    "name": "Baringo",
+    "code": "030",
+    "description": "County with Lake Baringo and Lake Bogoria. Known for geothermal activity and wildlife.",
+    "isPopular": false,
+    "population": 666763,
+    "area": "11,075 km²",
+    "capital": "Kabarnet"
+  },
+  {
+    "name": "Laikipia",
+    "code": "031",
+    "description": "Wildlife conservation county. Known for private ranches and community conservancies.",
+    "isPopular": false,
+    "population": 518560,
+    "area": "9,462 km²",
+    "capital": "Nanyuki"
+  },
+  {
+    "name": "Bomet",
+    "code": "036",
+    "description": "Agricultural county known for tea farming and dairy production in the South Rift region.",
+    "isPopular": false,
+    "population": 875689,
+    "area": "1,997 km²",
+    "capital": "Bomet Town"
+  },
+  {
+    "name": "Vihiga",
+    "code": "038",
+    "description": "Smallest county in Kenya. Known for sugarcane farming and Luhya cultural heritage.",
+    "isPopular": false,
+    "population": 590013,
+    "area": "531 km²",
+    "capital": "Vihiga Town"
+  },
+  {
+    "name": "Busia",
+    "code": "040",
+    "description": "Border county with Uganda. Known for cross-border trade and fishing on Lake Victoria.",
+    "isPopular": false,
+    "population": 893681,
+    "area": "1,628 km²",
+    "capital": "Busia Town"
+  },
+  {
+    "name": "Siaya",
+    "code": "041",
+    "description": "Home to Lake Victoria beaches. Known as the home of the first African US President's father.",
+    "isPopular": false,
+    "population": 993183,
+    "area": "2,530 km²",
+    "capital": "Siaya Town"
+  },
+  {
+    "name": "Homa Bay",
+    "code": "043",
+    "description": "County on Lake Victoria shores. Known for fishing industry and Ruma National Park.",
+    "isPopular": false,
+    "population": 1131950,
+    "area": "3,183 km²",
+    "capital": "Homa Bay Town"
+  },
+  {
+    "name": "Migori",
+    "code": "044",
+    "description": "County with Macalder gold mines. Known for sugarcane farming and Lake Victoria fishing.",
+    "isPopular": false,
+    "population": 1116436,
+    "area": "2,586 km²",
+    "capital": "Migori Town"
+  },
+  {
+    "name": "Nyamira",
+    "code": "046",
+    "description": "Agricultural county known for tea, bananas, and pyrethrum farming in Gusii highlands.",
+    "isPopular": false,
+    "population": 605576,
+    "area": "912 km²",
+    "capital": "Nyamira Town"
+  }
 ]
