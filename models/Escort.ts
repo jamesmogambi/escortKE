@@ -13,6 +13,14 @@ export interface Rate {
   outcall?: string;
 }
 
+export interface PlanDetails {
+  type: "basic" | "vip" | "premium";
+  isActive: boolean;
+  activatedAt?: Date;
+  expiresAt?: Date;
+  features: string[];
+}
+
 export interface EscortDoc extends Document {
   name?: string;
   clerkUserId?: string;
@@ -68,6 +76,7 @@ export interface EscortDoc extends Document {
   character?: string;
   hairColor?: string;
   experience?: string;
+  plan?: PlanDetails;
 }
 
 export const defaultOpeningHours: OpeningHour[] = [
@@ -199,6 +208,17 @@ const EscortSchema = new Schema<EscortDoc>(
     hairColor: { type: String, default: "" },
     experience: { type: String, default: "" },
     categories: { type: [String], default: [] },
+    plan: {
+      type: {
+        type: String,
+        enum: ["basic", "vip", "premium"],
+        default: "basic",
+      },
+      isActive: { type: Boolean, default: true },
+      activatedAt: { type: Date },
+      expiresAt: { type: Date },
+      features: { type: [String], default: [] },
+    },
   },
   { timestamps: true },
 );
