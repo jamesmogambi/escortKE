@@ -5,6 +5,8 @@ import NavItem from "./NavItem";
 interface Prop {
   className?: string;
 }
+
+// TODO:// FIX ICONS COLOR AND ICONS
 const NavMenu = ({ className }: Prop) => {
   return (
     <nav className={cn("", className)}>
@@ -12,10 +14,8 @@ const NavMenu = ({ className }: Prop) => {
         <NavItem path="/girls" text="girls for sex">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width={40}
-            height={40}
             viewBox="0 0 50 50"
-            className="text-gray-700 group-hover:text-primary"
+            className="text-stone-400/30 size-8 group-hover:text-primary"
           >
             <circle
               cx={22.875}
@@ -32,10 +32,8 @@ const NavMenu = ({ className }: Prop) => {
         <NavItem path="erotic-massages" text="erotic massages">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width={35}
-            height={35}
             viewBox="0 0 48 48"
-            className="text-gray-700 group-hover:text-primary mr-2 mt-3"
+            className="text-stone-400/30 size-8 group-hover:text-primary mr-2 "
           >
             <g
               fill="none"
@@ -57,10 +55,8 @@ const NavMenu = ({ className }: Prop) => {
         <NavItem path="bdsm" text="bdsm">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width={45}
-            height={45}
             viewBox="0 0 24 24"
-            className="text-gray-700 group-hover:text-primary"
+            className="text-stone-400/30 size-8 group-hover:text-primary"
           >
             <path
               fill="none"
@@ -75,10 +71,8 @@ const NavMenu = ({ className }: Prop) => {
         <NavItem path="/agencies" text="businesses">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width={35}
-            height={35}
             viewBox="0 0 24 24"
-            className="text-gray-700 group-hover:text-primary"
+            className="text-stone-400/30 size-8 group-hover:text-primary"
           >
             <path
               fill="currentColor"
@@ -92,8 +86,10 @@ const NavMenu = ({ className }: Prop) => {
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
+            // height={3}
+            // width={35}
             fill="currentColor"
-            className="size-10 text-gray-700 group-hover:text-primary mt-3.5"
+            className=" size-8  text-stone-400/30 group-hover:text-primary "
           >
             <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
             <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
@@ -104,7 +100,7 @@ const NavMenu = ({ className }: Prop) => {
             width={30}
             height={28}
             viewBox="0 0 14 14"
-            className="text-gray-700 group-hover:text-primary mt-3.5"
+            className="text-stone-400/30 group-hover:text-primary mt-3.5"
           >
             <path
               fill="currentColor"
