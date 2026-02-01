@@ -23,3 +23,5 @@ export type Town = {
   region: string; // relational link
   country: string;
 };
+
+declare module "*.css";
