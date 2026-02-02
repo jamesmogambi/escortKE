@@ -1,3 +1,4 @@
+import { getLocationIds } from "@/actions/location";
 import { initBrightData } from "@/lib/brightData";
 import { connectToDB } from "@/lib/mongoose";
 import Escort, { defaultOpeningHours } from "@/models/Escort";
@@ -316,6 +317,37 @@ export async function ScrapGirlandSave(
       });
     }
 
+    // Get location IDs
+
+    // Use the helper with auto-create for regions
+    const locationIds = await getLocationIds(
+      county,
+      region,
+      true, // Default to true for auto-creating regions
+    );
+
+    // If county is not found, we cannot proceed
+    // If county is not found, we cannot proceed
+    if (!locationIds.countyId) {
+      const errorMsg = `County "${county}" not found in database. Please add county first.`;
+      console.warn(`⚠️ ${errorMsg}`);
+
+      // You might want to log this to a separate table for manual review
+      await logMissingCounty(county, region, escortData.name);
+
+      return {
+        success: false,
+        action: "skipped",
+        error: errorMsg,
+      };
+    }
+
+    console.log("📍 Location IDs:", {
+      county: locationIds.countyId ? "✅ Found" : "❌ Not found",
+      region: locationIds.regionId ? "✅ Found/Created" : "❌ Not found",
+      countyCode: locationIds.countyCode,
+    });
+
     // Prepare data for Mongoose model
     const escortModelData = {
       name: escortData.name,
@@ -337,7 +369,6 @@ export async function ScrapGirlandSave(
       languages: escortData.languages,
       categories: escortData.categories,
       estate: escortData.location || "",
-      town: escortData.city || region,
       address: `${escortData.location || ""}, ${escortData.city || region}, ${escortData.country || county}`,
       practices: escortData.practices,
       bdsm: escortData.bdsm,
@@ -350,7 +381,7 @@ export async function ScrapGirlandSave(
       isActive: true,
       isVerified: false,
       street: escortData.location || "",
-      region: escortData.city || region,
+      // region: escortData.city || region,
       user: undefined,
       breastSize: escortData.bustSize || "",
       ageCategory: escortData.ageCategory || "",
@@ -361,6 +392,12 @@ export async function ScrapGirlandSave(
       previewPhoto: escortData.previewPhoto || "",
       username: escortData.slug,
       sourceUrl: escortURL,
+      country: "Kenya",
+      county: locationIds.countyId,
+      countyCode: locationIds.countyCode || undefined,
+      ...(locationIds.regionId && { region: locationIds.regionId }),
+      // region: locationIds.regionId || undefined,
+      // source:"scraped-afrohot",
     };
 
     // Save new escort
@@ -378,4 +415,26 @@ export async function ScrapGirlandSave(
       name: "Failed to scrape",
     };
   }
+}
+
+// Helper to log missing counties for manual review
+async function logMissingCounty(
+  countyName: string,
+  regionName: string,
+  escortName?: string,
+) {
+  // You can create a separate collection for missing locations
+  // For now, just log to console/file
+  const logEntry = {
+    timestamp: new Date(),
+    countyName,
+    regionName,
+    escortName,
+    type: "MISSING_COUNTY",
+  };
+
+  console.log("📋 Missing County Log:", logEntry);
+
+  // Optional: Save to a MongoDB collection
+  // await MissingLocation.create(logEntry);
 }
