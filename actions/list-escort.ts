@@ -1,7 +1,9 @@
 // app/actions/escort.actions.ts
-import { connectToDB } from "@/lib/mongoose";
+import { connectToDB, safeClone } from "@/lib/mongoose";
 import { paginate, ITEMS_PER_PAGE, PaginationResult } from "@/lib/pagination";
+import { ICounty } from "@/models/County";
 import Escort, { EscortDoc } from "@/models/Escort";
+import { IRegion } from "@/models/Region";
 import mongoose from "mongoose";
 
 // app/actions/escort.actions.ts - Kenya version
@@ -77,5 +79,53 @@ export async function getMasseuses(
   } catch (error) {
     console.error("Error fetching masseuses:", error);
     throw error;
+  }
+}
+
+// Optional: Simplified version without population (faster)
+export async function getSimpleFeaturedEscorts(limit: number = 20) {
+  try {
+    await connectToDB();
+
+    const escorts = (await Escort.find({
+      isActive: true,
+      previewPhoto: { $exists: true, $ne: "" }, // Has profile photo
+      images: { $exists: true, $ne: [] }, // Has at least one image
+    })
+      // .select(
+      //   "name age nationality previewPhoto city plan slug bustSize about isVerified images",
+      // )
+      .populate<{ regionDetails: IRegion }>({
+        path: "region",
+        select: "name _id countyCode",
+      })
+      .populate<{ countyDetails: ICounty }>({
+        path: "county",
+        select: "name _id code",
+      })
+      // .populate<{ regionDetails: IRegion }>("regionDetails")
+      // .populate<{ countyDetails: ICounty }>("countyDetails")
+      .sort({
+        // plan: -1, // VIP/Premium first
+        // isVerified: -1, // Verified profiles
+        images: -1, // More images first
+        createdAt: -1, // Newest
+      })
+      .limit(20)) as any; // Cast to any to resolve type mismatch
+
+    const transformed = safeClone(escorts);
+    return {
+      success: true,
+      data: transformed,
+      count: transformed.length,
+    };
+  } catch (error) {
+    console.error("Error in simple fetch:", error);
+    return {
+      success: false,
+      data: [],
+      count: 0,
+      error: "Failed to fetch data",
+    };
   }
 }

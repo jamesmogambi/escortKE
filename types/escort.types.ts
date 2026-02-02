@@ -1,5 +1,8 @@
 // types/escort.types.ts
 
+import { EscortDoc } from "@/models/Escort";
+import { Types } from "mongoose";
+
 // ============ ENUMS ============
 export enum EscortPlanType {
   BASIC = "basic",
@@ -679,3 +682,11 @@ export function transformFormToDocument(
     source: data.source,
   };
 }
+
+// export interface EscortPopulated extends Omit<EscortDoc, "region" | "county"> {
+//   regionDetails?: IRegion;
+//   countyDetails?: ICounty;
+//   region?: IRegion;
+//   county?: ICounty;
+//   displayLocation?: string;
+// }
