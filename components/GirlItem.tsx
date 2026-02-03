@@ -1,5 +1,5 @@
 // "use client";
-import { cn, slugify } from "@/lib/utils";
+import { cn, formatSlugToTitle, slugify } from "@/lib/utils";
 import Link from "next/link";
 import React from "react";
 import GirlImageSwiper from "./GirlImageSwiper";
@@ -25,12 +25,12 @@ interface GirlItemProps {
     telephone?: string;
     images: string[];
     videos: string[];
-    regionDetails?: {
+    region?: {
       _id: string;
       name: string;
       code?: string;
     };
-    countyDetails?: {
+    county?: {
       _id: string;
       name: string;
       code?: string;
@@ -54,8 +54,8 @@ const GirlItem = ({
     age,
     videos = [],
     name,
-    regionDetails,
-    countyDetails,
+    region,
+    county,
     telephone,
     images = [],
     town,
@@ -70,8 +70,8 @@ const GirlItem = ({
       const parts = [];
       if (estate) parts.push(estate);
       if (town) parts.push(town);
-      if (regionDetails?.name) parts.push(regionDetails.name);
-      if (countyDetails?.name) parts.push(`${countyDetails.name} County`);
+      if (region?.name) parts.push(region.name);
+      if (county?.name) parts.push(`${county.name} County`);
       return parts.length > 0 ? parts.join(", ") : "Location not specified";
     })();
 
@@ -117,12 +117,13 @@ const GirlItem = ({
               </svg>
 
               <span className="text-white text-sm  lg:text-lg">
-                {displayLocation}
+                {/* {displayLocation} */}
+                {formatSlugToTitle(region?.name || "Not Specified")}
               </span>
             </div>
 
-            <span className="text-white text-sm lg:text-lg">
-              {age} years old
+            <span className="text-white text-nowrap text-sm lg:text-lg">
+              {age} years
             </span>
           </div>
 

@@ -17,7 +17,7 @@ const Header = () => {
   return (
     <>
       <MobileHeader />
-      <div className="lg:flex hidden items-center gap-12 w-full px-12 bg-dark-slate">
+      <div className="lg:flex  hidden items-center gap-12 w-full px-12 bg-dark-slate">
         {/* logo */}
         <Logo />
         {/* <Link href="/">

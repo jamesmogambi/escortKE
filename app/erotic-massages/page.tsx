@@ -1,6 +1,11 @@
 import { getMassageEscorts } from "@/actions/masseuse";
+import { AppPagination } from "@/components/AppPagination";
+import { ClientPaginationWrapper } from "@/components/ClientPaginationWrapper";
+import FilterInput from "@/components/FilterInput";
 import GirlList from "@/components/GirlList";
+import ListHeader from "@/components/ListHeader";
 import React from "react";
+import SectionArticle from "./SectionArticle";
 
 interface PageProps {
   searchParams: {
@@ -23,11 +28,8 @@ export const metadata = {
     "massage escorts, masseuses, erotic massage, body massage, Kenya, sensual massage",
 };
 
-//  export const metadata = {
-//   title: "Erotic Massages in Kenya - Find the Best Massage Services | escortke.com",
-//   description:
-//     "Discover top-rated erotic massage services in Kenya. Explore our curated list of professional masseuses offering relaxing and sensual experiences.",
-// };
+const ITEMS_PER_PAGE = 5; // Make sure this matches your server action
+
 const page = async ({ searchParams }: PageProps) => {
   const currentPage = Number(searchParams.page) || 1;
 
@@ -36,7 +38,7 @@ const page = async ({ searchParams }: PageProps) => {
   // Fetch paginated massage escorts
   const { items: massageEscorts, ...paginationInfo } = await getMassageEscorts(
     currentPage,
-    20, // Items per page
+    ITEMS_PER_PAGE,
     // filters,
   );
 
@@ -45,9 +47,21 @@ const page = async ({ searchParams }: PageProps) => {
 
   return (
     <>
-      {/* <GirlList girls={} /> */}
+      <div className="bg-black  p-5 pb-6 -mt-4.5">
+        <FilterInput />
+      </div>
+      <ListHeader title="Erotic Massages" />
+      <GirlList girls={massageEscorts} />
+      <ClientPaginationWrapper
+        totalPages={paginationInfo.totalPages}
+        currentPage={currentPage}
+        totalItems={paginationInfo.totalItems}
+        itemsPerPage={ITEMS_PER_PAGE}
+      />
 
-      <div>Masseuses Only page</div>
+      {/* TODO://POPULATE THE ARTRICLE WITH TEXT */}
+
+      <SectionArticle />
     </>
   );
 };

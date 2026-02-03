@@ -1,8 +1,9 @@
 // app/actions/masseuse.actions.ts
-import { connectToDB } from "@/lib/mongoose";
+import { connectToDB, safeClone } from "@/lib/mongoose";
 import { ITEMS_PER_PAGE, PaginationResult } from "@/lib/pagination";
-import { County } from "@/models/County";
+import { County, ICounty } from "@/models/County";
 import Escort from "@/models/Escort";
+import { IRegion } from "@/models/Region";
 import mongoose from "mongoose";
 
 export interface MassageEscortFilters {
@@ -72,13 +73,21 @@ export async function getMassageEscorts(
 
     // Fetch paginated results with population
     const items = await Escort.find(query)
-      .populate({
-        path: "countyDetails",
-        select: "name code isPopular capital",
+      // .populate({
+      //   path: "countyDetails",
+      //   select: "name code isPopular capital ",
+      // })
+      // .populate({
+      //   path: "regionDetails",
+      //   select: "name countyCode",
+      // })
+      .populate<{ regionDetails: IRegion }>({
+        path: "region",
+        select: "name _id countyCode",
       })
-      .populate({
-        path: "regionDetails",
-        select: "name countyCode",
+      .populate<{ countyDetails: ICounty }>({
+        path: "county",
+        select: "name _id code",
       })
       .sort({
         "plan.type": -1, // Premium/VIP first
@@ -87,11 +96,12 @@ export async function getMassageEscorts(
       })
       .skip(skip)
       .limit(limit)
-      .select("-__v -labels -videos") // Exclude unnecessary fields
-      .lean();
+      .select("-__v -labels -videos"); // Exclude unnecessary fields
+    // .exec();
+    // .lean({ virtuals: true }); // Add virtuals: true here
 
     return {
-      items,
+      items: safeClone(items),
       currentPage: page,
       totalPages,
       totalItems,
