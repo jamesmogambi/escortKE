@@ -3,7 +3,7 @@ import { connectToDB, safeClone } from "@/lib/mongoose";
 import { ITEMS_PER_PAGE, PaginationResult } from "@/lib/pagination";
 import { County, ICounty } from "@/models/County";
 import Escort from "@/models/Escort";
-import { IRegion } from "@/models/Region";
+import { IRegion, Region } from "@/models/Region";
 import mongoose from "mongoose";
 
 export interface MassageEscortFilters {
@@ -211,5 +211,414 @@ export async function getMassageCountsByCounty() {
   } catch (error) {
     console.error("Error getting massage counts by county:", error);
     return [];
+  }
+}
+
+interface FilterEscortsParams {
+  county?: string;
+  region?: string;
+  massageType?: string;
+  categories?: string[];
+  practices?: string[];
+  bdsm?: string[];
+  ageCategory?: string[];
+  breastSize?: string[];
+  character?: string[];
+  hairColor?: string[];
+  experience?: string[];
+  nationality?: string[];
+  languages?: string[];
+  availability?: string[];
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}
+
+export async function getFilteredEscorts(params: FilterEscortsParams) {
+  try {
+    await connectToDB();
+
+    const {
+      county,
+      region,
+      massageType,
+      categories = [],
+      practices = [],
+      bdsm = [],
+      ageCategory = [],
+      breastSize = [],
+      character = [],
+      hairColor = [],
+      experience = [],
+      nationality = [],
+      languages = [],
+      availability = [],
+      page = 1,
+      limit = 20,
+      sortBy = "createdAt",
+      sortOrder = "desc",
+    } = params;
+
+    const skip = (page - 1) * limit;
+
+    // Build the filter query
+    const filter: any = {
+      isActive: true,
+      isVerified: true,
+      role: "escort",
+    };
+
+    // Location filters
+    if (county) {
+      // Try to find county by name or code
+      const countyDoc = await County.findOne({
+        $or: [
+          { name: new RegExp(county, "i") },
+          { code: county.toUpperCase() },
+        ],
+      });
+
+      if (countyDoc) {
+        filter.$or = [
+          { county: countyDoc._id },
+          { countyCode: countyDoc.code },
+        ];
+      } else {
+        // Fallback to text search
+        filter.$or = [
+          { countyCode: new RegExp(county, "i") },
+          { "countyDetails.name": new RegExp(county, "i") },
+        ];
+      }
+    }
+
+    if (region) {
+      const regionDoc = await Region.findOne({
+        name: new RegExp(region, "i"),
+      });
+
+      if (regionDoc) {
+        filter.region = regionDoc._id;
+      } else {
+        filter.$or = [
+          { region: new RegExp(region, "i") },
+          { "regionDetails.name": new RegExp(region, "i") },
+          { town: new RegExp(region, "i") },
+        ];
+      }
+    }
+
+    // Service/Massage type filter
+    if (massageType) {
+      filter.massage = {
+        $elemMatch: {
+          $regex: massageType,
+          $options: "i",
+        },
+      };
+    }
+
+    // Array filters (multiple selections)
+    const arrayFilters = [
+      { key: "categories", value: categories },
+      { key: "practices", value: practices },
+      { key: "bdsm", value: bdsm },
+      { key: "ageCategory", value: ageCategory },
+      { key: "breastSize", value: breastSize },
+      { key: "character", value: character },
+      { key: "hairColor", value: hairColor },
+      { key: "experience", value: experience },
+      { key: "nationality", value: nationality },
+      { key: "languages", value: languages },
+      { key: "availability", value: availability },
+    ];
+
+    arrayFilters.forEach(({ key, value }) => {
+      if (value && value.length > 0) {
+        filter[key] = { $in: value };
+      }
+    });
+
+    // Build sort object
+    const sort: any = {};
+    sort[sortBy] = sortOrder === "asc" ? 1 : -1;
+
+    // Execute query with pagination
+    const [escorts, total] = await Promise.all([
+      Escort.find(filter)
+        .populate("countyDetails", "name code")
+        .populate("regionDetails", "name countyCode")
+        .sort(sort)
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Escort.countDocuments(filter),
+    ]);
+
+    return {
+      success: true,
+      data: {
+        escorts,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasNextPage: page < Math.ceil(total / limit),
+          hasPrevPage: page > 1,
+        },
+      },
+    };
+  } catch (error) {
+    console.error("Error filtering escorts:", error);
+    return {
+      success: false,
+      error: "Failed to fetch escorts",
+      data: {
+        escorts: [],
+        pagination: {
+          page: 1,
+          limit: 20,
+          total: 0,
+          totalPages: 0,
+          hasNextPage: false,
+          hasPrevPage: false,
+        },
+      },
+    };
+  }
+}
+
+interface FilterMassageEscortsParams {
+  county?: string;
+  region?: string;
+  massageType?: string;
+  page?: number;
+  limit?: number;
+}
+
+export async function getFilteredMassageEscorts(
+  params: FilterMassageEscortsParams,
+) {
+  try {
+    await connectToDB();
+
+    const { county, region, massageType, page = 1, limit = 20 } = params;
+
+    const skip = (page - 1) * limit;
+
+    // Start with base filter: only escorts who offer massage services
+    const filter: any = {
+      isActive: true,
+      // isVerified: true,
+      role: "escort",
+      // Filter escorts who have at least one massage service
+      massage: { $exists: true, $ne: [], $not: { $size: 0 } },
+    };
+
+    // If massage type is specified, filter by specific massage
+    if (massageType && massageType.trim() !== "") {
+      filter.massage = {
+        $elemMatch: {
+          $regex: massageType.trim(),
+          $options: "i",
+        },
+      };
+    }
+
+    // Location filters
+    if (county && county.trim() !== "") {
+      // Try to find county by name (case-insensitive)
+      const countyDoc = await County.findOne({
+        name: new RegExp(`^${county.trim()}$`, "i"),
+      });
+
+      if (countyDoc) {
+        filter.$or = [
+          { county: countyDoc._id },
+          { countyCode: countyDoc.code },
+        ];
+      } else {
+        // Fallback to partial match on county name
+        filter.$or = [
+          { "countyDetails.name": new RegExp(county.trim(), "i") },
+          { countyCode: new RegExp(county.trim(), "i") },
+        ];
+      }
+    }
+
+    if (region && region.trim() !== "") {
+      const regionDoc = await Region.findOne({
+        name: new RegExp(`^${region.trim()}$`, "i"),
+      });
+
+      if (regionDoc) {
+        filter.region = regionDoc._id;
+      } else {
+        // Fallback to partial match on region or town
+        filter.$or = [
+          ...(filter.$or || []),
+          { "regionDetails.name": new RegExp(region.trim(), "i") },
+          { town: new RegExp(region.trim(), "i") },
+        ];
+      }
+    }
+
+    // If no county/region specified but massageType is specified,
+    // still filter by massageType and show all locations
+    if (!county && !region && massageType) {
+      // Keep the massage filter only
+    }
+
+    // Execute query with pagination
+    const [escorts, total] = await Promise.all([
+      Escort.find(filter)
+        .populate<{ regionDetails: IRegion }>({
+          path: "region",
+          select: "name _id countyCode",
+        })
+        .populate<{ countyDetails: ICounty }>({
+          path: "county",
+          select: "name _id code",
+        })
+        // .populate("countyDetails", "name code")
+        // .populate("regionDetails", "name countyCode")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Escort.countDocuments(filter),
+    ]);
+
+    return {
+      success: true,
+      data: {
+        escorts: safeClone(escorts),
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasNextPage: page < Math.ceil(total / limit),
+          hasPrevPage: page > 1,
+        },
+        filtersApplied: {
+          county: county || null,
+          region: region || null,
+          massageType: massageType || null,
+        },
+      },
+    };
+  } catch (error) {
+    console.error("Error filtering massage escorts:", error);
+    return {
+      success: false,
+      error: "Failed to fetch massage escorts",
+      data: {
+        escorts: [],
+        pagination: {
+          page: 1,
+          limit: 24,
+          total: 0,
+          totalPages: 0,
+          hasNextPage: false,
+          hasPrevPage: false,
+        },
+        filtersApplied: {
+          county: null,
+          region: null,
+          massageType: null,
+        },
+      },
+    };
+  }
+}
+
+export async function getAllEroticMassageEscorts(
+  page: number = 1,
+  limit: number = 24,
+) {
+  try {
+    await connectToDB();
+
+    const skip = (page - 1) * limit;
+
+    // Use the EXACT same filter that works in shell
+    const filter: any = {
+      isActive: true,
+      // isVerified: true,
+      role: "escort",
+      massage: {
+        $elemMatch: {
+          $regex: "erotic|sensual|tantric|nuru|body to body|happy ending",
+          $options: "i",
+        },
+      },
+    };
+
+    console.log("Using filter:", JSON.stringify(filter, null, 2));
+
+    // Execute query
+    const [escorts, total] = await Promise.all([
+      Escort.find(filter)
+        .populate<{ regionDetails: IRegion }>({
+          path: "region",
+          select: "name _id countyCode",
+        })
+        .populate<{ countyDetails: ICounty }>({
+          path: "county",
+          select: "name _id code",
+        })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Escort.countDocuments(filter),
+    ]);
+
+    console.log(`Found ${total} erotic massage escorts`);
+
+    // Log first few results for debugging
+    if (escorts.length > 0) {
+      console.log("First 3 results:");
+      escorts.slice(0, 3).forEach((escort: any, i) => {
+        console.log(
+          `${i + 1}. ${escort.name || "No name"}: ${escort.massage?.join(", ") || "No massage"}`,
+        );
+      });
+    }
+
+    return {
+      success: true,
+      data: {
+        escorts: safeClone(escorts),
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasNextPage: page < Math.ceil(total / limit),
+          hasPrevPage: page > 1,
+        },
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching erotic massage escorts:", error);
+    return {
+      success: false,
+      error: "Failed to fetch erotic massage escorts",
+      data: {
+        escorts: [],
+        pagination: {
+          page: 1,
+          limit: 24,
+          total: 0,
+          totalPages: 0,
+          hasNextPage: false,
+          hasPrevPage: false,
+        },
+      },
+    };
   }
 }

@@ -5,12 +5,15 @@ import { getRegions, getTowns } from "@/actions/location";
 import { getAllCounties, getAllRegions } from "@/actions/region";
 import { getVariantSettings } from "@/actions/variantsetting";
 import { useFilterInputStore } from "@/app/girls/filterInputStore";
+import { useVariantStore } from "@/store/variantStore";
 import { useEffect } from "react";
 // import { useLocationStore } from "@/stores/useLocationStore";
 
 // Initialize and fetch locations data for filter inputs
 const LocationInitializer = () => {
   const { setCounties, setRegions, setPractices } = useFilterInputStore();
+
+  const { massage: massageVariants, setMassage } = useVariantStore();
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -30,6 +33,7 @@ const LocationInitializer = () => {
         );
         setCounties(countiesRes.data);
         setRegions(regionsRes.data);
+        setMassage(variantRes?.massage || []);
         setPractices(practices);
       } catch (err) {
         console.error("Failed to fetch filterInput data:", err);

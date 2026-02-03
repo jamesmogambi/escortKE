@@ -1,9 +1,11 @@
+import { formatSlugToTitle } from "@/lib/utils";
 import { Minus } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
 interface Prop {
   title?: string;
+  subTitle?: string;
 }
 const ListHeader = (props: Prop) => {
   return (
@@ -16,11 +18,13 @@ const ListHeader = (props: Prop) => {
           </Link>
           <Minus className="size-4" />
 
-          <label className="font-bold">{props.title}</label>
+          <label className="font-bold">{props.subTitle}</label>
         </div>
       </div>
       {/* // render heading */}
-      <h4 className="text-center font-semibold mt-3 text-3xl">{props.title}</h4>
+      <h4 className="text-center font-semibold mt-3 text-3xl">
+        {formatSlugToTitle(props.title || "Erotic Massages")}
+      </h4>
     </section>
   );
 };
