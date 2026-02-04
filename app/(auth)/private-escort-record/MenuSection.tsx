@@ -19,7 +19,7 @@ const MenuSection = () => {
           {/* section 1 */}
           <div className="basis-full border border-primary  lg:basis-1/2">
             <h4 className="text-white bg-primary text-2xl py-4 font-bold text-center">
-              Registration Escort
+              Girl Registration
             </h4>
             <div className="p-8 ">
               <h4 className="text-white font-bold text-2xl">Contains :</h4>
@@ -27,7 +27,7 @@ const MenuSection = () => {
                 <li className="flex items-center gap-3">
                   <Check className="text-primary" strokeWidth={4} />
                   <span className="font-bold text-lg text-white/50">
-                    Complete profile on dobryprivat.cz
+                    Complete profile on EscortKE.com
                   </span>
                 </li>
               </ul>
@@ -65,7 +65,7 @@ const MenuSection = () => {
                 <li className="flex items-center gap-3">
                   <Check className="text-primary" strokeWidth={4} />
                   <span className="font-bold text-lg text-white/50">
-                    Complete profile on dobryprivat.cz
+                    Complete profile on escortKE.com
                   </span>
                 </li>
               </ul>

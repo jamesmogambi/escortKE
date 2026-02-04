@@ -42,11 +42,11 @@ const SelectPackagesForm = ({ form, className }: Prop) => {
     splitIntoThreeColumns(massage);
 
   const [bdsmCol1, bdsmCol2, bdsmCol3] = splitIntoThreeColumns(
-    variantSettings.bdsm
+    variantSettings.bdsm,
   );
   return (
     <section className={cn("w-full  ", className)}>
-      <h4 className="text-base text-white/50 underline  mb-6 font-bold">
+      <h4 className="text-primary text-xl  mb-6 font-bold">
         Select the services you offer:
       </h4>
       {/* // packages tab */}
@@ -87,7 +87,7 @@ const SelectPackagesForm = ({ form, className }: Prop) => {
                     key={j}
                     className={cn(
                       "bg-gray-1  cursor-pointer data-[active]:bg-primary font-medium text-white  text-center rounded-full p-2.5",
-                      selected.includes(item.name) ? "bg-primary" : "bg-gray-1"
+                      selected.includes(item.name) ? "bg-primary" : "bg-gray-1",
                     )}
                   >
                     {item.name}
@@ -109,7 +109,7 @@ const SelectPackagesForm = ({ form, className }: Prop) => {
                     key={j}
                     className={cn(
                       "bg-gray-1  cursor-pointer data-[active]:bg-primary font-medium text-white  text-center rounded-full p-2.5",
-                      massages.includes(item.name) ? "bg-primary" : "bg-gray-1"
+                      massages.includes(item.name) ? "bg-primary" : "bg-gray-1",
                     )}
                   >
                     {item.name}
@@ -131,7 +131,7 @@ const SelectPackagesForm = ({ form, className }: Prop) => {
                     key={j}
                     className={cn(
                       "bg-gray-1  cursor-pointer data-[active]:bg-primary font-medium text-white  text-center rounded-full p-2.5",
-                      bdsm.includes(item.name) ? "bg-primary" : "bg-gray-1"
+                      bdsm.includes(item.name) ? "bg-primary" : "bg-gray-1",
                     )}
                   >
                     {item.name}

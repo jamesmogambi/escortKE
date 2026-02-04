@@ -1,21 +1,21 @@
 import { create } from "zustand";
 
 interface LocationStore {
+  counties: any;
   regions: any;
-  towns: any;
   practices: any;
-  setRegions: (regions: string[]) => void;
-  setTowns: (towns: string[]) => void;
+  setCounties: (counties: string[]) => void;
+  setRegions: (locations: string[]) => void;
   setPractices: (practices: string[]) => void;
   reset: () => void;
 }
 
 export const useFilterInputStore = create<LocationStore>((set) => ({
+  counties: [],
   regions: [],
-  towns: [],
   practices: [],
+  setCounties: (counties) => set({ counties }),
   setRegions: (regions) => set({ regions }),
-  setTowns: (towns) => set({ towns }),
   setPractices: (practices) => set({ practices }),
-  reset: () => set({ regions: [], towns: [], practices: [] }),
+  reset: () => set({ counties: [], regions: [], practices: [] }),
 }));

@@ -1,6 +1,12 @@
 import React from "react";
+import { Metadata } from "next";
 import MenuSection from "./MenuSection";
 import WhyProfile from "@/components/blog/WhyProfile";
+
+export const metadata: Metadata = {
+  title: "Private room registration for girls",
+  description: "Private room registration for girls",
+};
 
 const page = () => {
   return (

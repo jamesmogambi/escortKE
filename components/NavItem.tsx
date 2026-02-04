@@ -21,7 +21,7 @@ const NavItem = ({ children, path, className, text = "Item" }: Props) => {
         <div
           className={cn(
             "group-hover:border-b-[6px] h-28 justify-between   flex border-0 flex-col items-center pb-10 border-primary",
-            pathname === path && "border-b-[6px]"
+            pathname === path && "border-b-[6px]",
           )}
         >
           <svg
@@ -31,7 +31,7 @@ const NavItem = ({ children, path, className, text = "Item" }: Props) => {
             viewBox="0 0 24 24"
             className={cn(
               "group-hover:text-primary text-dark-slate",
-              pathname === path && "text-primary"
+              pathname === path && "text-primary",
             )}
           >
             <path
@@ -42,8 +42,8 @@ const NavItem = ({ children, path, className, text = "Item" }: Props) => {
 
           <span
             className={cn(
-              "uppercase   group-hover:text-primary text-white text-base font-medium ",
-              pathname === path && "text-primary"
+              "uppercase text-nowrap   group-hover:text-primary text-white text-base font-medium ",
+              pathname === path && "text-primary",
             )}
           >
             {text}

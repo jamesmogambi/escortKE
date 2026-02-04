@@ -51,8 +51,20 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "www.kenyahotgirls.com",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+      {
+        protocol: "https",
+        hostname: "mombasahot.s3.us-east-005.backblazeb2.com",
+      },
+      {
+        protocol: "https",
+        hostname: "afrohot.s3.us-east-005.backblazeb2.com",
+      },
     ],
-    // qualities: [25, 50, 75, 100],
+    qualities: [25, 50, 75, 90, 100],
   },
 };
 

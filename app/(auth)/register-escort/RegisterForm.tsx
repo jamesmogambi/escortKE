@@ -21,6 +21,9 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useSignUp } from "@clerk/nextjs";
 import Link from "next/link";
+import { toast } from "sonner";
+import SuccessToast from "@/components/Toasts/SuccessToast";
+import { createEscort, createNewEscort } from "@/actions/escort";
 
 interface Prop {
   className?: String;
@@ -49,7 +52,7 @@ export const registrationSchema = z
       .regex(/[0-9]/, "Password must contain at least one number")
       .regex(
         /[^A-Za-z0-9]/,
-        "Password must contain at least one special character"
+        "Password must contain at least one special character",
       ),
 
     confirmPassword: z.string(),
@@ -74,30 +77,27 @@ const RegisterForm = ({ className }: Prop) => {
   const form = useForm<z.infer<typeof registrationSchema>>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
-      username: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+      username: "yeyej",
+      email: "mogambi48@icloud.com",
+      password: "Obama2026@",
+      confirmPassword: "Obama2026@",
       // agreeTerms:false
       //   terms: false,
     },
   });
 
-  const { isLoaded, signUp } = useSignUp();
+  const { isLoaded, signUp, setActive } = useSignUp();
 
   // 2. Define a submit handler.
   // TODO:// HANDLE ESCORT REGISRATION
   async function onSubmit(values: z.infer<typeof registrationSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-
     setError(null);
-    const { agreeTerms, confirmPassword, email, password, username } = values;
+
+    const { email, password, username } = values;
 
     if (!isLoaded || !signUp) {
       setError(
-        "Sign up is not available at the moment. Please try again later."
+        "Sign up is not available at the moment. Please try again later.",
       );
       return;
     }
@@ -105,27 +105,48 @@ const RegisterForm = ({ className }: Prop) => {
     setLoader(true);
 
     try {
-      await signUp.create({
+      // 1. Create user
+      const result = await signUp.create({
         emailAddress: email,
         password,
         username,
         unsafeMetadata: { role: "user" },
       });
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-      setMessage("Email verification code has been sent to your email.");
-      //  toast.custom(() => (
-      //    <SuccessToast message="Email verification code has been sent to your email." />
-      //  ));
-      // router.push("/verify-email");
+
+      // 2. Save User to DB
+
+      // 3. Auto-Sign User In
+
+      // Check if sign-up is complete
+      if (result.status === "complete") {
+        // save user to DB
+        const escort = await createEscort({
+          clerkUserId: result.id,
+          email: email,
+          username: username,
+        });
+
+        console.log("escort created", escort);
+
+        // Set the session as active
+        await setActive({ session: result.createdSessionId });
+
+        // Show success message
+        setMessage(
+          "Account created successfully! Redirecting to your profile...",
+        );
+
+        // Delay redirect (2–3 seconds)
+        setTimeout(() => {
+          router.push("/new-profile");
+        }, 5000);
+      }
     } catch (err: any) {
-      setError(err.errors[0]?.message || "Sign up failed");
-      console.log(err);
+      setError(err?.errors?.[0]?.message || "Sign up failed");
+      console.error(err);
     } finally {
       setLoader(false);
     }
-
-    // upon successful registration user should be redirected to /new profile
-    // router.push("/new-profile");
   }
 
   return (
@@ -278,13 +299,8 @@ const RegisterForm = ({ className }: Prop) => {
             )}
 
             {message && (
-              <p className=" bg-white text-primary p-3 my-3 mb-6 text-lg">
-                {message}{" "}
-                <span>
-                  <Link className="font-medium underline" href="/verify-email">
-                    Verify Email address
-                  </Link>
-                </span>
+              <p className=" bg-primary text-white p-3 my-3 mb-6 text-lg">
+                {message} ...
               </p>
             )}
             {/* <Button

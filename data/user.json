@@ -1,0 +1,63 @@
+{
+  "_id": {
+    "$oid": "6972334f0721ae3f3caf4098"
+  },
+  "name": "James mogambi nyabicha",
+  "clerkUserId": "user_38QrNcEVKSuXU86TOtBlzJrfDUN",
+  "previewPhoto": "https://res.cloudinary.com/dz58xxg6l/image/upload/v1769091910/nextjs-uploads/yxinryuywiceq84vyrgw.png",
+  "labels": [],
+  "email": "mogambi48@icloud.com",
+  "age": "24",
+  "telephone": "117273638",
+  "whatsappPhone": "0743129621",
+  "images": [
+    "https://res.cloudinary.com/dz58xxg6l/image/upload/v1769091910/nextjs-uploads/yxinryuywiceq84vyrgw.png",
+    "https://res.cloudinary.com/dz58xxg6l/image/upload/v1769091916/nextjs-uploads/z6s46zdcjiyrrranqbxc.png",
+    "https://res.cloudinary.com/dz58xxg6l/image/upload/v1769091917/nextjs-uploads/zrzzlhtafzhdopwp3le9.png"
+  ],
+  "videos": [],
+  "about": "<p>hbudshd hbuhudhsud uhihdijhdishd bundihsidjidjidjidhw jwbdiwhdihjdidhwid</p><p>ijdjdjowj uhidjidjwidj</p>",
+  "availability": ["Outcall", "Incall"],
+  "ethnicity": "",
+  "nationality": "",
+  "bustSize": "",
+  "weight": "56",
+  "sexualOrientation": null,
+  "languages": ["English"],
+  "region": "Kakamega",
+  "town": "Kakamega Town",
+  "source": "custom",
+  "practices": ["GFE"],
+  "bdsm": ["Light BDSM"],
+  "massage": [],
+  "extraServices": ["Pumpum", "Big Ass", "Bbw"],
+  "slug": "james-mogambi-nyabicha-mld26r",
+  "role": "escort",
+  "openingHours": {
+    "monday": "08:00 - 20:00",
+    "tuesday": "08:00 - 20:00",
+    "wednesday": "08:00 - 20:00",
+    "thursday": "08:00 - 20:00",
+    "friday": "08:00 - 20:00",
+    "saturday": "08:00 - 20:00",
+    "sunday": "08:00 - 20:00"
+  },
+  "isActive": true,
+  "isVerified": false,
+  "breastSize": "",
+  "ageCategory": "",
+  "character": "",
+  "hairColor": "",
+  "experience": "",
+  "categories": ["Escort"],
+  "rates": [],
+  "createdAt": {
+    "$date": "2026-01-22T14:25:19.204Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-01T10:34:14.067Z"
+  },
+  "__v": 0,
+  "street": "eldoret",
+  "plan": "basic"
+}
