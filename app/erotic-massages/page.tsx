@@ -147,7 +147,7 @@ const page = async ({ searchParams }: PageProps) => {
       <div className="bg-black  p-5 pb-6 -mt-4.5">
         <MassageTypeFilterInput />
       </div>
-      <ListHeader title={listHeaderTitle} subTitle="Erotic massages" />
+      <ListHeader title={listHeaderTitle} subTitle="Girls for sex" />
       <GirlList girls={(result.data.escorts as any) || []} />
       <ClientPaginationWrapper
         totalPages={result.data.pagination.totalPages}

@@ -13,7 +13,12 @@ import { useEffect } from "react";
 const LocationInitializer = () => {
   const { setCounties, setRegions, setPractices } = useFilterInputStore();
 
-  const { massage: massageVariants, setMassage, setBdsm } = useVariantStore();
+  const {
+    massage: massageVariants,
+    setMassage,
+    setBdsm,
+    setPractices: setVariantPractices,
+  } = useVariantStore();
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -36,6 +41,7 @@ const LocationInitializer = () => {
         setMassage(variantRes?.massage || []);
         setPractices(practices);
         setBdsm(variantRes?.bdsm || []);
+        setVariantPractices(practices);
       } catch (err) {
         console.error("Failed to fetch filterInput data:", err);
       }

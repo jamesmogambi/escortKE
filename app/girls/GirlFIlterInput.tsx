@@ -39,7 +39,7 @@ export interface ICounty {
   updatedAt?: Date;
 }
 
-const BDSMFilterInput = ({ className }: Prop) => {
+const GirlFilterInput = ({ className }: Prop) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -62,7 +62,11 @@ const BDSMFilterInput = ({ className }: Prop) => {
     counties,
     regions: fetchedRegions,
   } = useFilterInputStore();
-  const { massage: massageVariants, bdsm: bdsmVariants } = useVariantStore();
+  const {
+    massage: massageVariants,
+    bdsm: bdsmVariants,
+    practices: variantPractices,
+  } = useVariantStore();
 
   // Initialize from URL params on mount
   useEffect(() => {
@@ -328,7 +332,7 @@ const BDSMFilterInput = ({ className }: Prop) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="flex border-0 flex-col outline-none p-2 gap-3 w-screen lg:max-w-[900px] bg-gray-1">
           <div className="flex flex-wrap gap-1.5">
-            {bdsmVariants?.map((item: any) => (
+            {variantPractices?.map((item: any) => (
               <DropdownMenuItem
                 className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
                 onSelect={(e) => {
@@ -367,4 +371,4 @@ const BDSMFilterInput = ({ className }: Prop) => {
   );
 };
 
-export default BDSMFilterInput;
+export default GirlFilterInput;
