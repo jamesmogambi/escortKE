@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import LocationInitializer from "@/components/FileInputInitializer";
 import { useVariantStore } from "@/store/variantStore";
 import { useFilterInputStore } from "../girls/filterInputStore";
+import page from "./page";
 
 interface Prop {
   className?: string;
@@ -171,6 +172,7 @@ const BDSMFilterInput = ({ className }: Prop) => {
       county: county?.name || "",
       region: region?.name || "",
       practice: practice,
+      page: "1", // Reset to first page on new filter
     };
 
     updateURLParams(params);
