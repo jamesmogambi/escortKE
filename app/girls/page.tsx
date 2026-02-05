@@ -1,6 +1,10 @@
 import React from "react";
 import GirlFilterInput from "./GirlFIlterInput";
 import ListHeader from "@/components/ListHeader";
+import { fetchGirlEscorts } from "@/actions/list-escort";
+import GirlList from "@/components/GirlList";
+import { ClientPaginationWrapper } from "@/components/ClientPaginationWrapper";
+import SectionArticle from "./SectionArticle";
 
 export const metadata = {
   title: "Girls for Sex in Kenya - Over 900+ Verified Escorts",
@@ -51,6 +55,21 @@ const page = async ({ searchParams }: PageProps) => {
 
   const title = getDynamicTitle();
 
+  const res = await fetchGirlEscorts({
+    countyName: params.county,
+    regionName: params.region,
+    practice: params.practice,
+    page: params.page ? parseInt(params.page, 10) : 1,
+    limit: ITEMS_PER_PAGE,
+  });
+
+  console.log("only girls escorts -->", res);
+
+  const escorts = res.escorts.map((escort) => ({
+    ...escort,
+    videos: escort.videos || [],
+  }));
+
   return (
     <>
       <div className="bg-black  p-5 pb-6 -mt-4.5">
@@ -58,6 +77,17 @@ const page = async ({ searchParams }: PageProps) => {
       </div>
 
       <ListHeader title={title} subTitle="Erotic massages" />
+
+      <GirlList girls={escorts} />
+
+      <ClientPaginationWrapper
+        totalPages={res.totalPages}
+        currentPage={res.page}
+        totalItems={res.total}
+        itemsPerPage={ITEMS_PER_PAGE}
+      />
+
+      <SectionArticle />
     </>
   );
 };
