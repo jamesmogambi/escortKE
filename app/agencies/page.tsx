@@ -1,7 +1,6 @@
 import FilterInput from "@/components/FilterInput";
 import GirlRegions from "@/components/GirlRegions";
 import React from "react";
-import AgencyFilterInput from "./AgencyFilterInput";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,8 +12,58 @@ import {
 import Link from "next/link";
 import AgencyList from "./AgencyList";
 import { agencies } from "@/fixtures/agency";
+import AgencyFilterInput from "./AgencyFilterInput";
 
-const page = () => {
+export const metadata = {
+  title: "Erotic Private Agencies in Kenya - Top Escort Services",
+  description:
+    "Explore top erotic private agencies in Kenya offering professional escort services. Browse verified agency profiles with photos, rates, and locations.",
+  keywords:
+    "erotic private agencies, escort agencies, Kenya, professional escorts, companionship services",
+};
+
+interface PageProps {
+  searchParams: Promise<{
+    county?: string;
+    region?: string;
+    business?: string;
+    page?: string;
+  }>;
+}
+
+const ITEMS_PER_PAGE = 20; // Make sure this matches your server action
+
+const defaultTitle = "Erotic private rooms";
+
+const page = async ({ searchParams }: PageProps) => {
+  const params = await searchParams;
+  const { county, region, business } = params;
+
+  // Build dynamic title and subtitle
+  const getDynamicTitle = () => {
+    const parts = [];
+
+    if (business && business !== "all") {
+      parts.push(business);
+    }
+
+    if (region && region !== "all") {
+      parts.push(region);
+    }
+
+    if (county && county !== "all") {
+      parts.push(county);
+    }
+
+    if (parts.length === 0) {
+      return defaultTitle;
+    }
+
+    return `${parts.join(" ")} ${defaultTitle}`;
+  };
+
+  const title = getDynamicTitle();
+
   return (
     <div>
       <div className="w-full -mt-4  pb-6 py-10 bg-black">

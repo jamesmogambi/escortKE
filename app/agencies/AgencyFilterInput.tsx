@@ -1,161 +1,266 @@
 "use client";
-import { cn } from "@/lib/utils";
-import React, { useState } from "react";
-
+import { cn, formatSlugToTitle } from "@/lib/utils";
+import React, { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { regions, towns } from "@/fixtures/location";
-import Link from "next/link";
 import { X } from "lucide-react";
-import { practices } from "@/fixtures/practice";
-import { agencies } from "@/fixtures/agency";
+import { useRouter, useSearchParams } from "next/navigation";
+import LocationInitializer from "@/components/FileInputInitializer";
+import { useVariantStore } from "@/store/variantStore";
+import { useFilterInputStore } from "../girls/filterInputStore";
+import { BUSINESS_TYPES } from "@/constants/index";
 
 interface Prop {
   className?: string;
 }
-const AgencyFilterInput = ({ className }: Prop) => {
-  const [region, setRegion] = useState("");
-  const [open, setOpen] = React.useState(false);
-  const [townOpen, setTownOpen] = React.useState(false);
-  const [town, setTown] = useState("");
-  const [agency, setAgency] = useState("");
-  const [agencyOpen, setAgencyOpen] = React.useState(false);
 
+interface IRegion {
+  _id: string;
+  name: string;
+  countyCode: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ICounty {
+  _id: string;
+  name: string;
+  code: string;
+  description?: string;
+  isPopular?: boolean;
+  population?: number;
+  area?: string;
+  capital?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+const AgencyFilterInput = ({ className }: Prop) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Get initial values from URL params
+  const initialCountyCode = searchParams.get("county") || "";
+  const initialRegionName = searchParams.get("region") || "";
+  const initialbusiness = searchParams.get("business") || "";
+
+  const [county, setCounty] = useState<ICounty | null>(null);
+  const [open, setOpen] = useState(false);
+  const [regionOpen, setRegionOpen] = useState(false);
+  const [region, setRegion] = useState<IRegion | null>(null);
+  const [regions, setRegions] = useState<IRegion[]>([]);
+  const [business, setbusiness] = useState(initialbusiness);
+  const [businessOpen, setbusinessOpen] = useState(false);
+
+  // Get data from stores
+  const { counties, regions: fetchedRegions } = useFilterInputStore();
+  const { massage: massageVariants, bdsm: bdsmVariants } = useVariantStore();
+
+  // Initialize from URL params on mount
+  useEffect(() => {
+    if (initialCountyCode && counties.length > 0) {
+      const foundCounty = counties.find(
+        (c: { name: string }) => c.name === initialCountyCode,
+      );
+      if (foundCounty) {
+        setCounty(foundCounty);
+        // Load regions for this county
+        const filteredRegions = fetchedRegions.filter(
+          (region: any) => region.countyCode === foundCounty.code,
+        );
+        setRegions(filteredRegions);
+      }
+    }
+
+    if (initialRegionName && regions.length > 0) {
+      const foundRegion = regions.find((r) => r.name === initialRegionName);
+      if (foundRegion) {
+        setRegion(foundRegion);
+      }
+    }
+  }, [counties, fetchedRegions, initialCountyCode, initialRegionName]);
+
+  // Clear all filters
   const clearFilters = () => {
-    setRegion(""), setTown(""), setAgency("");
+    setCounty(null);
+    setRegion(null);
+    setbusiness("");
+    setRegions([]);
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("county");
+    params.delete("region");
+    params.delete("business");
+    router.replace(`?${params.toString()}`);
+  };
+
+  // Handle county selection
+  const handleCounty = (val: ICounty) => {
+    setCounty(val);
+    setRegion(null); // Reset region when county changes
+    setRegions([]);
+
+    // Filter regions based on selected county
+    const filteredRegions = fetchedRegions.filter(
+      (region: any) => region.countyCode === val.code,
+    );
+    setRegions(filteredRegions);
+
+    // Update URL params immediately or wait for filter button
+    // For immediate update, uncomment:
+    // updateURLParams({ county: val.name, region: "", business });
+  };
+
+  // Handle massage type selection
+  const handlebusiness = (val: string) => {
+    setbusiness(val);
+    // For immediate update, uncomment:
+    // updateURLParams({ county: county?.name || "", region: region?.name || "", business: val });
+  };
+
+  // Handle region selection
+  const handleRegion = (val: IRegion) => {
+    if (!county) {
+      alert("You must first select a county");
+      return;
+    }
+    setRegion(val);
+    // For immediate update, uncomment:
+    // updateURLParams({ county: county.name, region: val.name, business });
+  };
+
+  // Update URL params helper
+  const updateURLParams = (params: {
+    county: string;
+    region: string;
+    business: string;
+  }) => {
+    const urlParams = new URLSearchParams(searchParams.toString());
+
+    if (params.county) {
+      urlParams.set("county", params.county);
+    } else {
+      urlParams.delete("county");
+    }
+
+    if (params.region) {
+      urlParams.set("region", params.region);
+    } else {
+      urlParams.delete("region");
+    }
+
+    if (params.business) {
+      urlParams.set("business", params.business);
+    } else {
+      urlParams.delete("business");
+    }
+
+    router.replace(`?${urlParams.toString()}`);
+  };
+
+  // Apply filters
+  const onFilter = () => {
+    const params = {
+      county: county?.name || "",
+      region: region?.name || "",
+      business: business,
+      page: "1", // Reset to first page on new filter
+    };
+
+    updateURLParams(params);
+  };
+
+  // Clear individual filters
+  const clearCounty = () => {
+    setCounty(null);
+    setRegion(null);
+    setRegions([]);
+  };
+
+  const clearRegion = () => {
+    setRegion(null);
+  };
+
+  const clearbusiness = () => {
+    setbusiness("");
   };
 
   return (
     <div
       className={cn(
-        " flex justify-center flex-row flex-wrap  w-full gap-6 ",
-        className
+        "flex justify-center flex-row flex-wrap w-full gap-6",
+        className,
       )}
     >
-      {/* regiosn */}
+      <LocationInitializer />
+
+      {/* County Filter */}
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger className=" self-end  cursor-pointer border-0 flex w-full lg:w-[250px] justify-between items-center p-2 text-base px-5 bg-gray-1 rounded-md ">
+        <DropdownMenuTrigger className="self-end cursor-pointer border-0 flex w-full lg:w-[250px] justify-between items-center p-2 px-5 bg-gray-1 rounded-md">
+          {county ? (
+            <div className="flex items-center gap-2">
+              <span className="text-slate-100 text-lg font-bold">
+                {county.name}
+              </span>
+            </div>
+          ) : (
+            <span className="text-white/50 text-lg font-medium">County</span>
+          )}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={18}
+            height={18}
+            viewBox="0 0 32 32"
+            className="text-white/50"
+          >
+            <path
+              fill="currentColor"
+              d="M8.037 11.166L14.5 22.36c.825 1.43 2.175 1.43 3 0l6.463-11.195c.826-1.43.15-2.598-1.5-2.598H9.537c-1.65 0-2.326 1.17-1.5 2.6z"
+              strokeWidth={1}
+              stroke="currentColor"
+            ></path>
+          </svg>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="flex border-0 flex-col outline-none p-2 gap-3 w-screen lg:max-w-[900px] bg-gray-1">
+          <div className="flex flex-row w-full gap-1.5 flex-wrap">
+            {counties.map((item: any) => (
+              <DropdownMenuItem
+                className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
+                onSelect={(e) => {
+                  e.preventDefault();
+                  handleCounty(item);
+                  setOpen(false);
+                }}
+                key={item.code}
+              >
+                {formatSlugToTitle(item.name)}
+              </DropdownMenuItem>
+            ))}
+          </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Region/City Filter */}
+      <DropdownMenu open={regionOpen} onOpenChange={setRegionOpen}>
+        <DropdownMenuTrigger
+          className="self-end text-nowrap overflow-ellipsis pr-2 cursor-pointer border-0 flex w-full lg:w-[250px] justify-between items-center p-2 px-5 bg-gray-1 rounded-md"
+          disabled={!county}
+        >
           {region ? (
-            <span className="text-slate-100 text-lg font-bold">{region}</span>
-          ) : (
-            <span className="text-white/50 text-lg font-medium">Region</span>
-          )}
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width={18}
-            height={18}
-            viewBox="0 0 32 32"
-            className="text-white/50"
-          >
-            <path
-              fill="currentColor"
-              d="M8.037 11.166L14.5 22.36c.825 1.43 2.175 1.43 3 0l6.463-11.195c.826-1.43.15-2.598-1.5-2.598H9.537c-1.65 0-2.326 1.17-1.5 2.6z"
-              strokeWidth={1}
-              stroke="currentColor"
-            ></path>
-          </svg>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          //   side="left"
-          className="flex border-0 flex-col outline-none p-2 gap-3 w-screen  lg:max-w-[900px] bg-gray-1 "
-        >
-          <div className="flex flex-row w-full gap-1.5  flex-wrap">
-            {regions.map((item) => (
-              <DropdownMenuItem
-                className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
-                onSelect={(e) => setRegion(item.location)}
-                key={item.id}
-              >
-                {item.location}
-              </DropdownMenuItem>
-            ))}
-          </div>
-
-          <button
-            onClick={() => {
-              setRegion(""), setOpen(false);
-            }}
-            className="inline-flex text-primary cursor-pointer  mx-auto items-center gap-2"
-          >
-            <X className="h-5 w-5" />
-            <span className="font-medium">Cancel Filter</span>
-          </button>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* town */}
-
-      <DropdownMenu open={townOpen} onOpenChange={setTownOpen}>
-        <DropdownMenuTrigger className="self-end cursor-pointer border-0 flex w-full lg:w-[250px] justify-between items-center p-2 text-base px-5 bg-gray-1 rounded-md ">
-          {town ? (
-            <span className="text-slate-100 text-lg font-bold">{town}</span>
-          ) : (
-            <span className="text-white/50 text-lg font-medium">Town</span>
-          )}
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width={18}
-            height={18}
-            viewBox="0 0 32 32"
-            className="text-white/50"
-          >
-            <path
-              fill="currentColor"
-              d="M8.037 11.166L14.5 22.36c.825 1.43 2.175 1.43 3 0l6.463-11.195c.826-1.43.15-2.598-1.5-2.598H9.537c-1.65 0-2.326 1.17-1.5 2.6z"
-              strokeWidth={1}
-              stroke="currentColor"
-            ></path>
-          </svg>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          //   side="left"
-          className="flex border-0 flex-col outline-none p-2 gap-3 w-screen  lg:max-w-[900px] bg-gray-1 "
-        >
-          <div className="flex -2 gap-1.5 flex-wrap">
-            {towns.map((item) => (
-              <DropdownMenuItem
-                className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
-                onSelect={(e) => setTown(item.location)}
-                key={item.id}
-              >
-                {item.location}
-              </DropdownMenuItem>
-            ))}
-          </div>
-
-          <button
-            onClick={() => {
-              setTown(""), setTownOpen(false);
-            }}
-            className="inline-flex text-primary cursor-pointer  mx-auto items-center gap-2"
-          >
-            <X className="h-5 w-5" />
-            <span className="font-medium">Cancel Filter</span>
-          </button>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* practices */}
-      <DropdownMenu open={agencyOpen} onOpenChange={setAgencyOpen}>
-        <DropdownMenuTrigger className=" cursor-pointer self-end border-0 flex w-full lg:w-[250px] justify-between items-center p-2 text-base px-5 bg-gray-1 rounded-md ">
-          {agency ? (
-            <span className="text-slate-100 text-lg font-bold capitalize">
-              {agency}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-slate-100 text-lg font-bold">
+                {region.name}
+              </span>
+            </div>
           ) : (
             <span className="text-white/50 text-lg font-medium">
-              Select an Agency
+              {county ? "City or region" : "Select county first"}
             </span>
           )}
-
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width={18}
@@ -171,45 +276,89 @@ const AgencyFilterInput = ({ className }: Prop) => {
             ></path>
           </svg>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          //   side="left"
-          className="flex border-0 flex-col outline-none p-2 gap-3 w-screen  lg:max-w-[900px] bg-gray-1 "
-        >
-          <div className="flex -2 gap-1.5 flex-wrap">
-            {agencies.map((item: any) => (
+        <DropdownMenuContent className="flex border-0 flex-col outline-none p-2 gap-3 w-screen lg:max-w-[900px] bg-gray-1">
+          <div className="flex flex-wrap gap-1.5">
+            {regions.map((item: IRegion) => (
               <DropdownMenuItem
                 className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
-                onSelect={(e) => setAgency(item.name)}
-                key={item.id}
+                onSelect={(e) => {
+                  e.preventDefault();
+                  handleRegion(item);
+                  setRegionOpen(false);
+                }}
+                key={item._id}
               >
-                {item.name}
+                {formatSlugToTitle(item.name)}
               </DropdownMenuItem>
             ))}
           </div>
-
-          <button
-            onClick={() => {
-              setAgency(""), setAgencyOpen(false);
-            }}
-            className="inline-flex text-primary cursor-pointer  mx-auto items-center gap-2"
-          >
-            <X className="h-5 w-5" />
-            <span className="font-medium">Cancel Filter</span>
-          </button>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <div className="flex flex-col   items-center gap-2">
+      {/* Business TYpe */}
+      <DropdownMenu open={businessOpen} onOpenChange={setbusinessOpen}>
+        <DropdownMenuTrigger className="cursor-pointer self-end border-0 flex w-full lg:w-[250px] justify-between items-center p-2 px-5 bg-gray-1 rounded-md">
+          {business ? (
+            <div className="flex items-center gap-2">
+              <span className="text-slate-100 text-lg font-bold capitalize">
+                {business}
+              </span>
+            </div>
+          ) : (
+            <span className="text-white/50 text-lg font-medium">
+              Select a business
+            </span>
+          )}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={18}
+            height={18}
+            viewBox="0 0 32 32"
+            className="text-white/50"
+          >
+            <path
+              fill="currentColor"
+              d="M8.037 11.166L14.5 22.36c.825 1.43 2.175 1.43 3 0l6.463-11.195c.826-1.43.15-2.598-1.5-2.598H9.537c-1.65 0-2.326 1.17-1.5 2.6z"
+              strokeWidth={1}
+              stroke="currentColor"
+            ></path>
+          </svg>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="flex border-0 flex-col outline-none p-2 gap-3 w-screen lg:max-w-[900px] bg-gray-1">
+          <div className="flex flex-wrap gap-1.5">
+            {BUSINESS_TYPES.map((item: any) => (
+              <DropdownMenuItem
+                className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
+                onSelect={(e) => {
+                  e.preventDefault();
+                  handlebusiness(item.value);
+                  setbusinessOpen(false);
+                }}
+                key={item.id}
+              >
+                {item.icon} {item.label}
+              </DropdownMenuItem>
+            ))}
+          </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Action Buttons */}
+      <div className="flex flex-col items-center gap-2">
         <button
           onClick={clearFilters}
-          className="text-pink-600 cursor-pointer flex items-center"
+          className="text-pink-600 cursor-pointer flex items-center gap-1"
         >
           <X className="h-5 w-5" />
-          <span className="font-bold text-base">Cancel Filter</span>
+          <span className="font-bold text-base">Cancel Filters</span>
         </button>
 
-        <button className="rounded-md cursor-pointer hover:bg-primary/80 text-white bg-primary text-lg font-medium p-2 px-5">
-          Filter the girls
+        <button
+          onClick={onFilter}
+          className="rounded-md cursor-pointer hover:bg-primary/80 text-white bg-primary text-lg font-medium p-2 px-5"
+          disabled={!county && !region && !business}
+        >
+          Filter Company
         </button>
       </div>
     </div>
