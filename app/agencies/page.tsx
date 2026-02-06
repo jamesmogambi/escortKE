@@ -1,5 +1,3 @@
-import FilterInput from "@/components/FilterInput";
-import GirlRegions from "@/components/GirlRegions";
 import React from "react";
 import {
   Breadcrumb,
@@ -11,8 +9,8 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import AgencyList from "./AgencyList";
-import { agencies } from "@/fixtures/agency";
 import AgencyFilterInput from "./AgencyFilterInput";
+import { getAgencies } from "@/actions/business";
 
 export const metadata = {
   title: "Erotic Private Agencies in Kenya - Top Escort Services",
@@ -22,22 +20,35 @@ export const metadata = {
     "erotic private agencies, escort agencies, Kenya, professional escorts, companionship services",
 };
 
-interface PageProps {
-  searchParams: Promise<{
+interface AgenciesPageProps {
+  searchParams: {
     county?: string;
     region?: string;
     business?: string;
+    town?: string;
+    verified?: string;
+    featured?: string;
+    search?: string;
     page?: string;
-  }>;
+  };
 }
 
 const ITEMS_PER_PAGE = 20; // Make sure this matches your server action
 
 const defaultTitle = "Erotic private rooms";
 
-const page = async ({ searchParams }: PageProps) => {
+const page = async ({ searchParams }: AgenciesPageProps) => {
   const params = await searchParams;
-  const { county, region, business } = params;
+  const {
+    county,
+    region,
+    business,
+    town,
+    verified,
+    featured,
+    search,
+    page = "1",
+  } = params;
 
   // Build dynamic title and subtitle
   const getDynamicTitle = () => {
@@ -63,6 +74,25 @@ const page = async ({ searchParams }: PageProps) => {
   };
 
   const title = getDynamicTitle();
+
+  const res = await getAgencies(
+    {
+      county,
+      region,
+      business,
+      town,
+      verified,
+      featured,
+      search,
+    },
+    {
+      page: parseInt(page),
+      limit: 12,
+      includeEmployees: true,
+    },
+  );
+
+  console.log("business agencies ==>", res);
 
   return (
     <div>
@@ -96,7 +126,7 @@ const page = async ({ searchParams }: PageProps) => {
           </BreadcrumbList>
         </Breadcrumb>
 
-        <AgencyList agencies={agencies} />
+        <AgencyList agencies={res.data || []} title={title} />
       </div>
     </div>
   );

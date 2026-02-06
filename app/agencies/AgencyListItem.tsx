@@ -13,11 +13,13 @@ interface Prop {
 }
 const AgencyListItem = ({ agency, className }: Prop) => {
   const { name, description, coverImage, agencyPhone, members } = agency;
+
+  console.log("agency list item", { ...agency });
   return (
     <div
       className={cn(
         " border border-white/20 overflow-hidden rounded-md h-[800px] lg:h-[410px] flex flex-col lg:flex-row gap-3 ",
-        className
+        className,
       )}
     >
       {/* // box 1 */}
@@ -63,7 +65,7 @@ const AgencyListItem = ({ agency, className }: Prop) => {
           scrollbar={{ draggable: true }}
           className="w-full h-[270px] mt-4 "
         >
-          {members.map((member: any, index: any) => (
+          {members?.map((member: any, index: any) => (
             <SwiperSlide key={index} className="w-full border border-white/30">
               <div className="relative  border-white/40 w-full h-[150px] ">
                 <Image
