@@ -1,0 +1,350 @@
+[
+  {
+    "_id": { "$oid": "65f8a1b2c3d4e5f6a7b8c9e2" },
+    "name": "Isabella",
+    "username": "isabella_vintage",
+    "previewPhoto": "https://res.cloudinary.com/dz58xxg6l/image/upload/v1770372697/escorts/escorts/pic1_697bbf5c935d5katty-kenyan-escort-in-nairobi-13504644_original_khmtos.jpg",
+    "email": "isabella@vintagespa.com",
+    "labels": ["model", "masseuse", "elite"],
+    "age": "26",
+    "telephone": "+254712345601",
+    "whatsappPhone": "+254712345601",
+    "images": [
+      "https://res.cloudinary.com/dz58xxg6l/image/upload/v1770372718/escorts/escorts/pic1_697bbf7a4581ckatty-kenyan-escort-in-nairobi-13504648_original_p4nlcp.jpg"
+    ],
+    "videos": [],
+    "about": "Certified masseuse and elite companion at Vintage Beauty SPA. Specializing in therapeutic massage and luxury companionship.",
+    "availability": ["Weekdays", "Weekends"],
+    "ethnicity": "African",
+    "nationality": "Kenyan",
+    "bustSize": "34D",
+    "weight": "60kg",
+    "zodiacSign": "Libra",
+    "sexualOrientation": "Straight",
+    "languages": ["English", "Swahili", "French"],
+    "categories": ["masseuse", "model", "elite", "spa", "therapeutic"],
+    "country": "Kenya",
+    "county": { "$oid": "697a2bb3a3a21be5ad4bdc37" },
+    "countyCode": "047",
+    "region": { "$oid": "69805e2b548beeb6775e3871" },
+    "town": "Nairobi",
+    "estate": "Kilimani",
+    "address": "Kilimani Business Centre",
+    "street": "Lenana Road",
+    "postalCode": "00100",
+    "practices": ["GFE", "Massage Therapy", "Social Companion"],
+    "bdsm": [],
+    "massage": ["Swedish", "Deep Tissue", "Aromatherapy", "Hot Stone"],
+    "extraServices": ["Steam Bath", "Couples Massage"],
+    "slug": "isabella-vintage-beauty-spa",
+    "openingHours": {
+      "monday": "10:00-20:00",
+      "tuesday": "10:00-20:00",
+      "wednesday": "10:00-20:00",
+      "thursday": "10:00-22:00",
+      "friday": "10:00-23:00",
+      "saturday": "11:00-23:00",
+      "sunday": "12:00-20:00"
+    },
+    "rates": [
+      {
+        "duration": "1 hour massage",
+        "incall": "KES 8,000",
+        "outcall": "KES 10,000"
+      },
+      {
+        "duration": "2 hours massage",
+        "incall": "KES 15,000",
+        "outcall": "KES 18,000"
+      },
+      {
+        "duration": "Full companionship",
+        "incall": "KES 20,000",
+        "outcall": "KES 25,000"
+      }
+    ],
+    "role": "escort",
+    "breastSize": "34D",
+    "ageCategory": "25-30",
+    "character": "Professional, Therapeutic, Elegant",
+    "hairColor": "Black",
+    "experience": "4 years",
+    "workType": "agency_employee",
+    "agencyId": { "$oid": "65f8a1b2c3d4e5f6a7b8c9d8" },
+    "agencyRole": "masseuse",
+    "isAgencyFeatured": true,
+    "isActive": true,
+    "isVerified": true,
+    "isFeatured": true,
+    "plan": {
+      "type": "vip",
+      "isActive": true,
+      "activatedAt": { "$date": "2024-01-01T00:00:00Z" },
+      "expiresAt": { "$date": "2024-12-31T00:00:00Z" },
+      "features": ["priority_listing", "verified_badge"]
+    },
+    "totalBookings": 85,
+    "totalReviews": 32,
+    "rating": 4.7,
+    "totalViews": 12000,
+    "createdAt": { "$date": "2024-01-15T10:00:00Z" },
+    "updatedAt": { "$date": "2024-01-15T10:00:00Z" }
+  },
+  {
+    "_id": { "$oid": "65f8a1b2c3d4e5f6a7b8c9e3" },
+    "name": "Sophia",
+    "username": "sophia_vintage",
+    "previewPhoto": "https://res.cloudinary.com/dz58xxg6l/image/upload/v1770373159/escorts/escorts/1bd578234b46f8aa4fac40e1b95fd5ea_Kiambu_Town_Escort_854n_2_wueurc.jpg",
+    "email": "sophia@vintagespa.com",
+    "labels": ["model", "elite", "companion", "cosmopolitan"],
+    "age": "24",
+    "telephone": "+254712345602",
+    "whatsappPhone": "+254712345602",
+    "images": [
+      "https://res.cloudinary.com/dz58xxg6l/image/upload/v1770373159/escorts/escorts/1bd578234b46f8aa4fac40e1b95fd5ea_Kiambu_Town_Escort_854n_2_wueurc.jpg",
+      "https://res.cloudinary.com/dz58xxg6l/image/upload/v1770373159/escorts/escorts/1bd578234b46f8aa4fac40e1b95fd5ea_Kiambu_Town_Escort_854n_2_wueurc.jpg",
+      "https://res.cloudinary.com/dz58xxg6l/image/upload/v1770373165/escorts/escorts/1fb2a726176331945419a27ed5427a2a_Kiambu_Town_Escort_854n_1_gr2xls.jpg"
+    ],
+    "videos": [],
+    "about": "International model and elite companion at Vintage Beauty SPA. Fluent in multiple languages with experience in high-profile events and luxury travel companionship. Known for my cosmopolitan style and ability to blend into any social setting.",
+    "availability": ["Weekdays", "Weekends", "Travel"],
+    "ethnicity": "African",
+    "nationality": "Kenyan",
+    "bustSize": "32C",
+    "weight": "55kg",
+    "height": "5'9\"",
+    "zodiacSign": "Aquarius",
+    "sexualOrientation": "Straight",
+    "languages": ["English", "Swahili", "French", "Italian"],
+    "categories": [
+      "model",
+      "elite",
+      "companion",
+      "luxury",
+      "cosmopolitan",
+      "travel"
+    ],
+    "country": "Kenya",
+    "county": { "$oid": "697a2bb3a3a21be5ad4bdc37" },
+    "countyCode": "047",
+    "region": { "$oid": "69805e2b548beeb6775e3871" },
+    "town": "Nairobi",
+    "estate": "Kilimani",
+    "address": "Kilimani Business Centre",
+    "street": "Lenana Road",
+    "postalCode": "00100",
+    "practices": [
+      "GFE",
+      "PSE",
+      "Social Companion",
+      "Travel Companion",
+      "Event Escort"
+    ],
+    "bdsm": [],
+    "massage": ["Swedish", "Relaxation"],
+    "extraServices": [
+      "Photo Shoots",
+      "Fashion Events",
+      "Travel Companion",
+      "Corporate Functions"
+    ],
+    "slug": "sophia-vintage-beauty-spa",
+    "openingHours": {
+      "monday": "12:00-22:00",
+      "tuesday": "12:00-22:00",
+      "wednesday": "12:00-22:00",
+      "thursday": "12:00-23:00",
+      "friday": "14:00-01:00",
+      "saturday": "14:00-02:00",
+      "sunday": "14:00-22:00"
+    },
+    "rates": [
+      {
+        "duration": "1 hour",
+        "incall": "KES 18,000",
+        "outcall": "KES 22,000"
+      },
+      {
+        "duration": "2 hours",
+        "incall": "KES 32,000",
+        "outcall": "KES 38,000"
+      },
+      {
+        "duration": "Dinner Date (3 hours)",
+        "incall": "KES 45,000",
+        "outcall": "KES 55,000"
+      },
+      {
+        "duration": "Overnight",
+        "incall": "KES 85,000",
+        "outcall": "KES 100,000"
+      },
+      {
+        "duration": "Travel (per day)",
+        "incall": "KES 150,000",
+        "outcall": "KES 180,000"
+      }
+    ],
+    "role": "escort",
+    "breastSize": "32C",
+    "ageCategory": "20-25",
+    "character": "Cosmopolitan, Sophisticated, Intelligent",
+    "hairColor": "Brown",
+    "experience": "3 years",
+    "workType": "agency_employee",
+    "agencyId": { "$oid": "65f8a1b2c3d4e5f6a7b8c9d8" },
+    "agencyRole": "model",
+    "isAgencyFeatured": true,
+    "isActive": true,
+    "isVerified": true,
+    "isFeatured": true,
+    "plan": {
+      "type": "premium",
+      "isActive": true,
+      "activatedAt": { "$date": "2024-01-15T00:00:00Z" },
+      "expiresAt": { "$date": "2024-12-31T00:00:00Z" },
+      "features": [
+        "priority_listing",
+        "verified_badge",
+        "unlimited_photos",
+        "analytics"
+      ]
+    },
+    "totalBookings": 112,
+    "totalReviews": 48,
+    "rating": 4.8,
+    "totalViews": 18000,
+    "createdAt": { "$date": "2024-01-15T10:00:00Z" },
+    "updatedAt": { "$date": "2024-01-15T10:00:00Z" }
+  },
+
+  {
+    "_id": { "$oid": "65f8a1b2c3d4e5f6a7b8c9e4" },
+    "name": "Nadia",
+    "username": "nadia_vintage",
+    "previewPhoto": "https://res.cloudinary.com/dz58xxg6l/image/upload/v1770373349/escorts/escorts/2ec61ffa426522766bd0ecf74e99ede0_Juja_Escort_f_2_lnfu37.jpg",
+    "email": "nadia@vintagespa.com",
+    "labels": ["wellness", "therapist", "holistic", "experienced"],
+    "age": "29",
+    "telephone": "+254712345603",
+    "whatsappPhone": "+254712345603",
+    "images": [
+      "https://res.cloudinary.com/dz58xxg6l/image/upload/v1770373367/escorts/escorts/c9634cfc5b08acaa1855e166cdc8c749_Juja_Escort_f_1_u0vvoy.jpg",
+      "https://res.cloudinary.com/dz58xxg6l/image/upload/v1770373349/escorts/escorts/2ec61ffa426522766bd0ecf74e99ede0_Juja_Escort_f_2_lnfu37.jpg"
+    ],
+    "videos": [],
+    "about": "Certified wellness therapist and holistic healing specialist at Vintage Beauty SPA. With 6 years of experience in therapeutic treatments, I specialize in stress relief, deep tissue therapy, and holistic wellness approaches. Trained in both Eastern and Western massage techniques.",
+    "availability": ["Weekdays", "Mornings", "Afternoons"],
+    "ethnicity": "African",
+    "nationality": "Kenyan",
+    "bustSize": "36C",
+    "weight": "65kg",
+    "height": "5'6\"",
+    "zodiacSign": "Virgo",
+    "sexualOrientation": "Straight",
+    "languages": ["English", "Swahili", "Arabic"],
+    "categories": [
+      "wellness",
+      "therapist",
+      "holistic",
+      "experienced",
+      "spa",
+      "therapeutic"
+    ],
+    "country": "Kenya",
+    "county": { "$oid": "697a2bb3a3a21be5ad4bdc37" },
+    "countyCode": "047",
+    "region": { "$oid": "69805e2b548beeb6775e3871" },
+    "town": "Nairobi",
+    "estate": "Kilimani",
+    "address": "Kilimani Business Centre",
+    "street": "Lenana Road",
+    "postalCode": "00100",
+    "practices": [
+      "Therapeutic Massage",
+      "Wellness Therapy",
+      "Holistic Healing",
+      "GFE"
+    ],
+    "bdsm": [],
+    "massage": [
+      "Deep Tissue",
+      "Thai Massage",
+      "Sports Massage",
+      "Aromatherapy",
+      "Hot Stone",
+      "Reflexology",
+      "Prenatal Massage",
+      "Couples Massage"
+    ],
+    "extraServices": [
+      "Wellness Consultations",
+      "Stress Management",
+      "Corporate Wellness Packages",
+      "Couples Retreats"
+    ],
+    "slug": "nadia-vintage-beauty-spa",
+    "openingHours": {
+      "monday": "09:00-19:00",
+      "tuesday": "09:00-19:00",
+      "wednesday": "09:00-19:00",
+      "thursday": "09:00-20:00",
+      "friday": "09:00-20:00",
+      "saturday": "10:00-18:00",
+      "sunday": "11:00-17:00"
+    },
+    "rates": [
+      {
+        "duration": "30 mins therapeutic",
+        "incall": "KES 6,000",
+        "outcall": "KES 8,000"
+      },
+      {
+        "duration": "1 hour therapeutic",
+        "incall": "KES 10,000",
+        "outcall": "KES 12,000"
+      },
+      {
+        "duration": "1.5 hours holistic",
+        "incall": "KES 14,000",
+        "outcall": "KES 17,000"
+      },
+      {
+        "duration": "2 hours full treatment",
+        "incall": "KES 18,000",
+        "outcall": "KES 22,000"
+      },
+      {
+        "duration": "Couples massage (90 mins)",
+        "incall": "KES 25,000",
+        "outcall": "KES 30,000"
+      }
+    ],
+    "role": "escort",
+    "breastSize": "36C",
+    "ageCategory": "28-32",
+    "character": "Professional, Nurturing, Knowledgeable",
+    "hairColor": "Black",
+    "experience": "6 years",
+    "workType": "agency_employee",
+    "agencyId": { "$oid": "65f8a1b2c3d4e5f6a7b8c9d8" },
+    "agencyRole": "wellness_therapist",
+    "isAgencyFeatured": true,
+    "isActive": true,
+    "isVerified": true,
+    "isFeatured": false,
+    "plan": {
+      "type": "vip",
+      "isActive": true,
+      "activatedAt": { "$date": "2024-02-01T00:00:00Z" },
+      "expiresAt": { "$date": "2024-11-30T00:00:00Z" },
+      "features": ["priority_listing", "verified_badge", "wellness_category"]
+    },
+    "totalBookings": 156,
+    "totalReviews": 67,
+    "rating": 4.9,
+    "totalViews": 22000,
+    "createdAt": { "$date": "2024-01-15T10:00:00Z" },
+    "updatedAt": { "$date": "2024-01-15T10:00:00Z" }
+  }
+]
