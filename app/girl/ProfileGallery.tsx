@@ -6,10 +6,11 @@ import VideoGallery from "./VideoGallery";
 import { girls } from "@/fixtures/girl";
 
 interface Prop {
-  girl: Girl;
+  photos: string[];
+  videos: string[];
 }
-const ProfileGallery = ({ girl }: Prop) => {
-  const { photos, videos } = girl;
+const ProfileGallery = ({ photos, videos }: Prop) => {
+  // const { photos, videos } = girl;
   return (
     <div className=" h-full flex-1 ">
       {/* header */}

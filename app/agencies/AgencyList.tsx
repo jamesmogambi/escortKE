@@ -1,8 +1,9 @@
 "use client";
 import { AppPagination } from "@/components/AppPagination";
-import { cn } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 import React from "react";
 import AgencyListItem from "./AgencyListItem";
+import Link from "next/link";
 
 interface AgencyListProps {
   className?: string;
@@ -27,16 +28,10 @@ const AgencyList = ({
         )}
       >
         {agencies.map((agency, _) => (
-          <AgencyListItem key={_} agency={agency} />
+          <Link key={_} href={`/agencies/${slugify(agency.name)}`}>
+            <AgencyListItem agency={agency} />
+          </Link>
         ))}
-        {/* <div className="w-full flex justify-center items-center">
-          <AppPagination
-            className=""
-            currentPage={3}
-            onPageChange={(page) => page}
-            totalPages={50}
-          />
-        </div> */}
       </div>
     </div>
   );

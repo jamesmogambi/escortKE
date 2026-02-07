@@ -89,10 +89,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface Prop {
-  photos: {
-    id: string;
-    path: string;
-  }[];
+  photos: string[];
 }
 
 const PhotoGallery = ({ photos }: Prop) => {
@@ -108,13 +105,15 @@ const PhotoGallery = ({ photos }: Prop) => {
         pagination={{ clickable: true }}
         scrollbar={{ draggable: true }}
         className="  border-pink-400 w-full  h-[70%]"
-        onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
+        onSlideChange={(swiper: {
+          activeIndex: React.SetStateAction<number>;
+        }) => setCurrentIndex(swiper.activeIndex)}
       >
         {photos.map((src, index) => (
           <SwiperSlide key={index} className=" w-full">
             <div className=" border-b-[7px] border-primary w-full    ">
               <Image
-                src={src.path}
+                src={src}
                 alt={`Slide ${index + 1}`}
                 fill
                 className="object-cover"
@@ -149,11 +148,11 @@ const PhotoGallery = ({ photos }: Prop) => {
                  `,
                   {
                     "opacity-30": index !== currentIndex,
-                  }
+                  },
                 )}
               >
                 <Image
-                  src={src.path}
+                  src={src}
                   alt={`Slide ${index + 1}`}
                   fill
                   className="object-cover"

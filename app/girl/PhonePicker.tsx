@@ -13,7 +13,7 @@ const PhonePicker = ({ phone, className }: Prop) => {
     <div
       className={cn(
         "bg-primary flex p-2 cursor-pointer overflow-ellipsis  items-center gap-3  text-white w-full rounded-full",
-        className
+        className,
       )}
     >
       <div className="rounded-full p-3 bg-white text-primary">
@@ -24,7 +24,7 @@ const PhonePicker = ({ phone, className }: Prop) => {
           {formatKenyanPhoneNumber(phone)}
         </p>
         <p className="lg:text-sm whitespace-nowrap overflow-hidden text-ellipsis  text-nowrap text-[12px] font-semibold">
-          Say you're calling from dobryproduct.com
+          Say you're calling from escortKE.com
         </p>
       </div>
     </div>

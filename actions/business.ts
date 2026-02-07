@@ -8,6 +8,8 @@ import { revalidatePath } from "next/cache";
 import { Types } from "mongoose";
 import Escort from "@/models/Escort";
 import { BUSINESS_TYPES } from "@/constants";
+import { IRegion } from "@/models/Region";
+import { ICounty } from "@/models/County";
 
 export interface AgencyFilters {
   county?: string;
@@ -206,7 +208,7 @@ export async function getAgencyBySlug(slug: string) {
       return { success: false, error: "Agency not found" };
     }
 
-    return { success: true, data: agency };
+    return { success: true, data: safeClone(agency) };
   } catch (error: any) {
     console.error("Error fetching agency:", error);
     return { success: false, error: error.message };
@@ -271,11 +273,19 @@ export async function getAgencyEmployees(
 
     const [employees, total] = await Promise.all([
       Escort.find(query)
+        .populate<{ regionDetails: IRegion }>({
+          path: "region",
+          select: "name _id countyCode",
+        })
+        .populate<{ countyDetails: ICounty }>({
+          path: "county",
+          select: "name _id code",
+        })
         .skip(skip)
         .limit(limit)
         .sort(sort)
         .select(
-          "name previewPhoto age rating totalReviews categories rates isAgencyFeatured about",
+          "name previewPhoto age rating totalReviews categories rates isAgencyFeatured about images telephone whatsappPhone",
         )
         .lean(),
       Escort.countDocuments(query),
@@ -283,7 +293,7 @@ export async function getAgencyEmployees(
 
     return {
       success: true,
-      data: employees,
+      data: safeClone(employees),
       pagination: {
         page,
         limit,
