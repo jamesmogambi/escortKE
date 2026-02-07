@@ -29,14 +29,14 @@ const AgencyList = ({
         {agencies.map((agency, _) => (
           <AgencyListItem key={_} agency={agency} />
         ))}
-        <div className="w-full flex justify-center items-center">
+        {/* <div className="w-full flex justify-center items-center">
           <AppPagination
             className=""
             currentPage={3}
             onPageChange={(page) => page}
             totalPages={50}
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );

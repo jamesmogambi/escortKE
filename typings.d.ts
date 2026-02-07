@@ -41,3 +41,9 @@ interface Girl {
     name: string;
   }[];
 }
+
+declare module "swiper/css";
+declare module "swiper/css/*";
+declare module "swiper/react";
+declare module "swiper";
+declare module "swiper/modules";

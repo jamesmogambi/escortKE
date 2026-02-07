@@ -11,6 +11,9 @@ import Link from "next/link";
 import AgencyList from "./AgencyList";
 import AgencyFilterInput from "./AgencyFilterInput";
 import { getAgencies } from "@/actions/business";
+import { GetAgenciesResponse } from "@/types/agency.types";
+import { ClientPaginationWrapper } from "@/components/ClientPaginationWrapper";
+import SectionArticle from "./SectionArticle";
 
 export const metadata = {
   title: "Erotic Private Agencies in Kenya - Top Escort Services",
@@ -96,11 +99,11 @@ const page = async ({ searchParams }: AgenciesPageProps) => {
 
   return (
     <div>
-      <div className="w-full -mt-4  pb-6 py-10 bg-black">
+      <div className="w-full -mt-4 p-5 pb-6 py-10 bg-black">
         <AgencyFilterInput className="border-0 -mt-4" />
       </div>
 
-      <div className="w-full lg:max-w-7xl mx-auto p-4">
+      <div className="w-full lg:max-w-[90%] mx-auto p-4">
         <Breadcrumb className="p-4">
           <BreadcrumbList className="items-center flex-nowrap ">
             <BreadcrumbItem>
@@ -127,6 +130,17 @@ const page = async ({ searchParams }: AgenciesPageProps) => {
         </Breadcrumb>
 
         <AgencyList agencies={res.data || []} title={title} />
+
+        {res.pagination && (
+          <ClientPaginationWrapper
+            totalPages={res.pagination.pages}
+            currentPage={res.pagination.page}
+            totalItems={res.pagination.total}
+            itemsPerPage={ITEMS_PER_PAGE}
+          />
+        )}
+
+        <SectionArticle />
       </div>
     </div>
   );
