@@ -3,15 +3,9 @@ import PassionateMoments from "@/components/blog/PassionateMoments";
 import WhyProfile from "@/components/blog/WhyProfile";
 import GirlList from "@/components/GirlList";
 import GirlRegions from "@/components/GirlRegions";
-import { girls } from "@/fixtures/girl";
-import { connectToDB, safeClone, serializeMongoDocs } from "@/lib/mongoose";
-import { ICounty } from "@/models/County";
-import Escort from "@/models/Escort";
-import { IRegion } from "@/models/Region";
-// import { IRegion } from "@/types/escort.types";
 
 export const metadata = {
-  title: "Over 800 girls for sex from all over Kenya - escortke.com",
+  title: "Over 900 girls for sex from all over Kenya - escortke.com",
   description:
     "Find the best escorts in Kenya. Browse profiles with photos, rates, and reviews. Book your perfect companion today!",
   keywords: [

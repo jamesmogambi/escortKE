@@ -253,6 +253,7 @@ export interface FetchEscortsResponse {
   escorts: Array<{
     _id: string;
     name: string;
+    username: string;
     age: string;
     gender: string;
     previewPhoto?: string;
@@ -290,6 +291,7 @@ export interface FetchEscortsResponse {
   total: number;
   page: number;
   totalPages: number;
+  success: boolean;
   hasNextPage: boolean;
   hasPrevPage: boolean;
   filters: {
@@ -443,6 +445,7 @@ export async function fetchGirlEscorts(
         $project: {
           name: 1,
           age: 1,
+          username: 1,
           gender: 1,
           previewPhoto: 1,
           images: 1,
@@ -538,6 +541,7 @@ export async function fetchGirlEscorts(
       totalPages,
       hasNextPage,
       hasPrevPage,
+      success: true,
       filters: {
         county: countyName || undefined,
         region: regionName || undefined,

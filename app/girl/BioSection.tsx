@@ -59,7 +59,7 @@ const BioSection = ({ girl }: Prop) => {
         <div>
           {categories.map((category: any, index: number) => (
             <Link
-              href={`/category/${slugify(category)}`}
+              href={`/girls?practice=${category}`}
               key={index}
               className="text-white/40"
             >

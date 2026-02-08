@@ -37,7 +37,7 @@ const GirlRegions = async () => {
             <Link
               key={county.code}
               className="text-primary  uppercase font-bold text-base  bg-gray-1/35 rounded-md p-1.5 px-5"
-              href={`girls/${slugify(county.name)}`}
+              href={`girls?county=${county?.name}`}
             >
               sex {county.name}
             </Link>

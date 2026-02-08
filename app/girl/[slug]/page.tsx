@@ -168,9 +168,10 @@ const page = async ({ params }: PageProps) => {
           <BreadcrumbItem>
             <Link
               className="text-primary capitalize hover:text-primary bg-transparent text-sm lg:text-lg font-bold"
-              href={`/girls/${regionDetails?.name}`}
+              href={`/girls?region=${regionDetails?.name}`}
             >
-              sex {regionDetails?.name}
+              {/* sex {regionDetails?.name} */}
+              {regionDetails.name} Region
             </Link>
           </BreadcrumbItem>
           <BreadcrumbSeparator className="text-white text-lg">
@@ -181,7 +182,7 @@ const page = async ({ params }: PageProps) => {
               className=" hover:text-white text-white cursor-default bg-transparent text-sm lg:text-lg font-bold"
               href="#"
             >
-              {formatUsername(escort.username)}
+              {formatUsername(escort.name)}
             </Link>
           </BreadcrumbItem>
         </BreadcrumbList>
