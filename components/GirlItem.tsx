@@ -134,7 +134,7 @@ const GirlItem = ({
       </Link>
 
       {/* display number of media */}
-      <div className="fiex top-0 -left-2 absolute z-50">
+      <div className="fiex top-0 -left-2 absolute z-10">
         {videos.length > 0 ? (
           <div className=" flex items-center rounded-br-lg gap-4 p-2 px-  bg-red-700 text-white/80">
             <svg

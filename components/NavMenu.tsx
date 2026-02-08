@@ -6,7 +6,6 @@ interface Prop {
   className?: string;
 }
 
-// TODO:// FIX ICONS COLOR AND ICONS
 const NavMenu = ({ className }: Prop) => {
   return (
     <nav className={cn("", className)}>

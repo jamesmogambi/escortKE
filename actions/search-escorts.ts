@@ -1,6 +1,6 @@
 "use server";
 
-import { connectToDatabase } from "@/lib/mongodb";
+import { connectToDB } from "@/lib/mongoose";
 import Escort from "@/models/Escort";
 import mongoose from "mongoose";
 
@@ -22,7 +22,7 @@ export async function searchEscorts({
   filters = {},
 }: SearchEscortsOptions) {
   try {
-    await connectToDatabase();
+    await connectToDB();
 
     const skip = (page - 1) * limit;
 
@@ -198,37 +198,37 @@ async function getSearchSuggestions(query: string) {
 }
 
 // Get trending searches
-export async function getTrendingSearches(limit: number = 10) {
-  try {
-    await connectToDatabase();
+// export async function getTrendingSearches(limit: number = 10) {
+//   try {
+//     await connectToDB();
 
-    // In production, you'd want to track actual search queries
-    // For now, return popular categories/locations
-    const trending = await Escort.aggregate([
-      { $match: { isActive: true } },
-      { $unwind: "$categories" },
-      {
-        $group: {
-          _id: "$categories",
-          count: { $sum: 1 },
-          type: "category",
-        },
-      },
-      { $sort: { count: -1 } },
-      { $limit: limit },
-    ]);
+//     // In production, you'd want to track actual search queries
+//     // For now, return popular categories/locations
+//     const trending  = await Escort.aggregate([
+//       { $match: { isActive: true } },
+//       { $unwind: "$categories" },
+//       {
+//         $group: {
+//           _id: "$categories",
+//           count: { $sum: 1 },
+//           type: "category",
+//         },
+//       },
+//       { $sort: { count: -1 } },
+//       { $limit: limit },
+//     ]);
 
-    return {
-      success: true,
-      data: trending,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: "Failed to get trending searches",
-    };
-  }
-}
+//     return {
+//       success: true,
+//       data: trending,
+//     };
+//   } catch (error) {
+//     return {
+//       success: false,
+//       error: "Failed to get trending searches",
+//     };
+//   }
+// }
 
 // Get recent searches (client-side usually, but here's server version)
 export async function saveSearchQuery(query: string, userId?: string) {
