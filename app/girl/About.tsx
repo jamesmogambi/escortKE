@@ -4,12 +4,12 @@ import React from "react";
 
 interface Prop {
   classNameName?: string;
-  girl: Girl;
+  girl: any;
 }
 
 // TODO: MAKE TABS RESPONSIVE ON MOBILE PHONES
 const About = ({ girl, classNameName }: Prop) => {
-  const { age, height, weight, breasts } = girl;
+  const { age, height, weight, breasts, breastSize } = girl;
   return (
     <div className={cn("py-6", classNameName)}>
       <h5 className="underline text-xl text-white font-semibold">
@@ -32,7 +32,7 @@ const About = ({ girl, classNameName }: Prop) => {
               Height:
             </span>
             <span className="text-white font-bold text-sm lg:text-lg">
-              {height} cm
+              {height || "Not Specified"}
             </span>
           </div>
 
@@ -51,7 +51,7 @@ const About = ({ girl, classNameName }: Prop) => {
               Breasts:
             </span>
             <span className="text-white font-bold text-sm lg:text-lg">
-              {breasts}{" "}
+              {breastSize || "Not Specified"}
             </span>
           </div>
           <div className="flex lg:hidden items-center justify-between">
@@ -59,7 +59,7 @@ const About = ({ girl, classNameName }: Prop) => {
               Weight:
             </span>
             <span className="text-white font-bold text-sm lg:text-lg">
-              {weight}{" "}
+              {weight || "Not Specified"}
             </span>
           </div>
           <div className="lg:flex hidden items-center justify-between">
@@ -77,7 +77,7 @@ const About = ({ girl, classNameName }: Prop) => {
               Weight:
             </span>
             <span className="text-white font-bold text-sm lg:text-lg">
-              {weight} kg
+              {weight || "Not Specified"}
             </span>
           </div>
         </div>

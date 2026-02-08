@@ -6,15 +6,15 @@ import GirlImageSwiper from "./GirlImageSwiper";
 import { gallery } from "@/fixtures/girl";
 import { Images, X } from "lucide-react";
 import { convertToLocalPhone } from "@/lib/phone";
-import { EscortDocument } from "@/types/escort.types";
+// import { EscortDocument } from "@/types/escort.types";
 // import { useRouter } from "next/navigation";
 
-interface Prop {
-  girl: EscortDocument;
-  className?: string;
-  handlePress?: () => void;
-  path?: string;
-}
+// interface Prop {
+//   girl: EscortDocument;
+//   className?: string;
+//   handlePress?: () => void;
+//   path?: string;
+// }
 
 interface GirlItemProps {
   girl: {
@@ -48,7 +48,7 @@ const GirlItem = ({
   girl,
   className,
   handlePress,
-  path = `girl/${girl.username}`,
+  path = `/girl/${girl.username}`,
 }: GirlItemProps) => {
   const {
     age,

@@ -5,6 +5,7 @@ import React from "react";
 interface Prop {
   agencyId: string;
 }
+
 const CompanyGirls = async ({ agencyId }: Prop) => {
   const res = await getAgencyEmployees(agencyId);
 

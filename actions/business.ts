@@ -285,7 +285,7 @@ export async function getAgencyEmployees(
         .limit(limit)
         .sort(sort)
         .select(
-          "name previewPhoto age rating totalReviews categories rates isAgencyFeatured about images telephone whatsappPhone",
+          "name previewPhoto username age rating totalReviews categories rates isAgencyFeatured about images telephone whatsappPhone",
         )
         .lean(),
       Escort.countDocuments(query),
