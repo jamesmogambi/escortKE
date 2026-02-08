@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from "react";
 import ProfileGallery from "./ProfileGallery";
 import BioSection from "./BioSection";
-import { slugify } from "@/lib/utils";
+import { formatSlugToTitle, slugify } from "@/lib/utils";
 
 interface Prop {
   className?: string;
@@ -43,7 +43,10 @@ const GirlProfile = ({ girl, className }: Prop) => {
           old) {"  "}
           <span className="text-lg text-stone-400/70 font-extralight">
             from{" "}
-            <span className="font-bold capitalize">{regionDetails?.name}</span>
+            <span className="font-bold capitalize">
+              {" "}
+              {formatSlugToTitle(regionDetails?.name)}
+            </span>
           </span>
         </h3>
 

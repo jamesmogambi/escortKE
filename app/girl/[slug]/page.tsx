@@ -14,6 +14,7 @@ import GirlProfile from "../GirlProfile";
 import { girls } from "@/fixtures/girl";
 import { getEscortByUsername } from "@/actions/escort";
 import { Metadata, ResolvingMetadata } from "next";
+import { formatSlugToTitle } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -88,7 +89,7 @@ export async function generateMetadata(
               },
             ]
           : [],
-        locale: "en_US",
+        locale: "en_KE",
       },
 
       twitter: {
@@ -171,7 +172,8 @@ const page = async ({ params }: PageProps) => {
               href={`/girls?region=${regionDetails?.name}`}
             >
               {/* sex {regionDetails?.name} */}
-              {regionDetails.name} Region
+              {formatSlugToTitle(regionDetails?.name)}
+              {/* {regionDetails.name} Region */}
             </Link>
           </BreadcrumbItem>
           <BreadcrumbSeparator className="text-white text-lg">
@@ -182,7 +184,7 @@ const page = async ({ params }: PageProps) => {
               className=" hover:text-white text-white cursor-default bg-transparent text-sm lg:text-lg font-bold"
               href="#"
             >
-              {formatUsername(escort.name)}
+              {formatSlugToTitle(escort.name)}
             </Link>
           </BreadcrumbItem>
         </BreadcrumbList>

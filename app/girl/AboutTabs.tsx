@@ -11,13 +11,6 @@ interface Prop {
   girl: any;
 }
 
-interface WorkDay {
-  id: string;
-  date: string; // ISO date string: "2025-08-20"
-  startTime: string; // "09:00"
-  endTime: string; // "17:30"
-}
-
 const AboutTabs = ({ girl, className }: Prop) => {
   const { age, practices, openingHours } = girl;
 
@@ -112,7 +105,7 @@ const AboutTabs = ({ girl, className }: Prop) => {
               <div key={i} className="space-y-3 flex flex-col">
                 {column.map((practice: any, j) => (
                   <Link
-                    href=""
+                    href={`/girls?practice=${practice}`}
                     // href={`/practices/${slugify(practice)}`}
                     key={j}
                     className="bg-primary font-medium text-white  text-center rounded-full p-2.5 "

@@ -12,10 +12,10 @@ interface Prop {
 const ProfileGallery = ({ photos, videos }: Prop) => {
   // const { photos, videos } = girl;
   return (
-    <div className=" h-full flex-1 ">
+    <div className=" h-full  flex-1 ">
       {/* header */}
       <Tabs defaultValue="photos" className="w-full bg-transparent">
-        <TabsList className="w-full gap-6 bg-transparent ">
+        <TabsList className="w-full gap-3  lg:gap-6 bg-transparent ">
           <TabsTrigger
             className=" data-[state=active]:bg-primary text-lg font-semibold cursor-pointer py-6 px-6 items-center flex gap-2 bg-gray-1"
             value="photos"

@@ -491,45 +491,6 @@ export async function fetchGirlEscorts(
     const total = totalResult[0]?.total || 0;
     const escorts = escortsResult;
 
-    // Transform the data for response
-    const transformedEscorts = escorts.map((escort) => ({
-      _id: escort._id.toString(),
-      name: escort.name || "",
-      age: escort.age || "",
-      gender: escort.gender || "girl",
-      previewPhoto: escort.previewPhoto,
-      images: escort.images || [],
-      videos: escort.videos || [],
-      about: escort.about,
-      ethnicity: escort.ethnicity,
-      nationality: escort.nationality,
-      bustSize: escort.bustSize,
-      weight: escort.weight,
-      zodiacSign: escort.zodiacSign,
-      languages: escort.languages || [],
-      practices: escort.practices || [],
-      rates: escort.rates || [],
-      isActive: escort.isActive || false,
-      isVerified: escort.isVerified || false,
-      rating: escort.rating || 0,
-      county: escort.county
-        ? {
-            _id: escort.county._id.toString(),
-            name: escort.county.name,
-            code: escort.county.code,
-          }
-        : undefined,
-      region: escort.region
-        ? {
-            _id: escort.region._id.toString(),
-            name: escort.region.name,
-          }
-        : undefined,
-      town: escort.town,
-      estate: escort.estate,
-      slug: escort.slug || "",
-    }));
-
     const totalPages = Math.ceil(total / limit);
     const hasNextPage = page < totalPages;
     const hasPrevPage = page > 1;
