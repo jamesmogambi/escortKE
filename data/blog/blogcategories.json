@@ -1,0 +1,68 @@
+[
+  {
+    "_id": { "$oid": "642a1bc123456789abcdef01" },
+    "name": "Web Development",
+    "slug": "web-development",
+    "description": "Everything about modern web development technologies and frameworks.",
+    "colorCode": "#3b82f6",
+    "icon": "code",
+    "isActive": true,
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" },
+    "updatedAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": { "$oid": "642a1bc123456789abcdef02" },
+    "name": "JavaScript",
+    "slug": "javascript",
+    "description": "JavaScript tips, tricks, and deep dives into the language.",
+    "colorCode": "#f59e0b",
+    "icon": "javascript",
+    "isActive": true,
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" },
+    "updatedAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": { "$oid": "642a1bc123456789abcdef03" },
+    "name": "React",
+    "slug": "react",
+    "description": "React framework tutorials, best practices, and news.",
+    "colorCode": "#61dafb",
+    "icon": "react",
+    "isActive": true,
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" },
+    "updatedAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": { "$oid": "642a1bc123456789abcdef04" },
+    "name": "Node.js",
+    "slug": "nodejs",
+    "description": "Server-side JavaScript with Node.js and related technologies.",
+    "colorCode": "#68a063",
+    "icon": "nodejs",
+    "isActive": true,
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" },
+    "updatedAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": { "$oid": "642a1bc123456789abcdef05" },
+    "name": "Database",
+    "slug": "database",
+    "description": "Database management, optimization, and best practices.",
+    "colorCode": "#10b981",
+    "icon": "database",
+    "isActive": true,
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" },
+    "updatedAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": { "$oid": "642a1bc123456789abcdef06" },
+    "name": "DevOps",
+    "slug": "devops",
+    "description": "Development operations, CI/CD, and deployment strategies.",
+    "colorCode": "#ef4444",
+    "icon": "server",
+    "isActive": true,
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" },
+    "updatedAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  }
+]
