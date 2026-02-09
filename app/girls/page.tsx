@@ -292,7 +292,7 @@ const page = async ({ searchParams }: PageProps) => {
         <GirlFilterInput />
       </div>
 
-      <ListHeader title={title} subTitle="Erotic massages" />
+      <ListHeader title={title} subTitle="Girls for sex" />
 
       {res.success && res.total > 0 && <GirlList girls={escorts} />}
 

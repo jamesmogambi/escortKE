@@ -869,10 +869,6 @@
 // export default mongoose.models.Escort ||
 //   mongoose.model<EscortDoc, EscortModel>("Escort", EscortSchema);
 
-
-
-
-
 // models/escort.model.ts
 import mongoose, { Schema, Document, Types, Model } from "mongoose";
 import { ICounty } from "./County";
@@ -983,7 +979,7 @@ const EscortSchema: Schema = new Schema<EscortDoc>(
     character: { type: String, default: "" },
     hairColor: { type: String, default: "" },
     experience: { type: String, default: "" },
-    
+
     // Agency Relationship
     workType: {
       type: String,
@@ -1027,7 +1023,7 @@ const EscortSchema: Schema = new Schema<EscortDoc>(
       expiresAt: { type: Date },
       features: { type: [String], default: [] },
     },
-    
+
     // Statistics
     totalBookings: {
       type: Number,
@@ -1055,7 +1051,7 @@ const EscortSchema: Schema = new Schema<EscortDoc>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
 // Virtuals
@@ -1097,6 +1093,21 @@ EscortSchema.index({ county: 1, workType: 1 });
 EscortSchema.index({ rating: -1, totalReviews: -1 });
 EscortSchema.index({ isFeatured: 1, createdAt: -1 });
 EscortSchema.index({ workType: 1, isVerified: 1 });
+
+// for search optimization
+EscortSchema.index({
+  name: "text",
+  username: "text",
+  about: "text",
+  town: "text",
+  estate: "text",
+  categories: "text",
+  practices: "text",
+});
+
+EscortSchema.index({ isActive: 1, isVerified: 1 });
+EscortSchema.index({ "countyDetails.name": 1 });
+EscortSchema.index({ "regionDetails.name": 1 });
 
 export default mongoose.models.Escort ||
   mongoose.model<EscortDoc>("Escort", EscortSchema);

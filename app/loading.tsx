@@ -1,10 +1,11 @@
 import React from "react";
 
+// TODO: Fix bakcgorund color of loader
 const loading = () => {
   return (
     <div>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/30 ">
-        <span className="text-white/70 text-2xl font-semibold">Loading...</span>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/20 ">
+        <p className="text-white/70 text-3xl font-semibold">Loading...</p>
       </div>
     </div>
   );
