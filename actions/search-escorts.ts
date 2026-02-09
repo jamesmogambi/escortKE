@@ -1,7 +1,9 @@
 "use server";
 
 import { connectToDB } from "@/lib/mongoose";
+import { ICounty } from "@/models/County";
 import Escort from "@/models/Escort";
+import { IRegion } from "@/models/Region";
 import mongoose from "mongoose";
 
 interface SearchEscortsOptions {
@@ -68,8 +70,16 @@ export async function searchEscorts({
     // Get results with pagination
     const [escorts, total] = await Promise.all([
       Escort.find(searchQuery)
-        .populate("countyDetails", "name code")
-        .populate("regionDetails", "name")
+        .populate<{ regionDetails: IRegion }>({
+          path: "region",
+          select: "name _id countyCode",
+        })
+        .populate<{ countyDetails: ICounty }>({
+          path: "county",
+          select: "name _id code",
+        })
+        // .populate("countyDetails", "name code")
+        // .populate("regionDetails", "name")
         .sort({
           isFeatured: -1,
           rating: -1,
