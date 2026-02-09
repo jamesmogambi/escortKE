@@ -25,7 +25,7 @@ const CategorySection = ({ categories, title, className }: Prop) => {
   return (
     <ul
       className={cn(
-        "w-full bg-stone-900/90 flex flex-col border border-black ",
+        "w-full bg-stone-900 flex flex-col border border-black ",
         className,
       )}
     >

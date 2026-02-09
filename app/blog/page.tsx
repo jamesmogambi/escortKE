@@ -7,11 +7,18 @@ import {
   CATEGORIES_FLAT,
 } from "@/lib/blog/constants";
 import CategorySection, { Category } from "./CategorySection";
+import { getBlogPosts } from "@/actions/blog";
+import { notFound } from "next/navigation";
+import { ShowMoreButton } from "./ShowMOreButton";
 // import { getAllSubcategories, BLOG_CATEGORIES } from "../../constants/blog";
 
-const page = () => {
-  // const res = getAllSubcategories();
+interface PageProps {
+  searchParams: { page?: string };
+}
 
+const page = async ({ searchParams }: PageProps) => {
+  // const res = getAllSubcategories();
+  const currentPage = parseInt(searchParams.page || "1");
   // Get all categories
   const allCategories = getMainCategories();
 
@@ -32,6 +39,23 @@ const page = () => {
 
   // Get breadcrumbs for a subcategory
   // Returns: [{React category}, {React Core category}]
+
+  const blogRes: any = await getBlogPosts({
+    page: currentPage,
+    limit: 20,
+    sortBy: "newest",
+  });
+
+  if (!blogRes.success) {
+    return notFound();
+  }
+
+  console.log("fetched blog posts ==>", blogRes);
+
+  const { posts, pagination } = blogRes.data;
+  const nextPage = currentPage + 1;
+  const hasMore = currentPage < pagination.totalPages;
+
   return (
     <>
       <div className="flex w-full mx-auto flex-col-reverse  lg:max-w-7xl min-h-screen lg;flex-col lg:flex-row gap-2 ">
@@ -42,7 +66,28 @@ const page = () => {
         </aside>
 
         {/* blogs list */}
-        <div className="basis-full p-8 border border-amber-300 lg:flex-1"></div>
+        <div className="basis-full p-8 border border-amber-300 lg:flex-1">
+          {/* Posts Grid */}
+
+          {/* Show More Button (Client Component) */}
+          {hasMore && (
+            <ShowMoreButton
+              nextPage={nextPage}
+              totalPosts={pagination.total}
+              currentCount={posts.length}
+            />
+          )}
+
+          {/* No more posts */}
+          {!hasMore && posts.length > 0 && (
+            <div className="text-center py-8">
+              <div className="inline-flex items-center gap-2 px-6 py-3  rounded-full">
+                <span className="text-xl">✅</span>
+                <p className="font-medium ">All {posts.length} posts loaded</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );
