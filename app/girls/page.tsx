@@ -305,8 +305,8 @@ const page = async ({ searchParams }: PageProps) => {
               for sex{" "}
             </span>
             {"  "}
-            advertised in this city yet , try girls from other cities below.
-            //{" "}
+            advertised in this city yet , try girls from other cities
+            below.{" "}
           </p>
           <NotFoundList />
         </>
