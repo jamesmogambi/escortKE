@@ -1,4 +1,3 @@
-// import { getAllSubcategories } from "@/constants/blog";
 import React from "react";
 
 import {
@@ -10,8 +9,65 @@ import CategorySection, { Category } from "./CategorySection";
 import { getBlogPosts } from "@/actions/blog";
 import { notFound } from "next/navigation";
 import { ShowMoreButton } from "./ShowMOreButton";
+import BlogList from "./BlogList";
+import { Metadata } from "next";
 // import { getAllSubcategories, BLOG_CATEGORIES } from "../../constants/blog";
 
+export const metadata: Metadata = {
+  title: "Blog | Latest Articles & Insights | escortKE",
+  description:
+    "Discover our latest blog posts, articles, and insights. Stay updated with trending topics, tutorials, and industry news.",
+
+  openGraph: {
+    title: "Latest Blog Posts & Articles",
+    description: "Explore our collection of blog posts and articles",
+    type: "website",
+    url: "https://yoursite.com/blog",
+    siteName: "Your Site Name",
+    images: [
+      {
+        url: "https://yoursite.com/images/blog-og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Blog Posts Overview",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Latest Blog Posts & Articles",
+    description: "Explore our collection of blog posts and articles",
+    images: ["https://yoursite.com/images/blog-twitter-image.jpg"],
+    creator: "@yourtwitterhandle",
+  },
+
+  keywords: ["blog", "articles", "posts", "tutorials", "insights", "news"],
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+
+  alternates: {
+    canonical: "https://yoursite.com/blog",
+  },
+
+  // For multilingual sites
+  // alternates: {
+  //   languages: {
+  //     'en-US': 'https://yoursite.com/blog',
+  //     'es-ES': 'https://yoursite.com/es/blog',
+  //   },
+  // },
+};
 interface PageProps {
   searchParams: { page?: string };
 }
@@ -58,16 +114,18 @@ const page = async ({ searchParams }: PageProps) => {
 
   return (
     <>
-      <div className="flex w-full mx-auto flex-col-reverse  lg:max-w-7xl min-h-screen lg;flex-col lg:flex-row gap-2 ">
+      <div className="flex w-full mx-auto flex-col-reverse  lg:max-w-[80%] min-h-screen lg;flex-col lg:flex-row gap-2 ">
         {/* categories section*/}
-        <aside className=" basis-full space-y-7 lg:basis-1/3 p-6 border border-green-600">
+        <aside className=" basis-full space-y-7 lg:basis-1/3 p-6  border-green-600">
           <CategorySection title="Sexypedia" categories={firstSeven} />
           <CategorySection title="Magazine" categories={nextThree} />
         </aside>
 
         {/* blogs list */}
-        <div className="basis-full p-8 border border-amber-300 lg:flex-1">
+        <div className="basis-full p-8  border-amber-300 lg:flex-1">
           {/* Posts Grid */}
+
+          <BlogList blogList={posts} />
 
           {/* Show More Button (Client Component) */}
           {hasMore && (
