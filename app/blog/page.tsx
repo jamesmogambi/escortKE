@@ -83,7 +83,11 @@ const page = async ({ searchParams }: PageProps) => {
             <div className="text-center py-8">
               <div className="inline-flex items-center gap-2 px-6 py-3  rounded-full">
                 <span className="text-xl">✅</span>
-                <p className="font-medium ">All {posts.length} posts loaded</p>
+                <p className="font-medium ">
+                  All{" "}
+                  <span className="text-primary text-xl">{posts.length} </span>
+                  posts loaded
+                </p>
               </div>
             </div>
           )}
