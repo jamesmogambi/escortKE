@@ -748,16 +748,28 @@ export interface IEscort {
   languages: string[];
   categories: string[];
 
-  // Location (Kenya)
+  // Location (Kenya) - REFACTORED FOR MULTIPLE REGIONS
   country?: string;
   county?: Types.ObjectId;
   countyCode?: string;
-  region?: Types.ObjectId;
-  town?: string;
-  estate?: string;
-  address?: string;
-  street?: string;
-  postalCode?: string;
+
+  // Changed from single region to array of regions
+  regions?: Types.ObjectId[];
+
+  // Primary location (main working area)
+  primaryRegion?: Types.ObjectId;
+
+  // Location details - can vary by region
+  locations?: Array<{
+    region: Types.ObjectId;
+    town?: string;
+    estate?: string;
+    address?: string;
+    street?: string;
+    postalCode?: string;
+    isActive?: boolean;
+    notes?: string;
+  }>;
 
   // Services
   practices: string[];

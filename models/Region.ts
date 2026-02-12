@@ -1,8 +1,9 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model, models, Document, Types } from "mongoose";
 
 /* ---------- Interface ---------- */
 
-export interface IRegion {
+export interface IRegion extends Document {
+  _id: Types.ObjectId;
   name: string;
   countyCode: string; // e.g. "047" for Nairobi
   isActive?: boolean;
@@ -38,3 +39,5 @@ const RegionSchema = new Schema<IRegion>(
 RegionSchema.index({ countyCode: 1, name: 1 }, { unique: true });
 
 export const Region = models.Region || model<IRegion>("Region", RegionSchema);
+
+export default Region;
