@@ -15,6 +15,7 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -291,7 +292,9 @@ export default function RootLayout({
           {/* <MessageAlert /> */}
 
           {/* Main Content Scrolls Above */}
-          <main className="  bg-black/80 flex-1 py-4  w-full ">{children}</main>
+          <main className="  bg-black/80 flex-1 py-4  w-full ">
+            <TooltipProvider>{children}</TooltipProvider>
+          </main>
 
           <Footer />
           <Toaster position="bottom-left" />

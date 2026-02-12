@@ -51,7 +51,7 @@ export async function generateMetadata(
           },
           ...previousImages,
         ],
-        locale: "en_US",
+        locale: "en_KE",
         type: "article",
         publishedTime: post.publishedAt || post.createdAt,
         modifiedTime: post.updatedAt || post.publishedAt || post.createdAt,
