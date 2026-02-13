@@ -1,82 +1,96 @@
-// // tailwind.config.js
-// module.exports = {
-//   theme: {
-//     extend: {
-//       animation: {
-//         fadeIn: "fadeIn 0.5s ease-out",
-//         slideUp: "slideUp 0.3s ease-out",
-//       },
-//       keyframes: {
-//         fadeIn: {
-//           "0%": { opacity: "0", transform: "translateY(10px)" },
-//           "100%": { opacity: "1", transform: "translateY(0)" },
-//         },
-//         slideUp: {
-//           "0%": { transform: "translateY(20px)", opacity: "0" },
-//           "100%": { transform: "translateY(0)", opacity: "1" },
-//         },
-//       },
-//     },
-//   },
-// };import { Metadata } from 'next';
+// Define a proper type for the match stage
+interface FilterMatchStage {
+  gender: string;
+  isActive: boolean;
+  role: string;
+  county?: Types.ObjectId;
+  regions?: Types.ObjectId;
+  ethnicity?: { $ne: string };
+  nationality?: { $ne: string };
+  categories?: { $ne: never[] };
+  practices?: { $ne: never[] };
+  languages?: { $ne: never[] };
+  [key: string]: any; // Allow other dynamic properties
+}
 
-export const metadata: Metadata = {
-  title: "Blog | Latest Articles & Insights | Your Site Name",
-  description:
-    "Discover our latest blog posts, articles, and insights. Stay updated with trending topics, tutorials, and industry news.",
+// Helper function to get filter options
+async function getFilterOptions(currentFilters: any) {
+  try {
+    const baseMatch: FilterMatchStage = {
+      gender: "girl",
+      isActive: true,
+      role: "escort",
+    };
 
-  openGraph: {
-    title: "Latest Blog Posts & Articles",
-    description: "Explore our collection of blog posts and articles",
-    type: "website",
-    url: "https://yoursite.com/blog",
-    siteName: "Your Site Name",
-    images: [
-      {
-        url: "https://yoursite.com/images/blog-og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Blog Posts Overview",
+    // Apply current location filters to filter options
+    if (currentFilters.countyName) {
+      const county = await County.findOne({
+        name: { $regex: new RegExp(`^${currentFilters.countyName}$`, "i") },
+      });
+      if (county) {
+        baseMatch.county = county._id;
+      }
+    }
+
+    if (currentFilters.regionName) {
+      const region = await Region.findOne({
+        name: { $regex: new RegExp(`^${currentFilters.regionName}$`, "i") },
+      });
+      if (region) {
+        baseMatch.regions = region._id;
+      }
+    }
+
+    // Add non-empty filters
+    if (currentFilters.practice) {
+      baseMatch.practices = { $in: [currentFilters.practice] };
+    }
+
+    if (currentFilters.category) {
+      baseMatch.categories = { $in: [currentFilters.category] };
+    }
+
+    const [
+      ethnicities,
+      nationalities,
+      categories,
+      practices,
+      languages,
+      ageRange,
+    ] = await Promise.all([
+      Escort.distinct("ethnicity", { ...baseMatch, ethnicity: { $ne: "" } }),
+      Escort.distinct("nationality", {
+        ...baseMatch,
+        nationality: { $ne: "" },
+      }),
+      Escort.distinct("categories", { ...baseMatch, categories: { $ne: [] } }),
+      Escort.distinct("practices", { ...baseMatch, practices: { $ne: [] } }),
+      Escort.distinct("languages", { ...baseMatch, languages: { $ne: [] } }),
+      Escort.aggregate([
+        { $match: baseMatch },
+        {
+          $group: {
+            _id: null,
+            minAge: { $min: { $toInt: "$age" } },
+            maxAge: { $max: { $toInt: "$age" } },
+          },
+        },
+      ]),
+    ]);
+
+    return {
+      ethnicities: ethnicities.filter(Boolean).sort(),
+      nationalities: nationalities.filter(Boolean).sort(),
+      categories: categories.filter(Boolean).sort(),
+      practices: practices.filter(Boolean).sort(),
+      languages: languages.filter(Boolean).sort(),
+      ageRange: {
+        min: ageRange[0]?.minAge || 18,
+        max: ageRange[0]?.maxAge || 65,
       },
-    ],
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Latest Blog Posts & Articles",
-    description: "Explore our collection of blog posts and articles",
-    images: ["https://yoursite.com/images/blog-twitter-image.jpg"],
-    creator: "@yourtwitterhandle",
-  },
-
-  keywords: ["blog", "articles", "posts", "tutorials", "insights", "news"],
-
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-
-  alternates: {
-    canonical: "https://yoursite.com/blog",
-  },
-
-  // For multilingual sites
-  // alternates: {
-  //   languages: {
-  //     'en-US': 'https://yoursite.com/blog',
-  //     'es-ES': 'https://yoursite.com/es/blog',
-  //   },
-  // },
-};
-
-
-// business name suggestins
-- tsaveogirls.com
-tap2 Stay
+    };
+  } catch (error) {
+    console.error("Error fetching filter options:", error);
+    return null;
+  }
+}

@@ -5,41 +5,11 @@ import React from "react";
 import GirlImageSwiper from "./GirlImageSwiper";
 import { gallery } from "@/fixtures/girl";
 import { Images, X } from "lucide-react";
-import { convertToLocalPhone } from "@/lib/phone";
-// import { EscortDocument } from "@/types/escort.types";
-// import { useRouter } from "next/navigation";
-
-// interface Prop {
-//   girl: EscortDocument;
-//   className?: string;
-//   handlePress?: () => void;
-//   path?: string;
-// }
+import { convertToLocalPhone, formatPhoneNumber } from "@/lib/phone";
+import { EscortCardData, EscortProfileData } from "@/types/escort.types";
 
 interface GirlItemProps {
-  girl: {
-    _id: string;
-    name?: string;
-    username?: string;
-    age?: string;
-    telephone?: string;
-    images: string[];
-    videos: string[];
-    region?: {
-      _id: string;
-      name: string;
-      code?: string;
-    };
-    county?: {
-      _id: string;
-      name: string;
-      code?: string;
-    };
-    town?: string;
-    estate?: string;
-    displayLocation?: string;
-    // ... other fields
-  };
+  girl: EscortCardData;
   className?: string;
   handlePress?: () => void;
   path?: string;
@@ -48,38 +18,27 @@ const GirlItem = ({
   girl,
   className,
   handlePress,
-  path = `/girl/${girl.username}`,
+  path = `/girl/${girl.slug}`,
 }: GirlItemProps) => {
   const {
     age,
     videos = [],
     name,
-    region,
-    county,
     telephone,
     images = [],
-    town,
-    estate,
-    displayLocation,
+    // location,
+    whatsappPhone,
+    region,
+    primaryLocationDisplay,
   } = girl;
-
-  // Use displayLocation virtual if available, otherwise build it
-  const locationDisplay =
-    displayLocation ||
-    (() => {
-      const parts = [];
-      if (estate) parts.push(estate);
-      if (town) parts.push(town);
-      if (region?.name) parts.push(region.name);
-      if (county?.name) parts.push(`${county.name} County`);
-      return parts.length > 0 ? parts.join(", ") : "Location not specified";
-    })();
 
   // const router = useRouter();
 
   // const handleClick = () => {
   //   router.push(`girl/${userName}`);
-  // };
+  // };\
+
+  console.log("primary", primaryLocationDisplay);
 
   const escortName = name || "Escort";
 
@@ -118,7 +77,10 @@ const GirlItem = ({
 
               <span className="text-white text-sm  lg:text-lg">
                 {/* {displayLocation} */}
-                {formatSlugToTitle(region?.name || "Not Specified")}
+                {formatSlugToTitle(
+                  region?.name || "Not Specified",
+                  // location.regionName || location.countyName || "Not Specified",
+                )}
               </span>
             </div>
 
@@ -128,7 +90,7 @@ const GirlItem = ({
           </div>
 
           <p className="lg:text-[19px] text-base font-medium mt-2 lg:mt-3  ">
-            {convertToLocalPhone(telephone)}
+            {formatPhoneNumber(telephone || whatsappPhone)}
           </p>
         </div>
       </Link>

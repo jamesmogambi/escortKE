@@ -65,6 +65,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "mombasahot.s3.us-east-005.backblazeb2.com",
       },
+
+      {
+        protocol: "https",
+        hostname: "escort254.com",
+      },
       {
         protocol: "https",
         hostname: "afrohot.s3.us-east-005.backblazeb2.com",

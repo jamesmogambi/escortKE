@@ -8,6 +8,8 @@ import SectionArticle from "./SectionArticle";
 import { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 import NotFoundList from "@/components/NotFoundList";
+// import { FetchEscortsResponse } from "@/actions/escort.action";
+import { EscortPaginatedResponse } from "@/types/escort.types";
 
 interface PageProps {
   searchParams: Promise<{
@@ -294,7 +296,7 @@ const page = async ({ searchParams }: PageProps) => {
 
       <ListHeader title={title} subTitle="Girls for sex" />
 
-      {res.success && res.total > 0 && <GirlList girls={escorts} />}
+      {res.success && res.total > 0 && <GirlList girls={res.escorts} />}
 
       {res.success && res.total === 0 && (
         <>
@@ -308,7 +310,8 @@ const page = async ({ searchParams }: PageProps) => {
             advertised in this city yet , try girls from other cities
             below.{" "}
           </p>
-          <NotFoundList />
+          {/* TODO:// ADD NOT FOUND LIST */}
+          {/* <NotFoundList /> */}
         </>
       )}
       <ClientPaginationWrapper
