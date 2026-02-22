@@ -283,11 +283,6 @@ const page = async ({ searchParams }: PageProps) => {
 
   console.log("only girls escorts -->", res);
 
-  const escorts = res.escorts.map((escort) => ({
-    ...escort,
-    videos: escort.videos || [],
-  }));
-
   return (
     <>
       <div className="bg-black  p-5 pb-6 -mt-4.5">

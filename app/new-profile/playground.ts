@@ -1,305 +1,259 @@
- // Save user data to the database
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log("hi there");
-    const {
-      // address,
-      name,
-      email,
-      whatsappNumber,
-      street,
-      phone,
-      monday,
-      tuesday,
-      wednesday,
-      thursday,
-      friday,
-      saturday,
-      sunday,
-      myAge,
-      myHeight,
-      myBreasts,
-      myWeight,
-      // photo,
-    } = values;
-    // form.handleSubmit(onSubmit, (errors) => {
-    //   console.error("Validation errors:", errors);
-    // });
+// app/actions/escort.actions.ts
+"use server";
 
-    // if (!isLoaded || !isSignedIn) {
-    //   return;
-    // }
+import { connectToDatabase } from "@/lib/db";
+import Escort from "@/models/escort.model";
+import { Types } from "mongoose";
+import {
+  EscortsResponse,
+  FetchEscortsParams,
+  EscortCardData,
+} from "@/types/escort.types";
 
-    startTransition(async () => {
-      setLoader(true);
-      setError(null);
-      try {
-        // Update username in Clerk
-        // console.log("form-values", {
-        //   ...form.getValues(),
-        //   town,
-        //   region,
-        //   selectedAvailabilty: availability,
-        //   description,
-        //   age,
-        //   breast,
-        //   character,
-        //   hairColor,
-        //   nationality,
-        //   experience,
-        //   tags,
-        //   previewPhoto: selectedFiles,
-        //   selectedPractices: selected,
-        //   selectedMassage: massages,
-        //   selectedBDSM: bdsm,
-        //   selectedCategories: settingCategories,
-        //   selectedLanguages: languages,
-        //   selectedGallery: gallery,
-        // });
-
-        // 1 validate region
-        if (!region) {
-          setError("Please select your region");
-          return;
-        }
-
-        // 2. validate region
-        if (!town) {
-          setError("Please select your area or town");
-          return;
-        }
-
-        // validate your categories
-        if (settingCategories.length === 0) {
-          setError("Please select categories you want to appear");
-          return;
-        }
-
-        // extract only images from gallery
-        const allFiles = Array.from(useFileStore.getState().fileMap.values());
-        // console.log("file-map values", allFiles);
-        const imageFiles = allFiles.filter((file) =>
-          file.type.startsWith("image/"),
-        );
-        console.log("front-end image files----", imageFiles);
-
-        let imgGalleryUrls;
-        let videoGalleryUrls;
-        let previewPhotoUrl = "";
-
-        // TODO: 1- UPLOAD IMAGES TO S3
-
-        const formData = new FormData();
-        imageFiles.forEach((file) => {
-          formData.append("images", file); // must match `formData.getAll("images")` on server
-        });
-        // attach preview photo
-
-        if (selectedFiles && selectedFiles.length > 0) {
-          formData.append("images", selectedFiles[0]);
-        }
-
-        const res = await fetch("/api/s3/upload-escort-images", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (res.status === 201) {
-          const { imageUrls } = await res.json();
-          // console.log("✅ Uploaded:", imageUrls);
-          imgGalleryUrls = imageUrls;
-          if (selectedFiles && selectedFiles.length > 0) {
-            previewPhotoUrl = imageUrls?.at?.(-1);
-          }
-          // Optionally show placeholders or start polling for status
-        } else {
-          console.error("❌ Upload failed:", res.status);
-        }
-
-        // if (!res.ok) {
-        //   console.error("Upload failed");
-        //   return;
-        // }
-
-        // TODO: 2- UPLOAD videos to MUX
-
-        const videoFiles = allFiles.filter((file) =>
-          file.type.startsWith("video/"),
-        );
-
-        // console.log("all video files", videoFiles);
-
-        const videoFormData = new FormData();
-
-        videoFiles.forEach((file) => {
-          videoFormData.append("videos", file); // must match `formData.getAll("images")` on server
-        });
-
-        const clerkId: any = user?.id;
-        // console.log("clerk-id", clerkId);
-        videoFormData.append("clerkUserID", clerkId);
-
-        const videoRes = await fetch("/api/mux/upload-videos", {
-          method: "POST",
-          body: videoFormData,
-        });
-
-        if (videoRes.status === 201) {
-          // const { uploads } = await res.json();
-          console.log("✅ Upload initiated:");
-          // for videos webhook will update the record
-          // Optionally show placeholders or start polling for status
-        } else {
-          console.error("❌ Upload failed:", res.status);
-        }
-
-        // TODO: 3- Update clerk user role = 'escort'
-
-        // TODO: 4-create and save profile in Escorts schmea = 'escort'
-        const escortImages = imgGalleryUrls.filter(
-          (item: any) => item !== previewPhotoUrl,
-        );
-        const escortData = {
-          name,
-          clerkUserid: clerkId,
-          previewPhoto: imgGalleryUrls.at(-1),
-          // age,
-          telephone: phone,
-          whatsappPhone: whatsappNumber,
-          // exclude the last item if previewPhoto is their
-          images: escortImages,
-          // videos will be handled by mux webhook
-          // videos
-          about: description,
-          availability,
-          // ethnicity
-          nationality,
-          bustSize: breast,
-          // Weight,
-          // zodiacSign,
-          // sexualOrientation,
-          languages,
-          // estate
-          town,
-          region,
-          practices: selected,
-          bdsm,
-          massages,
-          extraServices: tags,
-          role: "escort",
-          openingHours: {
-            monday,
-            tuesday,
-            wednesday,
-            thursday,
-            friday,
-            saturday,
-            sunday,
-          },
-          ageCategory: age,
-          character,
-          hairColor,
-          experience,
-          age: myAge,
-          breasts: myBreasts,
-          weight: myWeight,
-          height: myHeight,
-          categories: settingCategories,
-          // address,
-          email,
-        };
-
-        await createNewEscort(escortData);
-        // await createNewEscort({
-        //   imageFiles: allFiles,
-        //   videoFiles: [],
-        //   previewPhoto: selectedFiles?.[0],
-        // });
-        //  if all is well proceed
-
-        // alert("submit form");
-        // Save user info in the database
-        // TODO:// CLEAR OR RESET FORM  VALUES
-        clear();
-        (clearAll(),
-          clearDescription(),
-          clearLanguages(),
-          clearFiles(),
-          clearTags(),
-          clearCategories());
-        clearEscortGallery();
-        toast.custom(() => (
-          <SuccessToast message="Your profile was created successfully." />
-        ));
-
-        router.push("/administration");
-        // Scroll user to the top after successful update
-
-        // window.scrollTo({ top: 0, behavior: "smooth" });
-      } catch (error: any) {
-        console.error("Error saving profile", error);
-        setError(error?.message || "Something went wrong");
-      } finally {
-        setLoader(false);
-      }
-    });
-  };
-
-
-
-
-
-  "use server";
-
-import { auth } from "@clerk/nextjs/server";
-import Escort from "@/models/Escort";
-import { connectDB } from "@/lib/db";
-import type { EscortDoc } from "@/types/escort";
-
-export async function saveEscortProfile(data: Partial<EscortDoc>) {
+export async function fetchEscorts(
+  params: FetchEscortsParams = {},
+): Promise<EscortsResponse> {
   try {
-    // 🔐 Authenticate user
-    const { userId } = auth();
+    // Connect to database
+    await connectToDatabase();
 
-    if (!userId) {
-      throw new Error("Unauthorized");
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = "featured",
+      gender,
+      county,
+      region,
+      isActive = true,
+      isVerified,
+    } = params;
+
+    // Calculate skip for pagination
+    const skip = (page - 1) * limit;
+
+    // Build query
+    const query: any = {};
+
+    // Basic filters
+    if (isActive !== undefined) query.isActive = isActive;
+    if (isVerified !== undefined) query.isVerified = isVerified;
+    if (gender) query.gender = gender;
+
+    // Location filters
+    if (county) {
+      // Check if county is ObjectId or string
+      if (Types.ObjectId.isValid(county)) {
+        query.county = new Types.ObjectId(county);
+      } else {
+        query.countyCode = county;
+      }
     }
 
-    // 🔌 Connect to DB
-    await connectDB();
-
-    // 🚫 Check if escort already exists
-    const existingEscort = await Escort.findOne({ clerkUserId: userId });
-
-    if (existingEscort) {
-      throw new Error("Escort profile already exists");
+    if (region) {
+      if (Types.ObjectId.isValid(region)) {
+        query.regions = new Types.ObjectId(region);
+      } else {
+        // If region is slug/name, you might need to lookup region ID first
+        // This is simplified - you might want to handle this differently
+        query.regions = region;
+      }
     }
 
-    // 🧠 Generate slug
-    const slug =
-      `${data.name || "escort"}`
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g, "-") +
-      "-" +
-      Math.random().toString(36).slice(2, 8);
+    // Determine sort order
+    let sortOptions: any = {};
+    switch (sortBy) {
+      case "featured":
+        sortOptions = { isFeatured: -1, createdAt: -1 };
+        break;
+      case "newest":
+        sortOptions = { createdAt: -1 };
+        break;
+      case "rating":
+        sortOptions = { rating: -1, totalReviews: -1 };
+        break;
+      case "views":
+        sortOptions = { totalViews: -1 };
+        break;
+      default:
+        sortOptions = { isFeatured: -1, createdAt: -1 };
+    }
 
-    // 📝 Save escort
-    const escort = await Escort.create({
-      ...data,
-      clerkUserId: userId, // ✅ authoritative source
-      slug,
-      role: "escort",
-      isActive: true,
-      isVerified: false,
-    });
+    // Execute count query for pagination
+    const totalEscorts = await Escort.countDocuments(query);
+
+    // Fetch escorts with population
+    const escorts = await Escort.find(query)
+      .populate({
+        path: "countyDetails",
+        select: "name code",
+      })
+      .populate({
+        path: "primaryRegionDetails",
+        select: "name",
+      })
+      .populate({
+        path: "regionsDetails",
+        select: "name",
+      })
+      .populate({
+        path: "agencyDetails",
+        select: "name logo",
+      })
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit)
+      .lean()
+      .exec();
+
+    // Transform data for client
+    const formattedEscorts: EscortCardData[] = escorts.map((escort: any) => ({
+      _id: escort._id.toString(),
+      name: escort.name || "Anonymous",
+      username: escort.username,
+      previewPhoto: escort.previewPhoto || escort.images?.[0],
+      images: escort.images || [],
+      age: escort.age,
+      gender: escort.gender,
+      workType: escort.workType,
+      isVerified: escort.isVerified,
+      isFeatured: escort.isFeatured,
+      rating: escort.rating || 0,
+      totalReviews: escort.totalReviews || 0,
+      primaryLocationDisplay: getPrimaryLocationDisplay(escort),
+      workTypeDisplay: getWorkTypeDisplay(escort),
+      rates: (escort.rates || []).map((rate: any) => ({
+        duration: rate.duration,
+        incall: rate.incall,
+        outcall: rate.outcall,
+      })),
+      categories: escort.categories || [],
+      agencyDetails: escort.agencyDetails
+        ? {
+            name: escort.agencyDetails.name,
+            logo: escort.agencyDetails.logo,
+          }
+        : undefined,
+    }));
+
+    // Calculate pagination info
+    const totalPages = Math.ceil(totalEscorts / limit);
+
+    return {
+      escorts: formattedEscorts,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalEscorts,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+        limit,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching escorts:", error);
+    throw new Error("Failed to fetch escorts");
+  }
+}
+
+// Helper function to get primary location display
+function getPrimaryLocationDisplay(escort: any): string {
+  if (escort.primaryLocationDisplay) {
+    return escort.primaryLocationDisplay;
+  }
+
+  // Manual construction if virtual isn't available in lean()
+  const primaryLocation =
+    escort.locations?.find(
+      (loc: any) => loc.region?.toString() === escort.primaryRegion?.toString(),
+    ) || escort.locations?.[0];
+
+  if (primaryLocation) {
+    const parts: string[] = [];
+    if (primaryLocation.estate) parts.push(primaryLocation.estate);
+    if (primaryLocation.town) parts.push(primaryLocation.town);
+    if (escort.primaryRegionDetails?.name)
+      parts.push(escort.primaryRegionDetails.name);
+    if (escort.countyDetails?.name)
+      parts.push(`${escort.countyDetails.name} County`);
+    return parts.length > 0 ? parts.join(", ") : "Location not specified";
+  }
+
+  return "Location not specified";
+}
+
+// Helper function to get work type display
+function getWorkTypeDisplay(escort: any): string {
+  if (escort.workType === "independent") {
+    return "Independent Escort";
+  } else if (escort.agencyDetails) {
+    return `Agency: ${escort.agencyDetails.name}`;
+  }
+  return "Escort";
+}
+
+// Additional useful server actions
+export async function fetchFeaturedEscorts(
+  limit: number = 6,
+): Promise<EscortsResponse> {
+  return fetchEscorts({
+    page: 1,
+    limit,
+    sortBy: "featured",
+    isActive: true,
+    isVerified: true,
+  });
+}
+
+export async function fetchEscortById(id: string) {
+  try {
+    await connectToDatabase();
+
+    const escort = await Escort.findById(id)
+      .populate("countyDetails")
+      .populate("regionsDetails")
+      .populate("primaryRegionDetails")
+      .populate("agencyDetails")
+      .populate({
+        path: "locationsWithDetails",
+        select: "name",
+      })
+      .lean()
+      .exec();
+
+    if (!escort) {
+      return null;
+    }
 
     return escort;
-  } catch (error: any) {
-    console.error("❌ saveEscortProfile error:", error);
+  } catch (error) {
+    console.error("Error fetching escort by ID:", error);
+    throw new Error("Failed to fetch escort");
+  }
+}
 
-    // Normalize error message
-    throw new Error(
-      error?.message || "Failed to create escort profile"
-    );
+export async function fetchEscortBySlug(slug: string) {
+  try {
+    await connectToDatabase();
+
+    const escort = await Escort.findOne({ slug, isActive: true })
+      .populate("countyDetails")
+      .populate("regionsDetails")
+      .populate("primaryRegionDetails")
+      .populate("agencyDetails")
+      .populate({
+        path: "locationsWithDetails",
+        select: "name",
+      })
+      .lean()
+      .exec();
+
+    if (!escort) {
+      return null;
+    }
+
+    return escort;
+  } catch (error) {
+    console.error("Error fetching escort by slug:", error);
+    throw new Error("Failed to fetch escort");
   }
 }

@@ -199,51 +199,180 @@ import { Types } from "mongoose";
 //     countyName: string;
 //   };
 // }
+// TODO:UPDATE ESCORTDATACARD TYPES
+// export interface EscortCardData {
+//   _id: string;
+//   name: string;
+//   username: string;
+//   age: string;
+//   gender: string;
+//   previewPhoto?: string;
+//   images: string[];
+//   about?: string;
+//   ethnicity?: string;
+//   nationality?: string;
+//   bustSize?: string;
+//   weight?: string;
+//   zodiacSign?: string;
+//   videos?: string[];
+//   languages: string[];
+//   practices: string[];
+//   rates: Array<{
+//     duration: string;
+//     incall: string;
+//     outcall?: string;
+//   }>;
+//   isActive: boolean;
+//   isVerified: boolean;
+//   rating: number;
+//   county?: {
+//     _id: string;
+//     name: string;
+//     code: string;
+//   };
+//   region?: {
+//     _id: string;
+//     name: string;
+//   };
+//   town?: string;
+//   estate?: string;
+//   slug: string;
+//   telephone?: string;
+//   whatsappPhone?: string;
+//   primaryLocationDisplay?: string;
+//   isFeatured?: boolean;
+//   totalBookings?: number;
+//   totalReviews?: number;
+//   workType?: string;
+// }
+// types/escort.types.ts
 
 export interface EscortCardData {
   _id: string;
-  name: string;
-  username: string;
-  age: string;
-  gender: string;
-  previewPhoto?: string;
+  name: string | null;
+  username: string | null;
+  slug: string;
+
+  // Media
+  previewPhoto: string | null;
   images: string[];
-  about?: string;
-  ethnicity?: string;
-  nationality?: string;
-  bustSize?: string;
-  weight?: string;
-  zodiacSign?: string;
-  videos?: string[];
+
+  // Contact Info - NOW INCLUDED
+  telephone?: string | null;
+  whatsappPhone?: string | null;
+  email?: string | null;
+
+  // Basic Info
+  age: string | null;
+  gender: string | null;
+  about: string | null;
+  aboutExcerpt: string | null;
+  ethnicity: string | null;
+  nationality: string | null;
+  bustSize: string | null;
+  weight: string | null;
+  zodiacSign: string | null;
   languages: string[];
+
+  // Services
   practices: string[];
-  rates: Array<{
-    duration: string;
-    incall: string;
-    outcall?: string;
-  }>;
-  isActive: boolean;
+  categories: string[];
+
+  // Status
   isVerified: boolean;
+  isFeatured: boolean;
+  isActive: boolean;
+
+  // Stats
   rating: number;
-  county?: {
+  totalReviews: number;
+  totalViews: number;
+
+  // Location - Enhanced with full details
+  primaryRegion: {
+    _id: string;
+    name: string;
+    county?: string;
+  } | null;
+
+  countyDetails: {
     _id: string;
     name: string;
     code: string;
-  };
-  region?: {
+  } | null;
+
+  primaryLocationDisplay: string;
+  allLocationsDisplay: string[];
+
+  locationDetails: {
+    town: string | null;
+    estate: string | null;
+    address: string | null;
+    street: string | null;
+    postalCode: string | null;
+    notes: string | null;
+    isActive: boolean;
+  } | null;
+
+  locations: Array<{
+    _id?: string;
+    region: string;
+    regionName: string | null;
+    town?: string;
+    estate?: string;
+    address?: string;
+    street?: string;
+    postalCode?: string;
+    isActive: boolean;
+    notes?: string;
+  }>;
+
+  // Working areas summary
+  workingAreas: Array<{
+    id: string;
+    name: string;
+    countyName: string | null;
+    isPrimary: boolean;
+    locationDetails: {
+      town?: string;
+      estate?: string;
+      address?: string;
+    } | null;
+  }>;
+
+  // Rates
+  rates: Array<{
+    duration: string;
+    incall: string;
+    outcall: string | null;
+    region?: string;
+  }>;
+
+  hourlyRate: {
+    duration: string;
+    incall: string;
+    outcall: string | null;
+  } | null;
+
+  // Work Type
+  workType: "independent" | "agency_employee" | null;
+  workTypeDisplay: string;
+
+  // Agency
+  agency: {
     _id: string;
     name: string;
-  };
-  town?: string;
-  estate?: string;
-  slug: string;
-  telephone?: string;
-  whatsappPhone?: string;
-  primaryLocationDisplay?: string;
-  isFeatured?: boolean;
-  totalBookings?: number;
-  totalReviews?: number;
-  workType?: string;
+    slug: string;
+    logo: string | null;
+    isVerified: boolean;
+  } | null;
+
+  // videos
+  videos?: string[];
+
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
 }
 
 /**

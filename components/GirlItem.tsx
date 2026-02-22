@@ -28,8 +28,9 @@ const GirlItem = ({
     images = [],
     // location,
     whatsappPhone,
-    region,
     primaryLocationDisplay,
+    primaryRegion,
+    countyDetails,
   } = girl;
 
   // const router = useRouter();
@@ -76,9 +77,8 @@ const GirlItem = ({
               </svg>
 
               <span className="text-white text-sm  lg:text-lg">
-                {/* {displayLocation} */}
                 {formatSlugToTitle(
-                  region?.name || "Not Specified",
+                  countyDetails?.name || "Not Specified",
                   // location.regionName || location.countyName || "Not Specified",
                 )}
               </span>

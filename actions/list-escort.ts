@@ -789,7 +789,14 @@ export interface FetchEscortsParams {
   limit?: number;
   minAge?: number;
   maxAge?: number;
-  sortBy?: "rating" | "newest" | "popular";
+  sortBy?:
+    | "newest"
+    | "oldest"
+    | "rating"
+    | "popular"
+    | "featured"
+    | "price_low"
+    | "price_high";
 }
 
 export interface FetchEscortsResponse {
@@ -916,6 +923,18 @@ export async function fetchGirlEscorts(
         break;
       case "popular":
         sortOptions = { isVerified: -1, rating: -1 };
+        break;
+      case "featured":
+        sortOptions = { isFeatured: -1, createdAt: -1 };
+        break;
+      case "price_low":
+        sortOptions = { price: 1 };
+        break;
+      case "price_high":
+        sortOptions = { price: -1 };
+        break;
+      case "oldest":
+        sortOptions = { createdAt: 1 };
         break;
       case "newest":
       default:

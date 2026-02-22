@@ -65,3 +65,5 @@ export const BUSINESS_NATURE_CATEGORIES = [
   "appointment_only", // Appointment only
   "walk_in_welcome", // Walk-ins accepted
 ];
+
+export const ITEMS_PER_PAGE = 20;
