@@ -4,22 +4,31 @@ import React from "react";
 import ProfileGallery from "./ProfileGallery";
 import BioSection from "./BioSection";
 import { formatSlugToTitle, slugify } from "@/lib/utils";
+import { EscortDetailData } from "@/types/escort.types";
 
 interface Prop {
   className?: string;
-  girl: any;
+  girl: EscortDetailData;
   // girl: Girl;
 }
 const GirlProfile = ({ girl, className }: Prop) => {
   const {
-    name,
-    age,
-    username,
-    county,
-    region,
-    regionDetails,
-    previewPhoto,
     images,
+    name,
+    workingAreas,
+    email,
+    telephone,
+    whatsappPhone,
+    openingHours,
+    nationality,
+    languages,
+    availability,
+    previewPhoto,
+    videos,
+    username,
+    about,
+    aboutExcerpt,
+    age,
   } = girl;
 
   const allPhotos: string[] = [
@@ -27,10 +36,10 @@ const GirlProfile = ({ girl, className }: Prop) => {
     ...(Array.isArray(images) ? images : []),
   ];
 
-  const formatUsername = (username: string) => {
+  const formatUsername = (username: any) => {
     return username
       .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
 
@@ -45,14 +54,14 @@ const GirlProfile = ({ girl, className }: Prop) => {
             from{" "}
             <span className="font-bold capitalize">
               {" "}
-              {formatSlugToTitle(regionDetails?.name)}
+              {formatSlugToTitle(workingAreas[0]?.name)}
             </span>
           </span>
         </h3>
 
         <Link
           className="text-primary lg:text-lg hover:underline gap-2 pb-1.5 flex items-center font-bold "
-          href={`/girls/${slugify(regionDetails?.name)}`}
+          href={`/girls/${slugify(workingAreas[0]?.name)}`}
         >
           back to list of girls
           <svg

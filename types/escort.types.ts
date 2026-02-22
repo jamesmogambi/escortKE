@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export interface EscortCardData {
   _id: string;
   name: string | null;
@@ -366,4 +368,58 @@ export function isEscortCard(data: any): data is EscortCardData {
     "_id" in data &&
     "primaryLocationDisplay" in data
   );
+}
+
+export interface EscortDetailData extends EscortCardData {
+  // Additional fields for detail page
+  videos: string[];
+  sexualOrientation: string | null;
+  labels: string[];
+  breastSize: string | null;
+  ageCategory: string | null;
+  character: string | null;
+  hairColor: string | null;
+  experience: string | null;
+  bdsm: string[];
+  massage: string[];
+  extraServices: string[];
+  totalBookings: number;
+  country: string;
+  countyCode: string | null;
+  ratesByDuration: Record<
+    string,
+    Array<{
+      duration: string;
+      incall: string;
+      outcall: string | null;
+      region?: string;
+    }>
+  >;
+  openingHours: {
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
+  };
+  agencyRole: string | null;
+  agencyCommissionRate: number | null;
+  isAgencyFeatured: boolean;
+  plan: {
+    type: "basic" | "vip" | "premium";
+    isActive: boolean;
+    activatedAt: string | null;
+    expiresAt: string | null;
+    features: string[];
+  };
+  availability: string[];
+  source: string;
+  similarEscorts: EscortCardData[];
+}
+
+export interface EscortDetailResponse {
+  escort: EscortDetailData;
+  success: boolean;
 }

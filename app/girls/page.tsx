@@ -8,8 +8,6 @@ import SectionArticle from "./SectionArticle";
 import { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 import NotFoundList from "@/components/NotFoundList";
-// import { FetchEscortsResponse } from "@/actions/escort.action";
-import { EscortPaginatedResponse } from "@/types/escort.types";
 
 interface PageProps {
   searchParams: Promise<{
@@ -240,6 +238,7 @@ export async function generateMetadata(
     },
   };
 }
+
 const page = async ({ searchParams }: PageProps) => {
   const params = await searchParams;
   const { county, region, practice } = params;

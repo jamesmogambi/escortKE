@@ -1,8 +1,4 @@
 import { fetchGirlEscorts } from "@/actions/escort.action";
-import {
-  getHomeEscorts,
-  // getSimpleFeaturedEscorts,
-} from "@/actions/list-escort";
 import PassionateMoments from "@/components/blog/PassionateMoments";
 import WhyProfile from "@/components/blog/WhyProfile";
 import { ClientPaginationWrapper } from "@/components/ClientPaginationWrapper";
@@ -11,23 +7,6 @@ import GirlRegions from "@/components/GirlRegions";
 import NotFoundList from "@/components/NotFoundList";
 import { ITEMS_PER_PAGE } from "@/constants";
 import { notFound } from "next/navigation";
-
-// export const metadata = {
-//   title: "Over 900 girls for sex from all over Kenya - escortke.com",
-//   description:
-//     "Find the best escorts in Kenya. Browse profiles with photos, rates, and reviews. Book your perfect companion today!",
-//   keywords: [
-//     "escorts Kenya",
-//     "Kenya escort services",
-//     "Nairobi escorts",
-//     "Mombasa escorts",
-//     "Kisumu escorts",
-//     "escort profiles Kenya",
-//     "book escorts Kenya",
-//     "Kenya companion services",
-//     "Kenya adult services",
-//     "Kenya escort agency",
-//   ],
 
 interface PageProps {
   searchParams: Promise<{
@@ -40,8 +19,6 @@ interface PageProps {
 
 export default async function Home({ searchParams }: PageProps) {
   const params = await searchParams;
-  const { county, region, practice, page } = params;
-  console.log("home params ==>", county, region, practice, page);
 
   const res = await fetchGirlEscorts({
     countyName: params.county,
@@ -54,8 +31,6 @@ export default async function Home({ searchParams }: PageProps) {
   if (!res.success) {
     notFound();
   }
-
-  console.log("home listing escorts -->", res);
 
   return (
     <>

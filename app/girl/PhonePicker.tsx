@@ -4,7 +4,7 @@ import React from "react";
 
 interface Prop {
   className?: string;
-  phone: string;
+  phone: string | null;
 }
 
 const app = null;

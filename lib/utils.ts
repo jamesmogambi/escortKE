@@ -85,7 +85,7 @@ export function convertToLocalPhone(phone: string): string {
 //   )} ${localNumber.slice(7)}`;
 // }
 
-export function formatKenyanPhoneNumber(phoneNumber: string): string {
+export function formatKenyanPhoneNumber(phoneNumber: string | null): string {
   if (!phoneNumber || typeof phoneNumber !== "string") {
     throw new Error("Phone number is required and must be a string");
   }
@@ -191,11 +191,14 @@ export function splitIntoThreeColumns<T>(items: T[]): [T[], T[], T[]] {
 export const getFlagEmoji = (locale: string): string =>
   localeToFlagEmoji[locale] ?? "🏳️"; // fallback to white flag
 
-export function formatSlugToTitle(slug: string) {
+export function formatSlugToTitle(slug: any) {
   if (!slug) return "";
   return slug
     .split(/[\s-]+/) // Split by spaces or hyphens
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize first letter of each word
+    .map(
+      (word: string) =>
+        word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+    ) // Capitalize first letter of each word
     .join(" "); // Join with space
 }
 

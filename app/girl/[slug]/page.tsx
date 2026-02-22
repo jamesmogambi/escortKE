@@ -15,11 +15,7 @@ import { girls } from "@/fixtures/girl";
 import { getEscortByUsername } from "@/actions/escort";
 import { Metadata, ResolvingMetadata } from "next";
 import { formatSlugToTitle } from "@/lib/utils";
-
-interface PageProps {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}
+import { fetchEscortBySlug } from "@/actions/escort.action";
 
 // Generate metadata function
 export async function generateMetadata(
@@ -128,26 +124,22 @@ export async function generateMetadata(
   }
 }
 
-const page = async ({ params }: PageProps) => {
+interface EscortPageProps {
+  params: Promise<{
+    slug: string;
+  }>;
+}
+
+const page = async ({ params }: EscortPageProps) => {
   const { slug } = await params;
 
-  const result = await getEscortByUsername(decodeURIComponent(slug));
+  const result = await fetchEscortBySlug(slug);
 
-  if (!result.success || !result.data) {
+  if (!result || !result.escort) {
     notFound();
   }
 
-  const escort = result.data;
-
-  console.log("individual escort ==>", escort);
-  const { name, username, regionDetails, countyDetails } = escort;
-
-  const formatUsername = (username: string) => {
-    return username
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
+  console.log("individual escort ==>", result.escort);
 
   return (
     <div className="w-full lg:max-w-7xl mx-auto p">
@@ -169,11 +161,9 @@ const page = async ({ params }: PageProps) => {
           <BreadcrumbItem>
             <Link
               className="text-primary capitalize hover:text-primary bg-transparent text-sm lg:text-lg font-bold"
-              href={`/girls?region=${regionDetails?.name}`}
+              href={`/girls?county=${result.escort.workingAreas[0]?.countyName}`}
             >
-              {/* sex {regionDetails?.name} */}
-              {formatSlugToTitle(regionDetails?.name)}
-              {/* {regionDetails.name} Region */}
+              sex {result.escort.workingAreas[0]?.countyName}
             </Link>
           </BreadcrumbItem>
           <BreadcrumbSeparator className="text-white text-lg">
@@ -184,13 +174,13 @@ const page = async ({ params }: PageProps) => {
               className=" hover:text-white text-white cursor-default bg-transparent text-sm lg:text-lg font-bold"
               href="#"
             >
-              {formatSlugToTitle(escort.name)}
+              {formatSlugToTitle(result.escort.name)}
             </Link>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
-      <GirlProfile girl={escort} />
+      <GirlProfile girl={result.escort} />
     </div>
   );
 };

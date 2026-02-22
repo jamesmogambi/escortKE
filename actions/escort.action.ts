@@ -4,7 +4,12 @@ import { connectToDB, safeClone } from "@/lib/mongoose";
 import { County } from "@/models/County";
 import Escort from "@/models/Escort";
 import Region from "@/models/Region";
-import { EscortCardData } from "@/types/escort.types";
+import {
+  EscortCardData,
+  EscortDetailData,
+  EscortDetailResponse,
+} from "@/types/escort.types";
+import { Types } from "mongoose";
 
 export async function fetchGirlEscorts(
   params: FetchEscortsParams,
@@ -672,4 +677,435 @@ export interface EscortPaginatedResponse {
     languages: string[];
     ageRange: { min: number; max: number };
   } | null;
+}
+
+/**
+ * Fetch a single escort by ID or slug for the detail page
+ */
+export async function fetchEscortByIdOrSlug(
+  identifier: string,
+): Promise<EscortDetailResponse | null> {
+  try {
+    await connectToDB();
+
+    // Determine if identifier is a valid ObjectId or slug
+    const isObjectId = Types.ObjectId.isValid(identifier);
+
+    // Build query based on identifier type
+    const query: any = {
+      isActive: true,
+      role: "escort",
+    };
+
+    if (isObjectId) {
+      query._id = new Types.ObjectId(identifier);
+    } else {
+      query.slug = identifier;
+    }
+
+    // Fetch escort with all populated fields
+    const escort = await Escort.findOne(query)
+      .populate({
+        path: "countyDetails",
+        select: "name code",
+      })
+      .populate({
+        path: "regionsDetails",
+        select: "name county",
+      })
+      .populate({
+        path: "primaryRegionDetails",
+        select: "name county",
+      })
+      .populate({
+        path: "agencyDetails",
+        select: "name slug logo description isVerified email phone website",
+      })
+      .populate({
+        path: "locationsWithDetails",
+        select: "name county",
+      })
+      .lean({ virtuals: true });
+
+    if (!escort) {
+      return null;
+    }
+
+    // Format the escort for client consumption
+    const formattedEscort = formatEscortDetailForClient(escort);
+
+    // Increment view count (fire and forget - don't await)
+    incrementEscortViews(escort._id.toString()).catch(console.error);
+
+    return {
+      escort: safeClone(formattedEscort),
+      success: true,
+    };
+  } catch (error) {
+    console.error("Error fetching escort by ID/slug:", error);
+    throw new Error("Failed to fetch escort details");
+  }
+}
+
+/**
+ * Fetch a single escort by ID (convenience method)
+ */
+export async function fetchEscortById(
+  id: string,
+): Promise<EscortDetailResponse | null> {
+  return fetchEscortByIdOrSlug(id);
+}
+
+/**
+ * Fetch a single escort by slug (convenience method)
+ */
+export async function fetchEscortBySlug(
+  slug: string,
+): Promise<EscortDetailResponse | null> {
+  return fetchEscortByIdOrSlug(slug);
+}
+
+/**
+ * Format escort detail for client with all fields
+ */
+function formatEscortDetailForClient(escort: any): EscortDetailData {
+  // Format phone numbers
+  const telephone = formatPhoneNumber(escort.telephone);
+  const whatsappPhone = formatPhoneNumber(escort.whatsappPhone);
+
+  // Get primary region details
+  const primaryRegionDetails = escort.primaryRegionDetails || null;
+
+  // Get county details
+  const countyDetails = escort.countyDetails || null;
+
+  // Get all regions details
+  const regionsDetails = escort.regionsDetails || [];
+
+  // Find the primary location
+  const primaryLocation =
+    escort.locations?.find(
+      (loc: any) => loc.region?.toString() === escort.primaryRegion?.toString(),
+    ) || escort.locations?.[0];
+
+  // Get all locations with region names
+  const locationsWithDetails =
+    escort.locations?.map((location: any) => {
+      const region = regionsDetails.find(
+        (r: any) => r._id?.toString() === location.region?.toString(),
+      );
+      return {
+        ...location,
+        regionName: region?.name || null,
+        regionId: location.region?.toString(),
+        _id: location._id?.toString(),
+      };
+    }) || [];
+
+  // Format all location displays
+  const allLocationsDisplay = locationsWithDetails.map((loc: any) => {
+    const parts = [];
+    if (loc.estate) parts.push(loc.estate);
+    if (loc.town) parts.push(loc.town);
+    if (loc.regionName) parts.push(loc.regionName);
+    if (countyDetails?.name) parts.push(`${countyDetails.name} County`);
+    return parts.length > 0 ? parts.join(", ") : "Location not specified";
+  });
+
+  // Format rates
+  const formattedRates = (escort.rates || []).map((rate: any) => ({
+    duration: rate.duration,
+    incall: rate.incall,
+    outcall: rate.outcall || null,
+    region: rate.region?.toString(),
+    _id: rate._id?.toString(),
+  }));
+
+  // Group rates by duration for easier display
+  const ratesByDuration = formattedRates.reduce((acc: any, rate: any) => {
+    if (!acc[rate.duration]) {
+      acc[rate.duration] = [];
+    }
+    acc[rate.duration].push(rate);
+    return acc;
+  }, {});
+
+  // Format opening hours
+  const openingHours = escort.openingHours || {
+    monday: "Not Specified",
+    tuesday: "Not Specified",
+    wednesday: "Not Specified",
+    thursday: "Not Specified",
+    friday: "Not Specified",
+    saturday: "Not Specified",
+    sunday: "Not Specified",
+  };
+
+  // Format agency info
+  const agency = escort.agencyDetails
+    ? {
+        _id: escort.agencyDetails._id.toString(),
+        name: escort.agencyDetails.name,
+        slug: escort.agencyDetails.slug,
+        logo: escort.agencyDetails.logo || null,
+        description: escort.agencyDetails.description || null,
+        email: escort.agencyDetails.email || null,
+        phone: escort.agencyDetails.phone || null,
+        website: escort.agencyDetails.website || null,
+        isVerified: escort.agencyDetails.isVerified || false,
+      }
+    : null;
+
+  // Get working areas with full details
+  const workingAreas = regionsDetails.map((region: any) => {
+    const location = escort.locations?.find(
+      (l: any) => l.region?.toString() === region._id?.toString(),
+    );
+    return {
+      id: region._id.toString(),
+      name: region.name,
+      countyName: countyDetails?.name || null,
+      isPrimary: escort.primaryRegion?.toString() === region._id?.toString(),
+      locationDetails: location
+        ? {
+            town: location.town || null,
+            estate: location.estate || null,
+            address: location.address || null,
+            street: location.street || null,
+            postalCode: location.postalCode || null,
+            notes: location.notes || null,
+          }
+        : null,
+    };
+  });
+
+  // Get similar escorts (same county/categories)
+  const similarEscorts = escort.similarEscorts || [];
+
+  return {
+    _id: escort._id.toString(),
+    name: escort.name || null,
+    username: escort.username || null,
+    slug: escort.slug || escort._id.toString(),
+    hourlyRate: escort.hourlyRate || null,
+    aboutExcerpt: escort.aboutExcerpt || null,
+
+    // Media
+    previewPhoto: escort.previewPhoto || escort.images?.[0] || null,
+    images: escort.images || [],
+    videos: escort.videos || [],
+
+    // Contact Info
+    telephone: telephone,
+    whatsappPhone: whatsappPhone,
+    email: escort.email || null,
+
+    // Basic Info
+    age: escort.age || null,
+    gender: escort.gender || null,
+    about: escort.about || null,
+    ethnicity: escort.ethnicity || null,
+    nationality: escort.nationality || null,
+    bustSize: escort.bustSize || null,
+    weight: escort.weight || null,
+    zodiacSign: escort.zodiacSign || null,
+    languages: escort.languages || [],
+    sexualOrientation: escort.sexualOrientation || null,
+    labels: escort.labels || [],
+
+    // Physical Attributes
+    breastSize: escort.breastSize || null,
+    ageCategory: escort.ageCategory || null,
+    character: escort.character || null,
+    hairColor: escort.hairColor || null,
+    experience: escort.experience || null,
+
+    // Services
+    practices: escort.practices || [],
+    bdsm: escort.bdsm || [],
+    massage: escort.massage || [],
+    extraServices: escort.extraServices || [],
+    categories: escort.categories || [],
+
+    // Status
+    isVerified: escort.isVerified || false,
+    isFeatured: escort.isFeatured || false,
+    isActive: escort.isActive || false,
+
+    // Stats
+    rating: escort.rating || 0,
+    totalReviews: escort.totalReviews || 0,
+    totalViews: escort.totalViews || 0,
+    totalBookings: escort.totalBookings || 0,
+
+    // Location - Full details
+    country: escort.country || "Kenya",
+    countyDetails: countyDetails
+      ? {
+          _id: countyDetails._id.toString(),
+          name: countyDetails.name,
+          code: countyDetails.code,
+        }
+      : null,
+    countyCode: escort.countyCode || null,
+
+    primaryRegion: primaryRegionDetails
+      ? {
+          _id: primaryRegionDetails._id.toString(),
+          name: primaryRegionDetails.name,
+          county: primaryRegionDetails.county?.toString(),
+        }
+      : null,
+
+    primaryLocationDisplay:
+      escort.primaryLocationDisplay || formatPrimaryLocationManually(escort),
+    allLocationsDisplay,
+
+    locationDetails: primaryLocation
+      ? {
+          town: primaryLocation.town || null,
+          estate: primaryLocation.estate || null,
+          address: primaryLocation.address || null,
+          street: primaryLocation.street || null,
+          postalCode: primaryLocation.postalCode || null,
+          notes: primaryLocation.notes || null,
+          isActive: primaryLocation.isActive !== false,
+        }
+      : null,
+
+    locations: locationsWithDetails,
+
+    // Working areas
+    workingAreas,
+
+    // Opening Hours
+    openingHours: {
+      monday: openingHours.monday,
+      tuesday: openingHours.tuesday,
+      wednesday: openingHours.wednesday,
+      thursday: openingHours.thursday,
+      friday: openingHours.friday,
+      saturday: openingHours.saturday,
+      sunday: openingHours.sunday,
+    },
+
+    // Rates
+    rates: formattedRates,
+    ratesByDuration,
+
+    // Work Type
+    workType: escort.workType || "independent",
+    workTypeDisplay: getWorkTypeDisplay(escort, agency),
+
+    // Agency
+    agency,
+    agencyRole: escort.agencyRole || null,
+    agencyCommissionRate: escort.agencyCommissionRate || null,
+    isAgencyFeatured: escort.isAgencyFeatured || false,
+
+    // Plan
+    plan: escort.plan
+      ? {
+          type: escort.plan.type || "basic",
+          isActive: escort.plan.isActive || false,
+          activatedAt: escort.plan.activatedAt?.toISOString() || null,
+          expiresAt: escort.plan.expiresAt?.toISOString() || null,
+          features: escort.plan.features || [],
+        }
+      : {
+          type: "basic",
+          isActive: false,
+          activatedAt: null,
+          expiresAt: null,
+          features: [],
+        },
+
+    // Availability
+    availability: escort.availability || [],
+
+    // Metadata
+    source: escort.source || "custom",
+    createdAt: escort.createdAt?.toISOString() || new Date().toISOString(),
+    updatedAt: escort.updatedAt?.toISOString() || new Date().toISOString(),
+
+    // Similar escorts (optional - can be populated later)
+    similarEscorts,
+  };
+}
+
+/**
+ * Increment escort view count
+ */
+async function incrementEscortViews(escortId: string): Promise<void> {
+  try {
+    await Escort.findByIdAndUpdate(escortId, {
+      $inc: { totalViews: 1 },
+    });
+  } catch (error) {
+    console.error("Error incrementing views:", error);
+  }
+}
+
+/**
+ * Fetch similar escorts based on county and categories
+ */
+export async function fetchSimilarEscorts(
+  escortId: string,
+  countyId?: string,
+  categories: string[] = [],
+  limit: number = 6,
+): Promise<EscortCardData[]> {
+  try {
+    await connectToDB();
+
+    const query: any = {
+      _id: { $ne: new Types.ObjectId(escortId) },
+      gender: "girl",
+      isActive: true,
+      role: "escort",
+    };
+
+    // Match by county if available
+    if (countyId && Types.ObjectId.isValid(countyId)) {
+      query.county = new Types.ObjectId(countyId);
+    }
+
+    // Match by categories if available
+    if (categories.length > 0) {
+      query.categories = { $in: categories };
+    }
+
+    const similarEscorts = await Escort.find(query)
+      .populate("countyDetails", "name code")
+      .populate("primaryRegionDetails", "name")
+      .populate("agencyDetails", "name slug logo")
+      .select({
+        name: 1,
+        username: 1,
+        slug: 1,
+        age: 1,
+        previewPhoto: 1,
+        images: { $slice: 1 },
+        about: { $substrCP: ["$about", 0, 100] },
+        isVerified: 1,
+        isFeatured: 1,
+        rating: 1,
+        totalReviews: 1,
+        primaryRegion: 1,
+        county: 1,
+        locations: { $slice: 1 },
+        rates: { $slice: 1 },
+        workType: 1,
+        agencyId: 1,
+      })
+      .sort({ isFeatured: -1, rating: -1, totalViews: -1 })
+      .limit(limit)
+      .lean({ virtuals: true });
+
+    // Format for card display
+    return similarEscorts.map((escort) => formatEscortForClient(escort));
+  } catch (error) {
+    console.error("Error fetching similar escorts:", error);
+    return [];
+  }
 }

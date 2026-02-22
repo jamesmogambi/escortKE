@@ -5,23 +5,37 @@ import AboutTabs from "./AboutTabs";
 // import { categories } from "@/fixtures/categories";
 import Link from "next/link";
 import { slugify } from "@/lib/utils";
+import { EscortDetailData } from "@/types/escort.types";
 
 interface Prop {
-  girl: any;
+  girl: EscortDetailData;
 }
 const BioSection = ({ girl }: Prop) => {
-  const { bio, phone, address, telephone, whatsappPhone, about, categories } =
-    girl;
+  const {
+    telephone,
+    whatsappPhone,
+    about,
+    categories,
+    aboutExcerpt,
+    workingAreas,
+    locationDetails,
+  } = girl;
   return (
     <div>
-      <RenderEditorContent html={about} />
+      {about && <RenderEditorContent html={about} />}
 
-      <PhonePicker phone={telephone || whatsappPhone} className="my-6" />
+      {telephone ||
+        (whatsappPhone && (
+          <PhonePicker phone={telephone || whatsappPhone} className="my-6" />
+        ))}
 
       <div className="flex items-center justify-between">
         <h3 className="font-bold text-lg text-primary">
           Address:
-          <span className="text-white/50 font-light"> {address}</span>
+          <span className="text-white/50 font-light">
+            {" "}
+            {locationDetails?.address}
+          </span>
         </h3>
 
         {/* whatsapp icon */}
