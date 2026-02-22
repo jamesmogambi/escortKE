@@ -1,13 +1,14 @@
 import React from "react";
 import GirlFilterInput from "./GirlFIlterInput";
 import ListHeader from "@/components/ListHeader";
-import { fetchGirlEscorts } from "@/actions/list-escort";
+// import { fetchGirlEscorts } from "@/actions/list-escort";
 import GirlList from "@/components/GirlList";
 import { ClientPaginationWrapper } from "@/components/ClientPaginationWrapper";
 import SectionArticle from "./SectionArticle";
 import { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 import NotFoundList from "@/components/NotFoundList";
+import { fetchGirlEscorts } from "@/actions/escort.action";
 
 interface PageProps {
   searchParams: Promise<{
@@ -274,6 +275,7 @@ const page = async ({ searchParams }: PageProps) => {
     practice: params.practice,
     page: params.page ? parseInt(params.page, 10) : 1,
     limit: ITEMS_PER_PAGE,
+    sortBy: "oldest",
   });
 
   if (!res.success) {
@@ -292,22 +294,7 @@ const page = async ({ searchParams }: PageProps) => {
 
       {res.success && res.total > 0 && <GirlList girls={res.escorts} />}
 
-      {res.success && res.total === 0 && (
-        <>
-          <p className="font-semibold  text-center text-xl">
-            {" "}
-            <span className="text-primary">
-              Unfortunately, we have to disappoint you, but there are no girls
-              for sex{" "}
-            </span>
-            {"  "}
-            advertised in this city yet , try girls from other cities
-            below.{" "}
-          </p>
-          {/* TODO:// ADD NOT FOUND LIST */}
-          {/* <NotFoundList /> */}
-        </>
-      )}
+      {res.success && res.total === 0 && <NotFoundList />}
       <ClientPaginationWrapper
         totalPages={res.totalPages}
         currentPage={res.page}
