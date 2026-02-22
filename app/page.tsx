@@ -5,6 +5,7 @@ import {
 } from "@/actions/list-escort";
 import PassionateMoments from "@/components/blog/PassionateMoments";
 import WhyProfile from "@/components/blog/WhyProfile";
+import { ClientPaginationWrapper } from "@/components/ClientPaginationWrapper";
 import GirlList from "@/components/GirlList";
 import GirlRegions from "@/components/GirlRegions";
 import NotFoundList from "@/components/NotFoundList";
@@ -39,7 +40,8 @@ interface PageProps {
 
 export default async function Home({ searchParams }: PageProps) {
   const params = await searchParams;
-  const { county, region, practice } = params;
+  const { county, region, practice, page } = params;
+  console.log("home params ==>", county, region, practice, page);
 
   const res = await fetchGirlEscorts({
     countyName: params.county,
@@ -60,24 +62,13 @@ export default async function Home({ searchParams }: PageProps) {
       <GirlRegions />
       {res.success && res.total > 0 && <GirlList girls={res.escorts} />}
 
-      {res.success && res.total === 0 && (
-        <>
-          <p className="font-semibold  text-center text-xl">
-            {" "}
-            <span className="text-primary">
-              Unfortunately, we have to disappoint you, but there are no girls
-              for sex{" "}
-            </span>
-            {"  "}
-            advertised in this city yet , try girls from other cities
-            below.{" "}
-          </p>
-          {/* TODO:// ADD NOT FOUND LIST */}
-          {/* <NotFoundList /> */}
-        </>
-      )}
-      {/* <GirlList girls={recent.items} className="max-w-6xl" /> */}
-
+      {res.success && res.total === 0 && <NotFoundList />}
+      <ClientPaginationWrapper
+        totalPages={res.totalPages}
+        currentPage={res.page}
+        totalItems={res.total}
+        itemsPerPage={ITEMS_PER_PAGE}
+      />
       <WhyProfile className="mt-20" />
       <PassionateMoments className="mt-8" />
     </>

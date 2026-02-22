@@ -6,6 +6,7 @@ import FilterInput from "./FilterInput";
 import Image from "next/image";
 import POPULAR_COUNTIES from "@/data/popular-counties";
 import { getPopularCountiesLimited } from "@/actions/region";
+import GirlFilterInput from "@/app/girls/GirlFIlterInput";
 
 const GirlRegions = async () => {
   // const counties = POPULAR_COUNTIES;
@@ -44,7 +45,8 @@ const GirlRegions = async () => {
           ))}
         </div>
 
-        <FilterInput className="lg:mt-9 mt-4   flex " />
+        {/* <FilterInput className="lg:mt-9 mt-4   flex " /> */}
+        <GirlFilterInput />
       </SectionCard>
     </div>
   );
