@@ -57,7 +57,7 @@ const GirlItem = ({
 
         {/* footer */}
         <div className="p-4">
-          <h4 className="text-primary mb-1 text-base lg:text-2xl font-bold capitalize">
+          <h4 className="text-primary mb-1 text-base lg:text-xl font-bold capitalize">
             {escortName.split(" ").slice(0, 2).join(" ") || "Escort"}
           </h4>
 

@@ -1,7 +1,6 @@
 import React from "react";
 import GirlFilterInput from "./GirlFIlterInput";
 import ListHeader from "@/components/ListHeader";
-// import { fetchGirlEscorts } from "@/actions/list-escort";
 import GirlList from "@/components/GirlList";
 import { ClientPaginationWrapper } from "@/components/ClientPaginationWrapper";
 import SectionArticle from "./SectionArticle";
@@ -9,6 +8,10 @@ import { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 import NotFoundList from "@/components/NotFoundList";
 import { fetchGirlEscorts } from "@/actions/escort.action";
+import {
+  generateBreadcrumbList,
+  generateListStructuredData,
+} from "./seo-utils";
 
 interface PageProps {
   searchParams: Promise<{
@@ -19,11 +22,20 @@ interface PageProps {
   }>;
 }
 
-const ITEMS_PER_PAGE = 20; // Make sure this matches your server action
+const ITEMS_PER_PAGE = 20;
 
-const defaultTitle = "Girls for Sex";
+// Default titles and descriptions with KENYADIVAS branding
+const defaultTitle = "Premium Escorts in Kenya";
 const defaultDescription =
-  "Discover professional girls for sex in Kenya. Browse verified profiles with photos, rates, and locations. Find the perfect companion for your desires.";
+  "KENYADIVAS - Kenya's premier escort directory. Browse verified premium escorts in Nairobi, Mombasa, Kisumu and across Kenya. Real photos, authentic reviews, and transparent rates.";
+
+// Helper function to format location names
+const formatLocationName = (str: string): string => {
+  return str
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
 
 // Generate dynamic metadata
 export async function generateMetadata(
@@ -37,6 +49,7 @@ export async function generateMetadata(
   // Fetch data for metadata generation
   let totalEscorts = 0;
   let firstEscort = null;
+  let uniqueLocations: string[] = [];
 
   try {
     const result = await fetchGirlEscorts({
@@ -51,97 +64,128 @@ export async function generateMetadata(
       totalEscorts = result.total;
       if (result.escorts.length > 0) {
         firstEscort = result.escorts[0];
+
+        // Extract unique locations for keywords
+        const locations = result.escorts
+          .map((e: any) => e.town || e.workingAreas?.[0]?.countyName)
+          .filter(Boolean);
+        uniqueLocations = [...new Set(locations)] as string[];
       }
     }
   } catch (error) {
     console.error("Error fetching data for metadata:", error);
   }
 
+  // Format filter values for display
+  const formattedCounty =
+    county && county !== "all" ? formatLocationName(county) : null;
+  const formattedRegion =
+    region && region !== "all" ? formatLocationName(region) : null;
+  const formattedPractice =
+    practice && practice !== "all" ? formatLocationName(practice) : null;
+
   // Build dynamic title
   const buildTitle = () => {
     const parts = [];
 
-    if (practice && practice !== "all") {
-      parts.push(practice.charAt(0).toUpperCase() + practice.slice(1));
+    if (formattedPractice) {
+      parts.push(formattedPractice);
     }
 
-    if (region && region !== "all") {
-      parts.push(region);
+    if (formattedRegion) {
+      parts.push(formattedRegion);
     }
 
-    if (county && county !== "all") {
-      parts.push(county + " County");
+    if (formattedCounty) {
+      parts.push(formattedCounty);
     }
 
     if (parts.length === 0) {
-      return `Girls for Sex in Kenya - Over ${totalEscorts}+ Verified Escorts`;
+      return `Premium Escorts in Kenya | KENYADIVAS`;
     }
 
-    return `${parts.join(" ")} Girls for Sex in Kenya - ${totalEscorts}+ Profiles`;
+    const baseTitle = `${parts.join(" ")} Escorts in Kenya`;
+    return pageNumber > 1
+      ? `${baseTitle} - Page ${pageNumber} | KENYADIVAS`
+      : `${baseTitle} | KENYADIVAS`;
   };
 
   // Build dynamic description
   const buildDescription = () => {
-    const parts = [];
+    const locationPhrase = [];
 
-    if (practice && practice !== "all") {
-      parts.push(`Find ${practice} girls for sex`);
+    if (formattedCounty && formattedRegion) {
+      locationPhrase.push(`in ${formattedRegion}, ${formattedCounty}`);
+    } else if (formattedCounty) {
+      locationPhrase.push(`in ${formattedCounty} County`);
+    } else if (formattedRegion) {
+      locationPhrase.push(`in ${formattedRegion}`);
     } else {
-      parts.push("Find professional girls for sex");
+      locationPhrase.push("across Kenya");
     }
 
-    if (county && county !== "all" && region && region !== "all") {
-      parts.push(`in ${region}, ${county} County, Kenya`);
-    } else if (county && county !== "all") {
-      parts.push(`in ${county} County, Kenya`);
-    } else if (region && region !== "all") {
-      parts.push(`in ${region}, Kenya`);
-    } else {
-      parts.push("in Kenya");
-    }
+    const servicePhrase = formattedPractice
+      ? `Find verified ${formattedPractice.toLowerCase()} escorts ${locationPhrase.join(" ")}.`
+      : `Discover premium escort services ${locationPhrase.join(" ")}.`;
 
-    parts.push(
-      `Browse ${totalEscorts}+ verified escort profiles with real photos, rates, reviews, and contact information.`,
-    );
-
-    return parts.join(" ");
+    return `KENYADIVAS - ${servicePhrase} Browse ${totalEscorts}+ verified profiles with real photos, authentic reviews, rates, and discreet contact information. Safe and professional companionship.`;
   };
 
-  // Build keywords
+  // Build comprehensive keywords
   const buildKeywords = () => {
-    const keywords = [
-      "girls for sex",
-      "escorts",
-      "Kenya",
-      "local escorts",
-      "companionship",
-      "adult services",
-      "verified profiles",
-    ];
+    const keywords = new Set([
+      "KENYADIVAS",
+      "Kenya escorts",
+      "premium escorts Kenya",
+      "verified companions",
+      "Nairobi escorts",
+      "Mombasa escorts",
+      "Kisumu escorts",
+      "escort directory Kenya",
+      "adult entertainment Kenya",
+      "professional escorts",
+      "luxury companions",
+      "VIP escorts",
+      "Kenya call girls",
+      "escort services",
+      "discreet dating",
+    ]);
 
-    if (county && county !== "all") {
-      keywords.push(`${county} escorts`, `${county} county girls`);
+    if (formattedCounty) {
+      keywords.add(`${formattedCounty} escorts`);
+      keywords.add(`${formattedCounty} County companions`);
+      keywords.add(`escorts in ${formattedCounty}`);
     }
 
-    if (region && region !== "all") {
-      keywords.push(`${region} escorts`, `girls in ${region}`);
+    if (formattedRegion) {
+      keywords.add(`${formattedRegion} escorts`);
+      keywords.add(`companions in ${formattedRegion}`);
     }
 
-    if (practice && practice !== "all") {
-      keywords.push(`${practice} services`, `${practice} girls`);
+    if (formattedPractice) {
+      keywords.add(`${formattedPractice} escorts`);
+      keywords.add(`${formattedPractice} services Kenya`);
     }
 
-    return keywords;
+    // Add unique locations from actual escorts
+    uniqueLocations.slice(0, 5).forEach((location) => {
+      keywords.add(`${location} escorts`);
+    });
+
+    return Array.from(keywords).join(", ");
   };
 
   // Build canonical URL
   const buildCanonicalUrl = () => {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://yoursite.com";
+    const baseUrl =
+      process.env.NEXT_PUBLIC_SITE_URL || "https://kenyadivas.com";
     const params = new URLSearchParams();
 
     if (county && county !== "all") params.append("county", county);
     if (region && region !== "all") params.append("region", region);
     if (practice && practice !== "all") params.append("practice", practice);
+
+    // Only add page parameter for pages > 1
     if (pageNumber > 1) params.append("page", pageNumber.toString());
 
     const queryString = params.toString();
@@ -160,34 +204,52 @@ export async function generateMetadata(
       url: firstEscort.previewPhoto,
       width: 1200,
       height: 630,
-      alt: `${firstEscort.name || firstEscort.username} - Verified Escort Profile`,
-    });
-  } else {
-    ogImages.push({
-      url: "/og-girls-default.jpg",
-      width: 1200,
-      height: 630,
-      alt: "Girls for Sex in Kenya - Verified Escorts",
+      alt: `${firstEscort.name || firstEscort.username} - Verified Escort Profile on KENYADIVAS`,
     });
   }
+
+  // Always add default OG image
+  ogImages.push({
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://kenyadivas.com"}/og-girls.jpg`,
+    width: 1200,
+    height: 630,
+    alt: "KENYADIVAS - Premium Escorts in Kenya",
+  });
+
+  // Calculate pagination URLs
+  const totalPages = Math.ceil(totalEscorts / ITEMS_PER_PAGE);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kenyadivas.com";
+
+  const buildPageUrl = (pageNum: number) => {
+    const params = new URLSearchParams();
+    if (county && county !== "all") params.append("county", county);
+    if (region && region !== "all") params.append("region", region);
+    if (practice && practice !== "all") params.append("practice", practice);
+    if (pageNum > 1) params.append("page", pageNum.toString());
+    const queryString = params.toString();
+    return `${baseUrl}/girls${queryString ? `?${queryString}` : ""}`;
+  };
 
   return {
     title,
     description,
-    keywords: keywords.join(", "),
+    keywords,
 
     openGraph: {
       type: "website",
       locale: "en_KE",
-      siteName: "YourSiteName",
+      siteName: "KENYADIVAS Kenya",
       title,
       description,
       url: canonicalUrl,
       images: ogImages,
+      countryName: "Kenya",
     },
 
     twitter: {
       card: "summary_large_image",
+      site: "@kenyadivas",
+      creator: "@kenyadivas",
       title,
       description,
       images: ogImages.map((img) => img.url),
@@ -208,14 +270,10 @@ export async function generateMetadata(
     alternates: {
       canonical: canonicalUrl,
       ...(pageNumber > 1 && {
-        prev:
-          pageNumber > 1
-            ? `${process.env.NEXT_PUBLIC_SITE_URL}/girls?page=${pageNumber - 1}`
-            : undefined,
-        next:
-          pageNumber < Math.ceil(totalEscorts / ITEMS_PER_PAGE)
-            ? `${process.env.NEXT_PUBLIC_SITE_URL}/girls?page=${pageNumber + 1}`
-            : undefined,
+        prev: buildPageUrl(pageNumber - 1),
+      }),
+      ...(pageNumber < totalPages && {
+        next: buildPageUrl(pageNumber + 1),
       }),
     },
 
@@ -227,44 +285,63 @@ export async function generateMetadata(
     // Geographical metadata
     other: {
       "geo.region": "KE",
-      "geo.placename": county && county !== "all" ? county : "Kenya",
+      "geo.placename": formattedCounty || "Kenya",
       "geo.position":
-        county && county === "nairobi" ? "-1.286389;36.817223" : "",
-      ICBM: county && county === "nairobi" ? "-1.286389, 36.817223" : "",
+        formattedCounty?.toLowerCase() === "nairobi"
+          ? "-1.286389;36.817223"
+          : "",
+      ICBM:
+        formattedCounty?.toLowerCase() === "nairobi"
+          ? "-1.286389, 36.817223"
+          : "",
       rating: "RTA-5042-1996-1400-1577-RTA",
-      classification: "Adult Content",
+      classification: "Adult Entertainment",
       distribution: "global",
-      language: "en",
-      author: "YourSiteName",
+      language: "English",
+      author: "KENYADIVAS",
+      copyright: `© ${new Date().getFullYear()} KENYADIVAS. All rights reserved.`,
+      "og:price:currency": "KES",
+      "twitter:app:country": "KE",
+      "business:contact_data:country": "Kenya",
+      "pinterest-rich-pin": "enabled",
     },
   };
 }
 
-const page = async ({ searchParams }: PageProps) => {
+const GirlsListingPage = async ({ searchParams }: PageProps) => {
   const params = await searchParams;
-  const { county, region, practice } = params;
+  const { county, region, practice, page } = params;
+  const currentPage = page ? parseInt(page, 10) : 1;
 
-  // Build dynamic title and subtitle
+  // Format values for display
+  const formattedCounty =
+    county && county !== "all" ? formatLocationName(county) : null;
+  const formattedRegion =
+    region && region !== "all" ? formatLocationName(region) : null;
+  const formattedPractice =
+    practice && practice !== "all" ? formatLocationName(practice) : null;
+
+  // Build dynamic title
   const getDynamicTitle = () => {
     const parts = [];
 
-    if (practice && practice !== "all") {
-      parts.push(practice);
+    if (formattedPractice) {
+      parts.push(formattedPractice);
     }
 
-    if (region && region !== "all") {
-      parts.push(region);
+    if (formattedRegion) {
+      parts.push(formattedRegion);
     }
 
-    if (county && county !== "all") {
-      parts.push(county);
+    if (formattedCounty) {
+      parts.push(formattedCounty);
     }
 
     if (parts.length === 0) {
-      return defaultTitle;
+      return "Premium Escorts in Kenya";
     }
 
-    return `${parts.join(" ")} ${defaultTitle}`;
+    return `${parts.join(" ")} Escorts in Kenya`;
   };
 
   const title = getDynamicTitle();
@@ -273,7 +350,7 @@ const page = async ({ searchParams }: PageProps) => {
     countyName: params.county,
     regionName: params.region,
     practice: params.practice,
-    page: params.page ? parseInt(params.page, 10) : 1,
+    page: currentPage,
     limit: ITEMS_PER_PAGE,
     sortBy: "oldest",
   });
@@ -282,29 +359,94 @@ const page = async ({ searchParams }: PageProps) => {
     notFound();
   }
 
-  console.log("only girls escorts -->", res);
+  // Generate structured data
+  const structuredData = generateListStructuredData({
+    title,
+    description: defaultDescription,
+    totalItems: res.total,
+    currentPage,
+    totalPages: res.totalPages,
+    filters: {
+      county: formattedCounty,
+      region: formattedRegion,
+      practice: formattedPractice,
+    },
+    items: res.escorts.slice(0, 10), // Include first 10 escorts in structured data
+  });
+
+  // Generate breadcrumb structured data
+  const breadcrumbData = generateBreadcrumbList([
+    { name: "Home", url: "/" },
+    { name: "Escorts", url: "/girls" },
+    ...(formattedCounty
+      ? [{ name: `${formattedCounty} Escorts`, url: `/girls?county=${county}` }]
+      : []),
+    ...(formattedRegion
+      ? [{ name: `${formattedRegion} Escorts`, url: `/girls?region=${region}` }]
+      : []),
+    ...(formattedPractice
+      ? [
+          {
+            name: `${formattedPractice} Escorts`,
+            url: `/girls?practice=${practice}`,
+          },
+        ]
+      : []),
+    ...(currentPage > 1
+      ? [{ name: `Page ${currentPage}`, url: `/girls?page=${currentPage}` }]
+      : []),
+  ]);
 
   return (
     <>
-      <div className="bg-black  p-5 pb-6 -mt-4.5">
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
+      />
+
+      {/* Hidden SEO elements */}
+      <div className="sr-only">
+        <h1>{title} | KENYADIVAS Kenya</h1>
+        <p>{defaultDescription}</p>
+      </div>
+
+      {/* Filter Section */}
+      <div className="bg-black p-5 pb-6 -mt-4.5">
         <GirlFilterInput />
       </div>
 
-      <ListHeader title={title} subTitle="Girls for sex" />
-
-      {res.success && res.total > 0 && <GirlList girls={res.escorts} />}
-
-      {res.success && res.total === 0 && <NotFoundList />}
-      <ClientPaginationWrapper
-        totalPages={res.totalPages}
-        currentPage={res.page}
-        totalItems={res.total}
-        itemsPerPage={ITEMS_PER_PAGE}
+      {/* Results Header */}
+      <ListHeader
+        title={title}
+        subTitle="Girls for Sex"
+        // subTitle={`${res.total} Verified Escorts Available`}
       />
 
+      {/* Results List */}
+      {res.success && res.total > 0 && (
+        <>
+          <GirlList girls={res.escorts} />
+          <ClientPaginationWrapper
+            totalPages={res.totalPages}
+            currentPage={res.page}
+            totalItems={res.total}
+            itemsPerPage={ITEMS_PER_PAGE}
+          />
+        </>
+      )}
+
+      {/* No Results */}
+      {res.success && res.total === 0 && <NotFoundList />}
+
+      {/* SEO Content Section */}
       <SectionArticle />
     </>
   );
 };
 
-export default page;
+export default GirlsListingPage;

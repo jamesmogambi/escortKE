@@ -23,7 +23,7 @@ const Logo = ({
       href={path}
     >
       {/* icon */}
-      <div className="size-14 rounded-sm  flex justify-center items-center bg-primary text-white">
+      <div className="size-12 rounded-sm  flex justify-center items-center bg-primary text-white">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="72"
@@ -77,8 +77,8 @@ const Logo = ({
           />
         </svg>
       </div>
-      <h4 className="text-white text-xl uppercase font-semibold">
-        escortke<span className="text-red-700">.com</span>
+      <h4 className="text-white text-xl md:text-2xl uppercase font-semibold">
+        kenyadivas<span className="text-red-700">.ke</span>
       </h4>
       {/* <Image
         alt="logo"
