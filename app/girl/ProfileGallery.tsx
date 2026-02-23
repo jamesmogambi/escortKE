@@ -6,15 +6,16 @@ import VideoGallery from "./VideoGallery";
 import { girls } from "@/fixtures/girl";
 
 interface Prop {
-  girl: Girl;
+  photos: string[];
+  videos: string[];
 }
-const ProfileGallery = ({ girl }: Prop) => {
-  const { photos, videos } = girl;
+const ProfileGallery = ({ photos, videos }: Prop) => {
+  // const { photos, videos } = girl;
   return (
-    <div className=" h-full flex-1 ">
+    <div className=" h-full  flex-1 ">
       {/* header */}
       <Tabs defaultValue="photos" className="w-full bg-transparent">
-        <TabsList className="w-full gap-6 bg-transparent ">
+        <TabsList className="w-full gap-3  lg:gap-6 bg-transparent ">
           <TabsTrigger
             className=" data-[state=active]:bg-primary text-lg font-semibold cursor-pointer py-6 px-6 items-center flex gap-2 bg-gray-1"
             value="photos"

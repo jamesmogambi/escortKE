@@ -1,9 +1,4 @@
-import {
-  getAllEroticMassageEscorts,
-  getFilteredEscorts,
-  getFilteredMassageEscorts,
-  getMassageEscorts,
-} from "@/actions/masseuse";
+// app/massage-escorts/page.tsx
 import { AppPagination } from "@/components/AppPagination";
 import { ClientPaginationWrapper } from "@/components/ClientPaginationWrapper";
 import FilterInput from "@/components/FilterInput";
@@ -12,89 +7,11 @@ import ListHeader from "@/components/ListHeader";
 import React from "react";
 import SectionArticle from "./SectionArticle";
 import MassageTypeFilterInput from "./MassageFilterInput";
-
-export const metadata = {
-  title: "Erotic Massage Escorts in Kenya - Sensual & Body Massages",
-  description:
-    "Find professional masseuses and massage escorts offering various massage services across Kenya. Browse verified profiles with photos, rates, and locations.",
-  keywords:
-    "massage escorts, masseuses, erotic massage, body massage, Kenya, sensual massage",
-};
+import { fetchMassageEscorts } from "@/actions/masseuse.action";
+import { ITEMS_PER_PAGE } from "@/constants";
+import NotFoundList from "@/components/NotFoundList";
 
 // Helper function to generate dynamic title
-const generateListHeaderTitle = (params: {
-  county?: string;
-  region?: string;
-  massageType?: string;
-  total?: number;
-}) => {
-  const { county, region, massageType, total } = params;
-  const parts = [];
-
-  // Add total count if available
-  // if (total !== undefined) {
-  //   parts.push(`${total} Masseuse${total !== 1 ? "s" : ""}`);
-  // }
-
-  // Add massage type
-  if (massageType) {
-    parts.push(massageType);
-  } else if (!county && !region) {
-    parts.push("Erotic");
-    // parts.push("Massages");
-  }
-
-  if (!massageType) {
-    parts.push("Massages");
-  }
-
-  // parts.push("Massages");
-
-  // Add location
-  if (county && region) {
-    parts.push(`in ${region}, ${county} County`);
-  } else if (county) {
-    parts.push(`in ${county} County`);
-  } else if (region) {
-    parts.push(`in ${region}`);
-  }
-
-  // Add Kenya if no location specified
-  // if (!county && !region) {
-  //   parts.push("in Kenya");
-  // }
-
-  return parts.join(" ");
-};
-
-// Function to generate page metadata dynamically
-const generateMetadata = async (params: {
-  county?: string;
-  region?: string;
-  massageType?: string;
-}) => {
-  const { county, region, massageType } = params;
-  const locationParts = [];
-
-  if (county && region) {
-    locationParts.push(`${region}, ${county} County`);
-  } else if (county) {
-    locationParts.push(`${county} County`);
-  } else if (region) {
-    locationParts.push(region);
-  } else {
-    locationParts.push("Kenya");
-  }
-
-  const location = locationParts.join(", ");
-  const massageText = massageType || "Erotic & Sensual";
-
-  return {
-    title: `${massageText} Massage Escorts in ${location} | Professional Masseuses`,
-    description: `Find verified ${massageText.toLowerCase()} massage escorts and professional masseuses in ${location}. Browse profiles with photos, rates, services, and contact information.`,
-    keywords: `${massageText.toLowerCase()} massage, masseuses, escorts, ${location}, body massage, sensual therapy`,
-  };
-};
 
 interface PageProps {
   searchParams: Promise<{
@@ -105,56 +22,111 @@ interface PageProps {
   }>;
 }
 
-const ITEMS_PER_PAGE = 20; // Make sure this matches your server action
+// Generate metadata
+export const generateMetadata = async ({ searchParams }: PageProps) => {
+  const params = await searchParams;
+
+  const title = params.massageType
+    ? `${params.massageType} Massage Escorts ${params.region ? `in ${params.region}` : params.county ? `in ${params.county}` : "in Kenya"}`
+    : `Erotic Massage Escorts ${params.region ? `in ${params.region}` : params.county ? `in ${params.county}` : "in Kenya"}`;
+
+  const description = `Find verified ${params.massageType || "erotic"} massage escorts and masseuses ${params.region ? `in ${params.region}` : params.county ? `in ${params.county}` : "across Kenya"}. Browse profiles with photos, rates, and locations.`;
+
+  return {
+    title,
+    description,
+  };
+};
+
+/**
+ * Generate h1 title for the page (displayed in ListHeader)
+ */
+const generateListHeaderTitle = (params: {
+  county?: string;
+  region?: string;
+  massageType?: string;
+  total?: number;
+}): string => {
+  const { county, region, massageType, total } = params;
+  const parts = [];
+
+  // Add total count if available (for SEO and user clarity)
+  if (total !== undefined) {
+    parts.push(`${total} Masseuse${total !== 1 ? "s" : ""}`);
+  }
+
+  // Add massage type or default to "Erotic"
+  if (massageType) {
+    parts.push(massageType);
+  } else {
+    parts.push("Erotic");
+  }
+
+  parts.push("Massages");
+
+  // Add location
+  if (county && region) {
+    parts.push(`in ${region}, ${county} County`);
+  } else if (county) {
+    parts.push(`in ${county} County`);
+  } else if (region) {
+    parts.push(`in ${region}`);
+  } else {
+    parts.push("in Kenya");
+  }
+
+  return parts.join(" ");
+};
 
 const page = async ({ searchParams }: PageProps) => {
   const params = await searchParams;
-  const page = params.page ? parseInt(params.page) : 1;
+  const currentPage = params.page ? parseInt(params.page) : 1;
 
-  // Check if any filters are applied
-  const hasFilters = !!(params.county || params.region || params.massageType);
+  // Fetch massage escorts based on filters
+  const data = await fetchMassageEscorts({
+    county: params.county,
+    region: params.region,
+    massageType: params.massageType,
+    page: currentPage,
+    limit: ITEMS_PER_PAGE,
+    gender: "girl", // Default to girls for massage escorts
+  });
 
-  let result;
-
-  console.log("params", params);
-  if (hasFilters) {
-    // Use filtered search when any filter is applied
-    result = await getFilteredMassageEscorts({
-      county: params.county,
-      region: params.region,
-      massageType: params.massageType,
-      page: page,
-      limit: ITEMS_PER_PAGE,
-    });
-  } else {
-    // Show erotic massage escorts by default when no filters
-    result = await getAllEroticMassageEscorts(page, ITEMS_PER_PAGE);
-  }
-
-  console.log("masseuses +++ =>>", result.data.escorts);
-  console.log("pagination info =>>", result.data.pagination);
+  console.log("Fetched massage escorts:", data);
 
   // Generate dynamic title
   const listHeaderTitle = generateListHeaderTitle({
     county: params.county,
     region: params.region,
     massageType: params.massageType,
-    total: result.data.pagination.total,
+    total: data.total,
   });
 
   return (
     <>
-      <div className="bg-black  p-5 pb-6 -mt-4.5">
+      <div className="bg-black p-5 pb-6 -mt-4.5">
         <MassageTypeFilterInput />
       </div>
-      <ListHeader title={listHeaderTitle} subTitle="Girls for sex" />
-      <GirlList girls={(result.data.escorts as any) || []} />
+
+      <ListHeader
+        title={listHeaderTitle}
+        subTitle={
+          params.massageType
+            ? `${params.massageType} specialists`
+            : "Erotic massages"
+        }
+      />
+
+      {data.total === 0 && <NotFoundList />}
+      {data.total > 0 && <GirlList girls={data.escorts as any} />}
+
       <ClientPaginationWrapper
-        totalPages={result.data.pagination.totalPages}
-        currentPage={page}
-        totalItems={result.data.pagination.total}
+        totalPages={data.totalPages}
+        currentPage={currentPage}
+        totalItems={data.total}
         itemsPerPage={ITEMS_PER_PAGE}
       />
+
       <SectionArticle />
     </>
   );

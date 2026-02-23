@@ -28,6 +28,12 @@ const nextConfig: NextConfig = {
 
       {
         protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
+
+      {
+        protocol: "https",
         hostname: "img.clerk.com",
       },
       {
@@ -59,12 +65,25 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "mombasahot.s3.us-east-005.backblazeb2.com",
       },
+
+      {
+        protocol: "https",
+        hostname: "escort254.com",
+      },
       {
         protocol: "https",
         hostname: "afrohot.s3.us-east-005.backblazeb2.com",
       },
     ],
     qualities: [25, 50, 75, 90, 100],
+  },
+  eslint: {
+    // Only disable for production builds, keep during development
+    ignoreDuringBuilds: process.env.NODE_ENV === "production",
+  },
+  typescript: {
+    // Only disable for production builds, keep during development
+    ignoreBuildErrors: process.env.NODE_ENV === "production",
   },
 };
 

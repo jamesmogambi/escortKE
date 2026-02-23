@@ -4,12 +4,12 @@ import React from "react";
 
 interface Prop {
   classNameName?: string;
-  girl: Girl;
+  girl: any;
 }
 
 // TODO: MAKE TABS RESPONSIVE ON MOBILE PHONES
 const About = ({ girl, classNameName }: Prop) => {
-  const { age, height, weight, breasts } = girl;
+  const { age, height, weight, breasts, breastSize } = girl;
   return (
     <div className={cn("py-6", classNameName)}>
       <h5 className="underline text-xl text-white font-semibold">
@@ -18,21 +18,21 @@ const About = ({ girl, classNameName }: Prop) => {
       <div className="grid py-6 grid-cols-2 md:grid-cols-3 gap-6 lg:gap-24 ">
         {/* <!-- Column 1 --> */}
         <div className="space-y-8">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 justify-between">
             <span className="text-primary text-sm font-bold lg:text-lg">
               Age:
             </span>
-            <span className="text-white text-sm font-bold lg:text-lg">
-              {age} years
+            <span className="text-white text-nowrap text-sm font-bold lg:text-lg">
+              {`${age} years` || "Not Specified"}
             </span>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 justify-between">
             <span className="text-primary font-bold text-sm lg:text-lg">
               Height:
             </span>
-            <span className="text-white font-bold text-sm lg:text-lg">
-              {height} cm
+            <span className="text-white  text-nowrap font-bold text-sm lg:text-lg">
+              {"  "} {height || "   Not Specified"}
             </span>
           </div>
 
@@ -46,20 +46,20 @@ const About = ({ girl, classNameName }: Prop) => {
 
         {/* <!-- Column 2 --> */}
         <div className="space-y-8">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center   gap-2 justify-between">
             <span className="text-primary font-bold text-sm lg:text-lg">
               Breasts:
             </span>
-            <span className="text-white font-bold text-sm lg:text-lg">
-              {breasts}{" "}
+            <span className="text-white text-nowrap font-bold text-sm lg:text-lg">
+              {breastSize || "Not Specified"}
             </span>
           </div>
-          <div className="flex lg:hidden items-center justify-between">
+          <div className="flex lg:hidden flex-nowrap  gap-2 items-center justify-between">
             <span className="text-primary font-bold text-sm lg:text-lg">
               Weight:
             </span>
-            <span className="text-white font-bold text-sm lg:text-lg">
-              {weight}{" "}
+            <span className="text-white text-nowrap font-bold text-sm lg:text-lg">
+              {weight || "Not Specified"}
             </span>
           </div>
           <div className="lg:flex hidden items-center justify-between">
@@ -72,12 +72,12 @@ const About = ({ girl, classNameName }: Prop) => {
 
         {/* <!-- Column 3 --> */}
         <div className="space-y-8 hidden lg:block">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 justify-between">
             <span className="text-primary font-bold text-sm lg:text-lg">
               Weight:
             </span>
-            <span className="text-white font-bold text-sm lg:text-lg">
-              {weight} kg
+            <span className="text-white text-nowrap font-bold text-sm lg:text-lg">
+              {weight || "Not Specified"}
             </span>
           </div>
         </div>

@@ -1,9 +1,12 @@
+// lib/scrapers/afrohot/helper.ts
 import { getLocationIds } from "@/actions/location";
 import { initBrightData } from "@/lib/brightData";
 import { connectToDB } from "@/lib/mongoose";
-import Escort, { defaultOpeningHours } from "@/models/Escort";
+import Escort from "@/models/Escort";
+import { Region } from "@/models/Region";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import { Types } from "mongoose";
 
 function extractRate(text: string): string {
   if (text.includes("ASK")) {
@@ -13,13 +16,12 @@ function extractRate(text: string): string {
   return rateMatch ? rateMatch[1] : "";
 }
 
-// Helper function to generate a consistent slug (without timestamp)
 function generateConsistentSlug(name: string, city: string): string {
   const nameSlug = name
     .toLowerCase()
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-]/g, "")
-    .replace(/-+/g, "-"); // Remove consecutive dashes
+    .replace(/-+/g, "-");
 
   const citySlug = (city || "unknown")
     .toLowerCase()
@@ -43,12 +45,12 @@ export async function ScrapGirlandSave(
     const html = response.data;
     const $ = cheerio.load(html);
 
-    // Extract basic info first to check for duplicates
+    // Extract basic info
     const imageAlt = $(".escort-gallery img").first().attr("alt") || "";
     const name = imageAlt.split("-")[0]?.trim() || "Unknown";
 
-    // Get city from the page
-    let city = region; // Default to passed region
+    // Get city/region from the page
+    let city = region;
     $(".more-info li").each((i, el) => {
       const label = $(el).find("span:first-child").text().trim().toLowerCase();
       if (label === "city") {
@@ -59,157 +61,64 @@ export async function ScrapGirlandSave(
       }
     });
 
-    // Generate consistent slug (NO TIMESTAMP for duplicate checking)
+    // Generate consistent slug
     const consistentSlug = generateConsistentSlug(name, city);
 
-    // Check for duplicates using multiple criteria
-    const existingEscort = await Escort.findOne({
-      $or: [
-        { sourceUrl: escortURL },
-        { slug: { $regex: `^${consistentSlug}` } }, // Match beginning of slug
-        {
-          name: { $regex: new RegExp(`^${name}$`, "i") }, // Case-insensitive name match
-          town: city,
-        },
-      ],
-    });
-
-    if (existingEscort) {
-      console.log(
-        `⚠️ Duplicate found: "${name}" from ${city}. Already exists with ID: ${existingEscort._id}`,
-      );
-      return {
-        _id: existingEscort._id,
-        name: existingEscort.name,
-        slug: existingEscort.slug,
-        plan: existingEscort.plan,
-        isDuplicate: true,
-        existingData: existingEscort,
-      };
-    }
-
-    // If no duplicate found, continue with full scraping
-    const escortData = {
-      sourceUrl: escortURL,
-      name,
-      age: "",
-      gender: "",
-      nationality: "",
-      ethnicity: "",
-      sexualOrientation: "",
-      languages: [] as string[],
-      description: "",
-
-      country: county,
-      city: city,
-      location: "",
-
-      bustSize: "",
-      height: "",
-      hairColor: "",
-      weight: "",
-      shaved: "",
-      smokes: "",
-
-      practices: [] as string[],
-      bdsm: [] as string[],
-      massage: [] as string[],
-      extraServices: [] as string[],
-      categories: [] as string[],
-
-      incallRate: "",
-      outcallRate: "",
-
-      images: [] as string[],
-      videos: [] as string[],
-      previewPhoto: "",
-
-      reviews: [] as Array<{
-        reviewer: string;
-        rating: string;
-        date: string;
-        content: string;
-      }>,
-      questions: [] as string[],
-
-      isActive: true,
-      isVerified: false,
-      source: "afrohot",
-      plan: "basic" as "basic" | "vip" | "premium",
-
-      slug: "", // Will be set with timestamp later
-      telephone: "",
-      whatsappPhone: "",
-      email: "",
-      labels: [] as string[],
-      availability: [] as string[],
-      rates: [] as Array<{ duration: string; incall: string; outcall: string }>,
-      openingHours: defaultOpeningHours,
-      ageCategory: "",
-      character: "",
-      experience: "",
-    };
-
     // Get description
-    escortData.description =
+    const description =
       $(".description p").first().text().trim() ||
       $(".description").first().text().trim();
 
     // Extract images
+    const images: string[] = [];
     $(".escort-gallery img").each((i, el) => {
       const imgUrl = $(el).attr("src");
-      if (imgUrl && !escortData.images.includes(imgUrl)) {
-        escortData.images.push(imgUrl);
+      if (imgUrl && !images.includes(imgUrl)) {
+        images.push(imgUrl);
       }
     });
 
     $(".escort-gallery a").each((i, el) => {
       const imgUrl = $(el).attr("href");
-      if (imgUrl && !escortData.images.includes(imgUrl)) {
-        escortData.images.push(imgUrl);
+      if (imgUrl && !images.includes(imgUrl)) {
+        images.push(imgUrl);
       }
     });
 
-    escortData.previewPhoto = escortData.images[0] || "";
+    const previewPhoto = images[0] || "";
 
     // Extract services
+    const practices: string[] = [];
+    const bdsm: string[] = [];
+    const massage: string[] = [];
+    const extraServices: string[] = [];
+    const categories: string[] = [];
+
     $(".description a.bg-secondary").each((i, el) => {
       const service = $(el).text().trim();
       if (service) {
-        const serviceLower = service.toLowerCase();
+        // Add to practices (ALL services go here)
+        if (!practices.includes(service)) {
+          practices.push(service);
+        }
 
+        // Also add to categories
+        if (!categories.includes(service)) {
+          categories.push(service);
+        }
+
+        // Keep these for backward compatibility
+        const serviceLower = service.toLowerCase();
         if (serviceLower.includes("bdsm")) {
-          if (!escortData.bdsm.includes(service)) {
-            escortData.bdsm.push(service);
-          }
+          if (!bdsm.includes(service)) bdsm.push(service);
         } else if (
           serviceLower.includes("massage") ||
           serviceLower.includes("handjob") ||
           serviceLower.includes("fisting")
         ) {
-          if (!escortData.massage.includes(service)) {
-            escortData.massage.push(service);
-          }
-        } else if (
-          serviceLower.includes("fetish") ||
-          serviceLower.includes("anal") ||
-          serviceLower.includes("deep throat") ||
-          serviceLower.includes("threesome") ||
-          serviceLower.includes("lesbian") ||
-          serviceLower.includes("webcam") ||
-          serviceLower.includes("sex")
-        ) {
-          if (!escortData.practices.includes(service)) {
-            escortData.practices.push(service);
-          }
+          if (!massage.includes(service)) massage.push(service);
         } else {
-          if (!escortData.extraServices.includes(service)) {
-            escortData.extraServices.push(service);
-          }
-        }
-
-        if (!escortData.categories.includes(service)) {
-          escortData.categories.push(service);
+          if (!extraServices.includes(service)) extraServices.push(service);
         }
       }
     });
@@ -217,8 +126,24 @@ export async function ScrapGirlandSave(
     // Extract rates
     const incallText = $(".up-down div:first-child p").text().trim();
     const outcallText = $(".up-down div:last-child p").text().trim();
-    escortData.incallRate = extractRate(incallText);
-    escortData.outcallRate = extractRate(outcallText);
+    const incallRate = extractRate(incallText);
+    const outcallRate = extractRate(outcallText);
+
+    // Initialize extracted fields
+    let age = "";
+    let gender = "";
+    let nationality = "";
+    let ethnicity = "";
+    let sexualOrientation = "";
+    const languages: string[] = [];
+    let location = "";
+    let bustSize = "";
+    let height = "";
+    let hairColor = "";
+    let weight = "";
+    let telephone = "";
+    let whatsappPhone = "";
+    let email = "";
 
     // Extract other details
     $(".more-info li").each((i, el) => {
@@ -229,72 +154,48 @@ export async function ScrapGirlandSave(
       switch (label) {
         case "languages":
           if (value) {
-            const languages = value.split(",").map((lang) => lang.trim());
-            escortData.languages = languages.filter(
-              (lang) => lang && lang !== "N/A" && lang !== "",
+            const langs = value.split(",").map((lang) => lang.trim());
+            languages.push(
+              ...langs.filter((lang) => lang && lang !== "N/A" && lang !== ""),
             );
           }
           break;
         case "orientation":
-          escortData.sexualOrientation = value;
+          sexualOrientation = value;
           break;
         case "ethnicity":
-          escortData.ethnicity = value || "";
+          ethnicity = value || "";
           break;
         case "age":
-          escortData.age = value;
-          break;
-        case "smokes?":
-          escortData.smokes = value;
+          age = value;
           break;
         case "nationality":
-          escortData.nationality = value;
+          nationality = value;
           break;
         case "location":
-          escortData.location = linkValue;
+          location = linkValue;
           break;
         case "bust":
-          escortData.bustSize = value || "";
+          bustSize = value || "";
           break;
         case "height":
           const cmMatch = value.match(/(\d+)\s*cm/i);
-          escortData.height = cmMatch ? cmMatch[1] + " cm" : value;
-          break;
-        case "shaved":
-          escortData.shaved = value;
+          height = cmMatch ? cmMatch[1] + " cm" : value;
           break;
         case "hair color":
-          escortData.hairColor = value;
+          hairColor = value;
           break;
         case "gender":
-          escortData.gender = value;
+          gender = value;
           break;
       }
     });
 
-    // Generate final slug WITH timestamp (for unique database entry)
-    escortData.slug = `${consistentSlug}-${Date.now().toString().slice(-6)}`;
-
-    // Add labels
-    const labels = [];
-    if (escortData.bdsm.length > 0) labels.push("BDSM");
-    if (escortData.images.length > 3) labels.push("Multiple Photos");
-    if (escortData.reviews.length > 0) labels.push("Reviewed");
-    if (escortData.incallRate !== "ASK" || escortData.outcallRate !== "ASK") {
-      labels.push("Rates Available");
-    }
-    escortData.labels = labels;
-
-    escortData.availability = [
-      "Available for incalls",
-      "Available for outcalls",
-    ];
-
-    // Extract contact info from HTML
+    // Extract contact info
     const emailMatch = html.match(
       /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/,
     );
-    escortData.email = emailMatch
+    email = emailMatch
       ? emailMatch[0]
       : `${name.toLowerCase().replace(/\s+/g, ".")}@afrohot.com`;
 
@@ -302,39 +203,42 @@ export async function ScrapGirlandSave(
       /(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g,
     );
     if (phoneMatch && phoneMatch.length > 0) {
-      escortData.telephone = phoneMatch[0];
+      telephone = phoneMatch[0];
       if (html.toLowerCase().includes("whatsapp") || html.includes("wa.me")) {
-        escortData.whatsappPhone = phoneMatch[0];
+        whatsappPhone = phoneMatch[0];
       }
     }
 
     // Create rates array
-    if (escortData.incallRate && escortData.incallRate !== "ASK") {
-      escortData.rates.push({
+    const rates: Array<{ duration: string; incall: string; outcall?: string }> =
+      [];
+    if (incallRate && incallRate !== "ASK") {
+      rates.push({
         duration: "1 hour",
-        incall: escortData.incallRate,
-        outcall: escortData.outcallRate !== "ASK" ? escortData.outcallRate : "",
+        incall: incallRate,
+        outcall: outcallRate !== "ASK" ? outcallRate : "",
       });
     }
 
-    // Get location IDs
+    // Generate labels
+    const labels: string[] = [];
+    if (bdsm.length > 0) labels.push("BDSM");
+    if (practices.length > 5) labels.push("Many Services");
+    if (images.length > 3) labels.push("Multiple Photos");
+    if (rates.length > 0) labels.push("Rates Available");
+    if (incallRate && incallRate !== "ASK") labels.push("Incall Available");
+    if (outcallRate && outcallRate !== "ASK") labels.push("Outcall Available");
+    if (languages.length > 1) labels.push("Multilingual");
 
-    // Use the helper with auto-create for regions
-    const locationIds = await getLocationIds(
-      county,
-      region,
-      true, // Default to true for auto-creating regions
-    );
+    const availability = ["Available for incalls", "Available for outcalls"];
 
-    // If county is not found, we cannot proceed
-    // If county is not found, we cannot proceed
+    // ============ UPDATED: Get Location IDs ============
+    const locationIds = await getLocationIds(county, region, true);
+
     if (!locationIds.countyId) {
       const errorMsg = `County "${county}" not found in database. Please add county first.`;
       console.warn(`⚠️ ${errorMsg}`);
-
-      // You might want to log this to a separate table for manual review
-      await logMissingCounty(county, region, escortData.name);
-
+      await logMissingCounty(county, region, name);
       return {
         success: false,
         action: "skipped",
@@ -348,65 +252,260 @@ export async function ScrapGirlandSave(
       countyCode: locationIds.countyCode,
     });
 
-    // Prepare data for Mongoose model
-    const escortModelData = {
-      name: escortData.name,
-      email: escortData.email,
-      labels: escortData.labels,
-      age: escortData.age || "",
-      telephone: escortData.telephone || "",
-      whatsappPhone: escortData.whatsappPhone || "",
-      images: escortData.images,
-      videos: escortData.videos,
-      about: escortData.description || "",
-      availability: escortData.availability,
-      ethnicity: escortData.ethnicity || "",
-      nationality: escortData.nationality || "",
-      bustSize: escortData.bustSize || "",
-      weight: escortData.weight || "",
-      source: escortData.source,
-      sexualOrientation: escortData.sexualOrientation || "",
-      languages: escortData.languages,
-      categories: escortData.categories,
-      estate: escortData.location || "",
-      address: `${escortData.location || ""}, ${escortData.city || region}, ${escortData.country || county}`,
-      practices: escortData.practices,
-      bdsm: escortData.bdsm,
-      massage: escortData.massage,
-      extraServices: escortData.extraServices,
-      slug: escortData.slug,
-      openingHours: defaultOpeningHours,
-      rates: escortData.rates,
-      role: "escort" as const,
-      isActive: true,
-      isVerified: false,
-      street: escortData.location || "",
-      // region: escortData.city || region,
-      user: undefined,
-      breastSize: escortData.bustSize || "",
-      ageCategory: escortData.ageCategory || "",
-      character: escortData.character || "",
-      hairColor: escortData.hairColor || "",
-      experience: escortData.experience || "",
-      plan: escortData.plan,
-      previewPhoto: escortData.previewPhoto || "",
-      username: escortData.slug,
-      sourceUrl: escortURL,
-      country: "Kenya",
-      county: locationIds.countyId,
-      countyCode: locationIds.countyCode || undefined,
-      ...(locationIds.regionId && { region: locationIds.regionId }),
-      // region: locationIds.regionId || undefined,
-      // source:"scraped-afrohot",
+    // ============ UPDATED: Determine Region ID ============
+    let regionId: Types.ObjectId | null = null;
+
+    // First, try to find region by name
+    if (city && city !== region) {
+      // const Region = (await import("@/models/Region")).default;
+      const foundRegion = await Region.findOne({
+        name: { $regex: new RegExp(`^${city}$`, "i") },
+        county: locationIds.countyId,
+      });
+      if (foundRegion) {
+        regionId = foundRegion._id;
+      }
+    }
+
+    // Fallback to the region from params
+    if (!regionId && locationIds.regionId) {
+      regionId = locationIds.regionId;
+    }
+
+    // ============ UPDATED: Default opening hours ============
+    const defaultOpeningHours = {
+      monday: "Not Specified",
+      tuesday: "Not Specified",
+      wednesday: "Not Specified",
+      thursday: "Not Specified",
+      friday: "Not Specified",
+      saturday: "Not Specified",
+      sunday: "Not Specified",
     };
 
-    // Save new escort
+    // ============ UPDATED: Map gender to enum ============
+    let mappedGender:
+      | "girl"
+      | "boy"
+      | "transgender"
+      | "non-binary"
+      | "other"
+      | undefined;
+    if (gender) {
+      const genderLower = gender.toLowerCase();
+      if (
+        genderLower.includes("girl") ||
+        genderLower.includes("female") ||
+        genderLower.includes("lady")
+      ) {
+        mappedGender = "girl";
+      } else if (
+        genderLower.includes("boy") ||
+        genderLower.includes("male") ||
+        genderLower.includes("man")
+      ) {
+        mappedGender = "boy";
+      } else if (
+        genderLower.includes("trans") ||
+        genderLower.includes("tgirl") ||
+        genderLower.includes("transgender")
+      ) {
+        mappedGender = "transgender";
+      } else if (
+        genderLower.includes("non-binary") ||
+        genderLower.includes("non binary")
+      ) {
+        mappedGender = "non-binary";
+      } else {
+        mappedGender = "other";
+      }
+    }
+
+    // ============ UPDATED: Prepare location data for new schema ============
+    const regions: Types.ObjectId[] = [];
+    const locations = [];
+
+    if (regionId) {
+      regions.push(regionId);
+
+      // Create location object
+      locations.push({
+        region: regionId,
+        town: city || region,
+        estate: location || "",
+        address: `${location || ""}, ${city || region}, Kenya`,
+        street: location || "",
+        postalCode: "",
+        isActive: true,
+        notes: `Scraped from afrohot.com on ${new Date().toISOString().split("T")[0]}`,
+      });
+    }
+
+    // ============ UPDATED: Prepare data for Mongoose model ============
+    const escortModelData = {
+      // Basic info
+      name: name,
+      username: `${consistentSlug}-${Date.now().toString().slice(-6)}`,
+      previewPhoto: previewPhoto,
+      email: email,
+      labels: labels,
+      age: age || "",
+      telephone: telephone || "",
+      whatsappPhone: whatsappPhone || telephone || "",
+      images: images,
+      videos: [],
+      about: description || "",
+      availability: availability,
+
+      // Demographics
+      ethnicity: ethnicity || "",
+      nationality: nationality || "",
+
+      // Physical attributes
+      bustSize: bustSize || "",
+      weight: weight || "",
+      breastSize: bustSize || "",
+
+      // Other attributes
+      source: "afrohot",
+      zodiacSign: "",
+      sexualOrientation: sexualOrientation || "",
+      gender: mappedGender,
+
+      // Languages and categories
+      languages: languages,
+      categories: [...new Set(categories)],
+
+      // ============ UPDATED: Location fields - Multi-region support ============
+      country: "Kenya",
+      county: locationIds.countyId as Types.ObjectId,
+      countyCode: locationIds.countyCode || "",
+
+      // NEW: Multi-region arrays
+      regions: regions,
+      primaryRegion: regions.length > 0 ? regions[0] : undefined,
+      locations: locations,
+
+      // Services
+      practices: [...new Set(practices)],
+      bdsm: [...new Set(bdsm)],
+      massage: [...new Set(massage)],
+      extraServices: [...new Set(extraServices)],
+
+      // SEO
+      slug: `${consistentSlug}-${Date.now().toString().slice(-6)}`,
+
+      // Hours
+      openingHours: defaultOpeningHours,
+
+      // Rates
+      rates: rates,
+
+      // Role and status
+      role: "escort",
+      isActive: true,
+      isVerified: false,
+      isFeatured: false,
+
+      // Physical attributes (again)
+      // breastSize: bustSize || "",
+      ageCategory: "",
+      character: "",
+      hairColor: hairColor || "",
+      experience: "",
+
+      // Work type
+      workType: "independent",
+
+      // Plan
+      plan: {
+        type: "basic",
+        isActive: true,
+        features: [],
+      },
+
+      // Statistics
+      totalBookings: 0,
+      totalReviews: 0,
+      rating: 0,
+      totalViews: 0,
+
+      // Migration metadata
+      migrationVersion: "2.0",
+      migratedAt: new Date(),
+
+      // Source tracking
+      sourceUrl: escortURL,
+    };
+
+    console.log("escort model data ==>", escortModelData);
+
+    // ============ UPDATED: Check for duplicate ============
+    const existingEscort = await Escort.findOne({
+      $or: [
+        { sourceUrl: escortURL },
+        { slug: consistentSlug },
+        {
+          name: { $regex: new RegExp(`^${name}$`, "i") },
+          "locations.town": city,
+        },
+      ],
+    });
+
+    if (existingEscort) {
+      console.log(
+        `⚠️ Duplicate found: "${name}" from ${city}. Already exists with ID: ${existingEscort._id}`,
+      );
+
+      // ============ UPDATED: Update existing escort with new location if needed ============
+      if (regionId && existingEscort.regions) {
+        // Check if this region is already associated
+        if (
+          !existingEscort.regions.some(
+            (r: Types.ObjectId) => r.toString() === regionId?.toString(),
+          )
+        ) {
+          // Add new region and location to existing escort
+          await Escort.findByIdAndUpdate(existingEscort._id, {
+            $addToSet: {
+              regions: regionId,
+              locations: {
+                region: regionId,
+                town: city || region,
+                estate: location || "",
+                address: `${location || ""}, ${city || region}, Kenya`,
+                street: location || "",
+                postalCode: "",
+                isActive: true,
+                notes: `Added from scraper on ${new Date().toISOString().split("T")[0]}`,
+              },
+            },
+          });
+          console.log(`   ✅ Added new region ${city} to existing escort`);
+        }
+      }
+
+      return {
+        _id: existingEscort._id,
+        name: existingEscort.name,
+        slug: existingEscort.slug,
+        plan: existingEscort.plan,
+        isDuplicate: true,
+        existingData: existingEscort,
+      };
+    }
+
+    // ============ UPDATED: Save new escort ============
     const newEscort = await Escort.create(escortModelData);
     console.log(`✅ New escort saved: ${newEscort.name} (${newEscort._id})`);
+    console.log(`   📍 Regions: ${newEscort.regions?.length || 0}`);
+    console.log(`   📍 Locations: ${newEscort.locations?.length || 0}`);
+    console.log(`   🛠️ Services: ${newEscort.practices?.length || 0}`);
+
     return newEscort;
   } catch (error: any) {
-    console.error("Scraping error for URL:", escortURL);
-    console.error("Error details:", error.message);
+    console.error("❌ Scraping error for URL:", escortURL);
+    console.error("   Error details:", error.message);
 
     return {
       error: true,
@@ -417,14 +516,12 @@ export async function ScrapGirlandSave(
   }
 }
 
-// Helper to log missing counties for manual review
+// Helper to log missing counties
 async function logMissingCounty(
   countyName: string,
   regionName: string,
   escortName?: string,
 ) {
-  // You can create a separate collection for missing locations
-  // For now, just log to console/file
   const logEntry = {
     timestamp: new Date(),
     countyName,
@@ -432,9 +529,8 @@ async function logMissingCounty(
     escortName,
     type: "MISSING_COUNTY",
   };
-
   console.log("📋 Missing County Log:", logEntry);
 
-  // Optional: Save to a MongoDB collection
+  // Optional: Save to a database collection
   // await MissingLocation.create(logEntry);
 }

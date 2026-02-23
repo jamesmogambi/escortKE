@@ -211,3 +211,34 @@ export async function updateEscortProfile(data: any) {
     throw new Error(error?.message || "Failed to update escort profile");
   }
 }
+
+export async function getEscortByUsername(username: string) {
+  try {
+    await connectToDB();
+
+    const escort = await Escort.findOne({ username })
+      .populate("countyDetails", "name code")
+      .populate("regionDetails", "name")
+      .populate("agencyDetails", "name slug isVerified")
+      .lean()
+      .exec();
+
+    if (!escort) {
+      return { success: false, error: "Escort not found" };
+    }
+
+    // Convert MongoDB ObjectId and Date to strings for serialization
+    const serializedEscort = JSON.parse(JSON.stringify(escort));
+
+    return {
+      success: true,
+      data: serializedEscort,
+    };
+  } catch (error) {
+    console.error("Error fetching escort by username:", error);
+    return {
+      success: false,
+      error: "Failed to fetch escort",
+    };
+  }
+}

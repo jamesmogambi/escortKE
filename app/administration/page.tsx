@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 import SectionCard from "@/components/SectionCard";
 import React from "react";
 import TextSection from "./TextSection";

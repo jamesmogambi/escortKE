@@ -6,7 +6,16 @@ export function initBrightData() {
   const port = 33335;
   // const port = 22225;
   const session_id = (1000000 * Math.random()) | 0;
-  const options = {
+  const options: {
+    auth: {
+      username: string;
+      password: string;
+    };
+    host: string;
+    port: number;
+    rejectUnauthorized: boolean;
+    headers?: Record<string, string>;
+  } = {
     auth: {
       username: `${username}-session-${session_id}`,
       password,

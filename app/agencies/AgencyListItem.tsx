@@ -6,35 +6,40 @@ import "swiper/css/pagination";
 import { cn, getFirstName } from "@/lib/utils";
 import Image from "next/image";
 import React from "react";
+import { AgencyListing, EscortSummary, IAgency } from "@/types/agency.types";
 
 interface Prop {
   className?: string;
-  agency: any; // Replace 'any' with the actual type of agency if known
+  agency: AgencyListing; // Replace 'any' with the actual type of agency if known
 }
 const AgencyListItem = ({ agency, className }: Prop) => {
-  const { name, description, coverImage, agencyPhone, members } = agency;
+  const { name, description, coverImage, employees, contactPhone } = agency;
+
+  console.log("agency list item", { ...agency });
   return (
     <div
       className={cn(
         " border border-white/20 overflow-hidden rounded-md h-[800px] lg:h-[410px] flex flex-col lg:flex-row gap-3 ",
-        className
+        className,
       )}
     >
       {/* // box 1 */}
       <div className="w-full  h-[700px]   relative  lg:h-full lg:w-1/2 ">
-        <Image
-          src={coverImage}
-          fill
-          className="object-cover"
-          priority
-          alt={name}
-          quality={90}
-        />
+        {coverImage && (
+          <Image
+            src={coverImage}
+            fill
+            className="object-cover"
+            priority
+            alt={name}
+            quality={90}
+          />
+        )}
       </div>
 
       {/* // box 2 */}
       <div className="w-full p-3   border-yellow-900 h-full lg:w-1/2">
-        <h3 className="text-3xl font-bold">{name}</h3>
+        <h3 className="text-2xl text-primary font-bold">{name}</h3>
 
         <div className="flex items-center mt-3 gap-3 text-white/40">
           <svg
@@ -50,7 +55,7 @@ const AgencyListItem = ({ agency, className }: Prop) => {
             />
           </svg>
 
-          <span className="text-xl">{agencyPhone}</span>
+          <span className="text-xl font-semibold">{contactPhone}</span>
         </div>
 
         {/* images swipetr */}
@@ -63,27 +68,29 @@ const AgencyListItem = ({ agency, className }: Prop) => {
           scrollbar={{ draggable: true }}
           className="w-full h-[270px] mt-4 "
         >
-          {members.map((member: any, index: any) => (
+          {employees?.map((member: EscortSummary, index: any) => (
             <SwiperSlide key={index} className="w-full border border-white/30">
-              <div className="relative  border-white/40 w-full h-[150px] ">
-                <Image
-                  src={member.image}
-                  alt={`Slide ${index + 1}`}
-                  fill
-                  style={{ objectFit: "cover" }}
-                  quality={90}
-                />
-                <div className="fixed  left-0 bottom-5   right-0 mx-auto text-base font-light text-white/50 w-full flex items-center justify-between">
-                  <span className="mr-5">{getFirstName(member.name)}</span>
+              {member.previewPhoto && (
+                <div className="relative  border-white/40 w-full h-[150px] ">
+                  <Image
+                    src={member.previewPhoto}
+                    alt={`Slide ${index + 1}`}
+                    fill
+                    style={{ objectFit: "cover" }}
+                    quality={90}
+                  />
+                  <div className="fixed  text-sm font-normal  left-0 bottom-5   right-0 mx-auto  text-white/50 w-full flex items-center justify-between">
+                    <span className="">{getFirstName(member.name || "")}</span>
 
-                  <span className="text-right"> {member.age} years old</span>
+                    <span className="text-right"> {member.age} years old</span>
+                  </div>
                 </div>
-              </div>
+              )}
             </SwiperSlide>
           ))}
         </Swiper>
         <p className="text-center drop-shadow-gray-600 bg-[#252525]/70 shadow-inner tracking-wider text-white/40 text-lg font-semibold mb-2 ">
-          {agency.town}
+          {/* {agency.region}, {agency.county} */}
         </p>
       </div>
 

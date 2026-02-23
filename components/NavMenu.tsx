@@ -6,7 +6,6 @@ interface Prop {
   className?: string;
 }
 
-// TODO:// FIX ICONS COLOR AND ICONS
 const NavMenu = ({ className }: Prop) => {
   return (
     <nav className={cn("", className)}>
@@ -14,46 +13,39 @@ const NavMenu = ({ className }: Prop) => {
         <NavItem path="/girls" text="girls for sex">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 50 50"
-            className="text-stone-400/30 size-8 group-hover:text-primary"
+            width="48"
+            height="48"
+            viewBox="0 0 48 48"
+            className="text-stone-400/30 size-10 group-hover:text-primary"
           >
-            <circle
-              cx={22.875}
-              cy={4.625}
-              r={4.125}
-              fill="currentColor"
-            ></circle>
             <path
               fill="currentColor"
-              d="M22 10h-3c-2.82 0-5 1.719-5 4.587V27c0 2 3 2 3 0V15h1v32c0 1.233.768 2 2 2c1.235 0 2-.767 2-2zm13 15l-4.017-10.357C30.634 12.322 28.29 10 25.615 10H23v23.783c.5.002 1 .075 1 .217v13c0 1.04.917 2 2 2c1.086 0 2-.961 2-2V34h3.869c.362 0 1.044-.654 1.044-1c0-.08.029-.931 0-1l-5.909-16.237l-.034-.167c0-.237.199-.429.447-.429c.211 0 .388.141.435.329L31.869 26c.267.601 1.365 1 2.087 1c.965 0 1.065-1.895 1.044-2"
-            ></path>
+              fill-rule="evenodd"
+              d="M40.497.512a1.934 1.934 0 0 1 1.991 1.992c-.068 2.349-.28 4.61-.483 6.383c-.079.685-.478 1.226-1.039 1.46c-.566.238-1.23.134-1.76-.331a55 55 0 0 1-1.404-1.283l-.024.024l-5.499 5.5a14.43 14.43 0 0 1 2.232 7.732c0 7.156-5.184 13.1-12 14.285v2.215h1.5a2.5 2.5 0 1 1 0 5h-1.5v1.5a2.5 2.5 0 1 1-5 0v-1.5h-1.5a2.5 2.5 0 0 1 0-5h1.5v-2.214c-6.817-1.185-12-7.13-12-14.286c0-8.008 6.492-14.5 14.5-14.5c3.358 0 6.449 1.142 8.907 3.058l5.325-5.326l.012-.011a54 54 0 0 1-1.305-1.411c-.459-.517-.572-1.168-.347-1.73c.223-.557.75-.957 1.424-1.043a68 68 0 0 1 6.47-.514M10.51 21.989a9.5 9.5 0 1 1 19 0a9.5 9.5 0 0 1-19 0"
+              clip-rule="evenodd"
+            />
           </svg>
         </NavItem>
-        <NavItem path="erotic-massages" text="erotic massages">
+        <NavItem path="/erotic-massages" text="erotic massages">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 48 48"
-            className="text-stone-400/30 size-8 group-hover:text-primary mr-2 "
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            className="text-stone-400/30 size-10 group-hover:text-primary"
           >
-            <g
+            <path
               fill="none"
               stroke="currentColor"
-              strokeLinejoin="round"
-              strokeWidth={4}
-            >
-              <path
-                fill="currentColor"
-                d="M14 17a2 2 0 0 1 2-2h26a2 2 0 0 1 2 2v6H14z"
-              ></path>
-              <path
-                strokeLinecap="round"
-                d="M26 23L14 37m18-14l12 14M14 23H6m33 8H19M6 13v10m8 0v17m30-17v17M9 14l-6-2"
-              ></path>
-            </g>
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 17a1 1 0 1 0 2 0a1 1 0 1 0-2 0M8 5a1 1 0 1 0 2 0a1 1 0 1 0-2 0M4 22l4-2v-3h12m-9 3h9M8 14l3-2l1-4c3 1 3 4 3 6"
+            />
           </svg>
         </NavItem>
-        <NavItem path="bdsm" text="bdsm">
-          <svg
+        <NavItem path="/bdsm" text="bdsm">
+          {/* <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             className="text-stone-400/30 size-8 group-hover:text-primary"
@@ -66,6 +58,22 @@ const NavMenu = ({ className }: Prop) => {
               strokeWidth={2}
               d="M3 17a1 1 0 1 0 2 0a1 1 0 1 0-2 0M8 5a1 1 0 1 0 2 0a1 1 0 1 0-2 0M4 22l4-2v-3h12m-9 3h9M8 14l3-2l1-4c3 1 3 4 3 6"
             ></path>
+          </svg> */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="48"
+            height="48"
+            viewBox="0 0 48 48"
+            className="text-stone-400/30 size-10 group-hover:text-primary"
+          >
+            <g fill="currentColor">
+              <path d="M14.5 13a3.5 3.5 0 1 0 0-7a3.5 3.5 0 0 0 0 7m4 2a1.5 1.5 0 0 1 .367.046c1.113.28 1.862.959 2.333 1.886c.412.81.613 1.82.78 2.822l1 6a1.5 1.5 0 1 1-2.96.493l-1-6a15 15 0 0 0-.265-1.309L18.5 22c0 1.606 1.703 10.36 2.298 13.37a.99.99 0 0 1-.829 1.173c-4.12.599-6.817.618-10.939.004a.99.99 0 0 1-.823-1.177c.6-2.962 2.293-11.5 2.293-13.37l-.255-3.061c-.087.327-.172.752-.265 1.309l-1 6a1.5 1.5 0 1 1-2.96-.493l1-6c.168-1.003.369-2.011.78-2.823c.472-.926 1.22-1.605 2.334-1.885q.179-.046.364-.046H18.5m-7.869 23.111l.377 3.012a1 1 0 0 0 1.962.119l.72-2.88c-.992-.037-2-.121-3.059-.252m4.685.274l.714 2.857a1 1 0 0 0 1.962-.118l.365-2.913a35 35 0 0 1-3.041.174" />
+              <path
+                fill-rule="evenodd"
+                d="M32 24v-2h-1a4 4 0 0 1-4-4h2a2 2 0 0 0 2 2h1v-4h-1a4 4 0 0 1 0-8h1V6h2v2h1a4 4 0 0 1 4 4h-2a2 2 0 0 0-2-2h-1v4h1a4 4 0 0 1 0 8h-1v2zm3-4h-1v-4h1a2 2 0 1 1 0 4m-4-10h1v4h-1a2 2 0 1 1 0-4m-7 25c0-1.306.835-2.417 2-2.83V26h2v1h10v-1h2v6.17c1.165.413 2 1.524 2 2.83v7h-2v-3H26v3h-2zm14-6h-2v3h2zm-4 0h-2v3h2zm-4 0h-2v3h2zm-3 5a1 1 0 0 0-1 1v2h14v-2a1 1 0 0 0-1-1z"
+                clip-rule="evenodd"
+              />
+            </g>
           </svg>
         </NavItem>
         <NavItem path="/agencies" text="businesses">
@@ -82,7 +90,7 @@ const NavMenu = ({ className }: Prop) => {
             ></path>
           </svg>
         </NavItem>
-        <NavItem path="blog" text="blog">
+        <NavItem path="/blog" text="blog">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -94,23 +102,6 @@ const NavMenu = ({ className }: Prop) => {
             <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
             <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
           </svg>
-
-          {/* <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width={30}
-            height={28}
-            viewBox="0 0 14 14"
-            className="text-stone-400/30 group-hover:text-primary mt-3.5"
-          >
-            <path
-              fill="currentColor"
-              fillRule="evenodd"
-              d="M2.36 1.36c.07-.07.166-.11.265-.11H7A.625.625 0 1 0 7 0H2.625A1.625 1.625 0 0 0 1 1.625v8.649l-.968 2.903a.625.625 0 0 0 .745.804L4.702 13h7.673A1.625 1.625 0 0 0 14 11.375V7a.625.625 0 1 0-1.25 0v4.375a.375.375 0 0 1-.375.375h-7.75a.6.6 0 0 0-.152.019l-2.895.724l.64-1.92a.6.6 0 0 0 .032-.198v-8.75c0-.1.04-.195.11-.265M10.726.246a1.5 1.5 0 0 1 1.641.328h.001l1.057 1.058h.001a1.5 1.5 0 0 1 0 2.129L8.716 8.49a.5.5 0 0 1-.265.139l-3 .54a.5.5 0 0 1-.582-.573l.5-3.04a.5.5 0 0 1 .14-.274L10.24.573a1.5 1.5 0 0 1 .486-.327"
-              clipRule="evenodd"
-              strokeWidth={0.5}
-              stroke="currentColor"
-            ></path>
-          </svg> */}
         </NavItem>
       </ul>
     </nav>

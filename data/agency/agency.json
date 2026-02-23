@@ -1,0 +1,109 @@
+[
+  {
+    "_id": { "$oid": "65f8a1b2c3d4e5f6a7b8c9d8" },
+    "name": "Vintage Beauty SPA",
+    "slug": "vintage-beauty-spa",
+    "description": "Premiere elite spa and agency serving Nairobi's discerning clientele since 2018. We specialize in high-class companions for corporate events, luxury dates, VIP experiences, and therapeutic spa treatments.",
+    "contactEmail": "bookings@vintagespa.com",
+    "contactPhone": "+254712345678",
+    "whatsappPhone": "+254712345678",
+    "website": "https://vintagespa.com",
+    "ownerId": { "$oid": "65f8a1b2c3d4e5f6a7b8c9d4" },
+    "country": "Kenya",
+    "county": { "$oid": "697a2bb3a3a21be5ad4bdc37" },
+    "countyCode": "047",
+    "region": { "$oid": "69805e2b548beeb6775e3871" },
+    "town": "Nairobi",
+    "estate": "Kilimani",
+    "address": "Kilimani Business Centre, 3rd Floor",
+    "street": "Lenana Road",
+    "postalCode": "00100",
+    "businessType": "spa",
+    "categories": [
+      "spa",
+      "massage",
+      "elite",
+      "luxury",
+      "VIP",
+      "models",
+      "wellness"
+    ],
+    "openingHours": {
+      "monday": "09:00-22:00",
+      "tuesday": "09:00-22:00",
+      "wednesday": "09:00-22:00",
+      "thursday": "09:00-23:00",
+      "friday": "09:00-01:00",
+      "saturday": "10:00-02:00",
+      "sunday": "12:00-22:00"
+    },
+    "services": [
+      "GFE",
+      "PSE",
+      "Dinner Dates",
+      "Travel Companion",
+      "Event Escort",
+      "Swedish Massage",
+      "Thai Massage",
+      "Deep Tissue Massage",
+      "Steam Bath",
+      "Sauna",
+      "Aromatherapy"
+    ],
+    "specialties": [
+      "Corporate Functions",
+      "Luxury Travel",
+      "VIP Events",
+      "Foreign Clients",
+      "Therapeutic Treatments",
+      "Couples Packages"
+    ],
+    "isVerified": true,
+    "verificationStatus": "verified",
+    "verificationDocuments": {
+      "businessLicense": "licenses/vintage-spa-license.jpg",
+      "taxCertificate": "licenses/vintage-tax-cert.jpg",
+      "idProof": "ids/owner-id.jpg"
+    },
+    "logo": "https://res.cloudinary.com/dz58xxg6l/image/upload/v1770369646/escorts/agencies/Vintage-beauty-spa-Kilimani_vdyelf.jpg",
+    "coverImage": "https://res.cloudinary.com/dz58xxg6l/image/upload/v1770369646/escorts/agencies/Vintage-beauty-spa-Kilimani_vdyelf.jpg",
+    "gallery": [
+      "https://res.cloudinary.com/dz58xxg6l/image/upload/v1770369646/escorts/agencies/Vintage-beauty-spa-Kilimani_vdyelf.jpg",
+      "https://res.cloudinary.com/dz58xxg6l/image/upload/v1770369646/escorts/agencies/Vintage-beauty-spa-Kilimani_vdyelf.jpg",
+      "https://res.cloudinary.com/dz58xxg6l/image/upload/v1770369646/escorts/agencies/Vintage-beauty-spa-Kilimani_vdyelf.jpg"
+    ],
+    "videos": [],
+    "establishmentYear": 2018,
+    "languages": ["English", "Swahili", "French", "Italian"],
+    "paymentMethods": ["Cash", "M-Pesa", "Bank Transfer", "Credit Card"],
+    "socialMedia": {
+      "instagram": "@VintageBeautySpaNBO",
+      "twitter": "@VintageSpaNairobi",
+      "facebook": "VintageBeautySpaNairobi",
+      "telegram": "@VintageSpaNBO"
+    },
+    "plan": {
+      "type": "premium",
+      "isActive": true,
+      "activatedAt": { "$date": "2024-01-01T00:00:00Z" },
+      "expiresAt": { "$date": "2025-01-01T00:00:00Z" },
+      "features": [
+        "unlimited_employees",
+        "priority_listing",
+        "analytics",
+        "custom_profile"
+      ],
+      "maxEmployees": 50,
+      "maxGalleryImages": 100
+    },
+    "rating": 4.8,
+    "totalReviews": 156,
+    "totalBookings": 1200,
+    "totalViews": 50000,
+    "featuredEmployeesCount": 12,
+    "isActive": true,
+    "isFeatured": true,
+    "createdAt": { "$date": "2024-01-15T10:00:00Z" },
+    "updatedAt": { "$date": "2024-01-15T10:00:00Z" }
+  }
+]

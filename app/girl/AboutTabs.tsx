@@ -2,35 +2,31 @@ import { cn, slugify } from "@/lib/utils";
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import About from "./About";
-import { practices } from "@/fixtures/practice";
+// import { practices } from "@/fixtures/practice";
 import Link from "next/link";
+import { openingHoursToArray } from "@/lib/opening-hours";
 
 interface Prop {
   className?: string;
-  girl: Girl;
-}
-
-interface WorkDay {
-  id: string;
-  date: string; // ISO date string: "2025-08-20"
-  startTime: string; // "09:00"
-  endTime: string; // "17:30"
+  girl: any;
 }
 
 const AboutTabs = ({ girl, className }: Prop) => {
-  const { photos, videos } = girl;
+  const { age, practices, openingHours } = girl;
 
-  const days = Array.from({ length: 7 }, (_, i) => {
-    // const date = new Date(today);
-    // date.setDate(today.getDate() + i);
+  // const days = Array.from({ length: 7 }, (_, i) => {
+  //   // const date = new Date(today);
+  //   // date.setDate(today.getDate() + i);
 
-    return {
-      id: i.toString(),
-      day: "Monday",
-      startTime: "09:00",
-      endTime: "17:30",
-    };
-  });
+  //   return {
+  //     id: i.toString(),
+  //     day: "Monday",
+  //     startTime: "09:00",
+  //     endTime: "17:30",
+  //   };
+  // });
+
+  const days = openingHoursToArray(openingHours);
 
   const [firstFive, lastTwo] = [days.slice(0, 5), days.slice(5)];
 
@@ -73,15 +69,16 @@ const AboutTabs = ({ girl, className }: Prop) => {
           <About girl={girl} />
         </TabsContent>
         <TabsContent className="text-base" value="openingHours">
-          <div className="inline-flex flex-col lg:flex-row gap-12 p-4">
+          <div className="inline-flex flex-col lg:flex-row lg:gap-12 p-4">
             {/* Column 1 */}
             <div className="space-y-2 basis-full lg:basis-1/2">
-              {firstFive.map((item, index) => (
-                <div key={index} className="">
-                  <span className="mr-4 text-white/40">{item.day}:</span>
-                  {"             "}
-                  <span className="font-medium">
-                    {item.startTime}-{item.endTime}
+              {firstFive.map((item, index: React.Key | null | undefined) => (
+                <div key={index} className="flex items-center justify-between">
+                  <span className="mr-4 text-white/40 whitespace-nowrap">
+                    {item.day}:
+                  </span>
+                  <span className="font-medium truncate min-w-0">
+                    {item.hours}
                   </span>
                 </div>
               ))}
@@ -89,12 +86,13 @@ const AboutTabs = ({ girl, className }: Prop) => {
 
             {/* Column 2 */}
             <div className="space-y-2 basis-full lg:basis-1/2">
-              {lastTwo.map((item, index) => (
-                <div key={index} className="">
-                  <span className="mr-4 text-white/40">{item.day}:</span>
-                  {"             "}
-                  <span className="font-medium">
-                    {item.startTime}-{item.endTime}
+              {lastTwo.map((item, index: React.Key | null | undefined) => (
+                <div key={index} className="flex items-center justify-between ">
+                  <span className="mr-4 text-white/40 whitespace-nowrap">
+                    {item.day}:
+                  </span>
+                  <span className="font-medium truncate min-w-0">
+                    {item.hours}
                   </span>
                 </div>
               ))}
@@ -105,13 +103,14 @@ const AboutTabs = ({ girl, className }: Prop) => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4">
             {[col1, col2, col3].map((column, i) => (
               <div key={i} className="space-y-3 flex flex-col">
-                {column.map((item, j) => (
+                {column.map((practice: any, j) => (
                   <Link
-                    href={`/practices/${slugify(item.practice)}`}
+                    href={`/girls?practice=${practice}`}
+                    // href={`/practices/${slugify(practice)}`}
                     key={j}
                     className="bg-primary font-medium text-white  text-center rounded-full p-2.5 "
                   >
-                    {item.practice}
+                    {practice}
                   </Link>
                 ))}
               </div>

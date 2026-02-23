@@ -4,33 +4,35 @@ import GirlItem from "./GirlItem";
 import { cn } from "@/lib/utils";
 import { AppPagination } from "./AppPagination";
 import { usePathname } from "next/navigation"; // Import usePathname
+import { HomeEscort } from "@/actions/list-escort";
+import { EscortCardData, EscortProfileData } from "@/types/escort.types";
 
-export interface EscortPopulated {
-  _id: string;
-  name?: string;
-  username?: string;
-  age?: string;
-  telephone?: string;
-  images: string[];
-  videos: string[];
-  regionDetails?: {
-    _id: string;
-    name: string;
-    code?: string;
-  };
-  countyDetails?: {
-    _id: string;
-    name: string;
-    code?: string;
-  };
-  town?: string;
-  estate?: string;
-  displayLocation?: string;
-  // ... other fields
-}
+// export interface EscortPopulated {
+//   _id: string;
+//   name?: string;
+//   username?: string;
+//   age?: string;
+//   telephone?: string;
+//   images: string[];
+//   videos: string[];
+//   regionDetails?: {
+//     _id: string;
+//     name: string;
+//     code?: string;
+//   };
+//   countyDetails?: {
+//     _id: string;
+//     name: string;
+//     code?: string;
+//   };
+//   town?: string;
+//   estate?: string;
+//   displayLocation?: string;
+//   // ... other fields
+// }
 
 interface Prop {
-  girls: EscortPopulated[];
+  girls: EscortCardData[];
   className?: string;
   showPagination?: boolean; // Optional prop to control pagination
   paginationProps?: {

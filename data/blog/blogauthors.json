@@ -1,0 +1,67 @@
+[
+  {
+    "_id": { "$oid": "642a1bc123456789abcdef11" },
+    "name": "Sarah Johnson",
+    "email": "sarah.johnson@example.com",
+    "bio": "Senior full-stack developer with 10+ years of experience. Specialized in React and Node.js.",
+    "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b786",
+    "role": "admin",
+    "isActive": true,
+    "socialLinks": {
+      "twitter": "https://twitter.com/sarah_dev",
+      "linkedin": "https://linkedin.com/in/sarahjohnson",
+      "github": "https://github.com/sarahjohnson"
+    },
+    "expertise": ["React", "Node.js", "TypeScript", "MongoDB"],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" },
+    "updatedAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": { "$oid": "642a1bc123456789abcdef12" },
+    "name": "Michael Chen",
+    "email": "michael.chen@example.com",
+    "bio": "JavaScript expert and technical writer passionate about clean code and best practices.",
+    "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
+    "role": "editor",
+    "isActive": true,
+    "socialLinks": {
+      "twitter": "https://twitter.com/michaelchen",
+      "website": "https://michaelchen.dev"
+    },
+    "expertise": ["JavaScript", "Vue.js", "Performance", "Testing"],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" },
+    "updatedAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": { "$oid": "642a1bc123456789abcdef13" },
+    "name": "Emma Wilson",
+    "email": "emma.wilson@example.com",
+    "bio": "Frontend developer specializing in React ecosystem and modern CSS.",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
+    "role": "contributor",
+    "isActive": true,
+    "socialLinks": {
+      "twitter": "https://twitter.com/emmafrontend",
+      "github": "https://github.com/emmawilson"
+    },
+    "expertise": ["React", "CSS", "Web Performance", "Accessibility"],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" },
+    "updatedAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": { "$oid": "642a1bc123456789abcdef14" },
+    "name": "David Park",
+    "email": "david.park@example.com",
+    "bio": "Backend engineer focused on scalability and distributed systems.",
+    "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+    "role": "contributor",
+    "isActive": true,
+    "socialLinks": {
+      "linkedin": "https://linkedin.com/in/davidpark",
+      "twitter": "https://twitter.com/davidbackend"
+    },
+    "expertise": ["Node.js", "Docker", "Microservices", "AWS"],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" },
+    "updatedAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  }
+]
