@@ -26,7 +26,7 @@ const NavMenu = ({ className }: Prop) => {
             />
           </svg>
         </NavItem>
-        <NavItem path="erotic-massages" text="erotic massages">
+        <NavItem path="/erotic-massages" text="erotic massages">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -44,7 +44,7 @@ const NavMenu = ({ className }: Prop) => {
             />
           </svg>
         </NavItem>
-        <NavItem path="bdsm" text="bdsm">
+        <NavItem path="/bdsm" text="bdsm">
           {/* <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -90,7 +90,7 @@ const NavMenu = ({ className }: Prop) => {
             ></path>
           </svg>
         </NavItem>
-        <NavItem path="blog" text="blog">
+        <NavItem path="/blog" text="blog">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
