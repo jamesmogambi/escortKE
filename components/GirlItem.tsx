@@ -78,7 +78,7 @@ const GirlItem = ({
 
               <span className="text-white text-sm  lg:text-lg">
                 {formatSlugToTitle(
-                  countyDetails?.name || "Not Specified",
+                  primaryRegion?.name || "Not Specified",
                   // location.regionName || location.countyName || "Not Specified",
                 )}
               </span>

@@ -2,9 +2,11 @@ import React from "react";
 import BDSMHeader from "./BDSMHeader";
 import BDSMFilterInput from "./BDSMFilterInput";
 import SectionArticle from "./SectionArticle";
-import { getBDSMEscorts } from "@/actions/list-escort";
 import GirlList from "@/components/GirlList";
 import { ClientPaginationWrapper } from "@/components/ClientPaginationWrapper";
+import { getBDSMEscorts } from "@/actions/bdsm.action";
+import { ITEMS_PER_PAGE } from "@/constants";
+import NotFoundList from "@/components/NotFoundList";
 
 export const metadata = {
   title: "BDSM Escorts in Kenya - Bondage & Discipline Services",
@@ -22,8 +24,6 @@ interface PageProps {
     page?: string;
   }>;
 }
-
-const ITEMS_PER_PAGE = 20; // Make sure this matches your server action
 
 const defaultTitle = "BDSM";
 
@@ -53,12 +53,13 @@ const page = async ({ searchParams }: PageProps) => {
 
     return `${parts.join(" ")} ${defaultTitle}`;
   };
-
   const res = await getBDSMEscorts({
     county: params.county,
     region: params.region,
     practice: params.practice,
-    page: params.page,
+    page: params.page ? parseInt(params.page) : 1,
+    limit: ITEMS_PER_PAGE,
+    gender: "girl",
   });
 
   const title = getDynamicTitle();
@@ -70,6 +71,10 @@ const page = async ({ searchParams }: PageProps) => {
       <div className="px-4">
         <BDSMFilterInput />
       </div>
+      {res && res.total > 0 && <GirlList girls={res.escorts} />}
+
+      {res && res.total === 0 && <NotFoundList />}
+
       <GirlList girls={(res.escorts as any) || []} />
       <ClientPaginationWrapper
         totalPages={res.totalPages}
