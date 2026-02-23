@@ -280,53 +280,40 @@ const EscortProfilePage = async ({ params }: EscortPageProps) => {
       <div className="w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb Navigation */}
         <Breadcrumb className="py-4">
-          <BreadcrumbList className="items-center flex-nowrap overflow-x-auto pb-2 scrollbar-hide">
+          <BreadcrumbList className="items-center text-lg flex-nowrap overflow-x-auto pb-2 scrollbar-hide">
             <BreadcrumbItem>
               <Link
-                className="text-primary hover:text-primary/80 bg-transparent text-sm lg:text-base font-medium transition-colors whitespace-nowrap"
+                className="text-primary font-bold text-lg hover:text-primary/80 bg-transparent  transition-colors whitespace-nowrap"
                 href="/"
                 aria-label="Home"
               >
-                Home
+                Introduction
               </Link>
             </BreadcrumbItem>
-            <BreadcrumbSeparator className="text-white/60 text-sm lg:text-base">
+            <BreadcrumbSeparator className="text-white/60 ">
               -
             </BreadcrumbSeparator>
 
             <BreadcrumbItem>
               <Link
-                className="text-primary hover:text-primary/80 bg-transparent text-sm lg:text-base font-medium transition-colors whitespace-nowrap"
-                href="/girls"
-                aria-label="All Escorts"
+                className="text-primary text-lg  hover:text-primary/80 bg-transparent font-bold transition-colors whitespace-nowrap"
+                href={`/girls?region=${encodeURIComponent(escort.workingAreas[0]?.name)}`}
+                aria-label={`${escort.workingAreas[0].countyName} Escorts`}
               >
-                Escorts
+                <span className="text-white font-bold">sex</span>
+                {"   "}
+                <span className="capitalize">
+                  {escort.workingAreas[0]?.name}
+                </span>
               </Link>
             </BreadcrumbItem>
-            <BreadcrumbSeparator className="text-white/60 text-sm lg:text-base">
+            <BreadcrumbSeparator className="text-white/60  lg:text-base">
               -
             </BreadcrumbSeparator>
 
-            {escort.workingAreas?.[0]?.countyName && (
-              <>
-                <BreadcrumbItem>
-                  <Link
-                    className="text-primary hover:text-primary/80 bg-transparent text-sm lg:text-base font-medium transition-colors whitespace-nowrap"
-                    href={`/girls?county=${encodeURIComponent(escort.workingAreas[0].countyName)}`}
-                    aria-label={`${escort.workingAreas[0].countyName} Escorts`}
-                  >
-                    {escort.workingAreas[0].countyName} Escorts
-                  </Link>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="text-white/60 text-sm lg:text-base">
-                  -
-                </BreadcrumbSeparator>
-              </>
-            )}
-
             <BreadcrumbItem>
               <span
-                className="text-white/80 bg-transparent text-sm lg:text-base font-medium whitespace-nowrap"
+                className="text-white/80 bg-transparent text-lg  font-bold whitespace-nowrap"
                 aria-current="page"
               >
                 {displayName}
