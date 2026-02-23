@@ -1,4 +1,4 @@
-import { getAgencyEmployees } from "@/actions/business";
+import { getAgencyEmployees } from "@/actions/business.action";
 import GirlList from "@/components/GirlList";
 import React from "react";
 

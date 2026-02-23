@@ -1,4 +1,3 @@
-import { getAgencyBySlug } from "@/actions/business";
 import { notFound } from "next/navigation";
 import React from "react";
 import Header from "./Header";
@@ -6,6 +5,7 @@ import { generateAgencyMetadata } from "@/lib/metadata";
 import type { Metadata } from "next";
 import AgencyProfile from "./AgencyDetailCard";
 import CompanyGirls from "./CompanyGirls";
+import { getAgencyBySlug } from "@/actions/business.action";
 
 interface PageProps {
   params: Promise<{ slug: string }>;

@@ -10,10 +10,10 @@ import {
 import Link from "next/link";
 import AgencyList from "./AgencyList";
 import AgencyFilterInput from "./AgencyFilterInput";
-import { getAgencies } from "@/actions/business";
 import { GetAgenciesResponse } from "@/types/agency.types";
 import { ClientPaginationWrapper } from "@/components/ClientPaginationWrapper";
 import SectionArticle from "./SectionArticle";
+import { getAgencies } from "@/actions/business.action";
 
 export const metadata = {
   title: "Erotic Private Agencies in Kenya - Top Escort Services",
