@@ -12,22 +12,21 @@ interface Prop {
 }
 const BioSection = ({ girl }: Prop) => {
   const {
-    telephone,
-    whatsappPhone,
     about,
     categories,
     aboutExcerpt,
     workingAreas,
     locationDetails,
+    telephone,
+    whatsappPhone,
   } = girl;
   return (
     <div>
       {about && <RenderEditorContent html={about} />}
 
-      {telephone ||
-        (whatsappPhone && (
-          <PhonePicker phone={telephone || whatsappPhone} className="my-6" />
-        ))}
+      <div>
+        <PhonePicker phone={telephone || whatsappPhone} className="my-6" />
+      </div>
 
       <div className="flex items-center justify-between">
         <h3 className="font-bold text-lg text-primary">

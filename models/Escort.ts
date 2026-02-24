@@ -443,7 +443,6 @@ const EscortSchema = new Schema<EscortDoc, EscortModel>(
       type: String,
       required: false,
       unique: true,
-      index: true,
       sparse: true,
     },
 

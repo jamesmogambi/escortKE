@@ -9,9 +9,9 @@ interface Prop {
 }
 const ListHeader = (props: Prop) => {
   return (
-    <section className="w-full lg:max-w-7xl mx-auto my-3 p-5">
+    <section className="w-full lg:max-w-7xl  mx-auto my-3 p-5">
       {/* // breadcrumb */}
-      <div className="w-full flex items-center lg:justify-start justify-center ">
+      <div className="w-full flex items-center text-lg lg:justify-start justify-center ">
         <div className="flex items-center  gap-3">
           <Link href={"/"} className="text-primary font-bold">
             Introduction

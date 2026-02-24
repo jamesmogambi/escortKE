@@ -47,33 +47,33 @@ export default function Icon() {
           <path
             fill="none"
             stroke="#000"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="0.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="0.5"
             d="M17.008 59.958v-3c0-4.994 5.008-9 10-9q9 7.5 18 0c4.994 0 10 4.006 10 9v3"
           />
           <path d="M42.008 30.958c0 1.105-.895 1-2 1s-2 .105-2-1a3.12 3.12 0 0 1 1-2c1.105 0 3 .896 3 2m-8 0c0 1.105-.895 1-2 1s-2 .105-2-1c0-1 2.023-2 3.127-2a3.26 3.26 0 0 1 .873 2" />
           <path
             fill="none"
             stroke="#000"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="0.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="0.5"
             d="M38.008 38.708a3.04 3.04 0 0 0-4 0"
           />
           <path
             fill="none"
             stroke="#000"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="0.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="0.5"
             d="M18.855 46.658c-3.723-5.857-.628-10.08 1.18-14.725c1.635-4.2-.21-6.45 1.29-12.034c1.48-5.5 7.278-8.966 13.71-8.966c5.4 0 8 3 8 3a8.13 8.13 0 0 1 7.404 8.037c.387 7.18 1.025 7.152 3.43 12.822a11.6 11.6 0 0 1-1.447 11.663"
           />
           <path
             fill="none"
             stroke="#000"
-            stroke-linejoin="round"
-            stroke-width="0.5"
+            strokeLinejoin="round"
+            strokeWidth="0.5"
             d="M25.034 30.933c0 8 5 14 11 14s11-6 11-14c0-5-2-8-6-12c-4 4-16 9-16 11Z"
           />
         </svg>
@@ -84,6 +84,6 @@ export default function Icon() {
       // For convenience, we can re-use the exported icons size metadata
       // config to also set the ImageResponse's width and height.
       ...size,
-    }
+    },
   );
 }

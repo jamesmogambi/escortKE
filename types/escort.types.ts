@@ -371,6 +371,9 @@ export function isEscortCard(data: any): data is EscortCardData {
 }
 
 export interface EscortDetailData extends EscortCardData {
+  town: string | null;
+  measurements: any;
+  ratePerHour: any;
   // Additional fields for detail page
   videos: string[];
   sexualOrientation: string | null;

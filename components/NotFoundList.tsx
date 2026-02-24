@@ -13,21 +13,27 @@ const NotFoundList = async ({ className }: Prop) => {
     sortBy: "newest",
     limit: ITEMS_PER_PAGE,
   });
+
   return (
-    <section className={cn("my-6", className)}>
-      <p className="font-semibold mb-8 text-center text-xl">
-        {" "}
-        <span className="text-primary">
-          Unfortunately, we have to disappoint you, but there are no girls for
-          sex{" "}
-        </span>
-        {"  "}
-        advertised in this region yet , try girls from other regions below.{" "}
-      </p>
-      <div>
-        {res.success && res.total > 0 && <GirlList girls={res.escorts} />}
-      </div>
-    </section>
+    <>
+      {res.success && res.total > 0 && (
+        <section className={cn("my-6", className)}>
+          <p className="font-semibold mb-8 text-center text-xl">
+            {" "}
+            <span className="text-primary">
+              Unfortunately, we have to disappoint you, but there are no girls
+              for sex{" "}
+            </span>
+            {"  "}
+            advertised in this region yet , try girls from other regions
+            below.{" "}
+          </p>
+          <div>
+            {res.success && res.total > 0 && <GirlList girls={res.escorts} />}
+          </div>
+        </section>
+      )}
+    </>
   );
 };
 

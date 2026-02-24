@@ -16,85 +16,110 @@ import { getEscortByUsername } from "@/actions/escort";
 import { Metadata, ResolvingMetadata } from "next";
 import { formatSlugToTitle } from "@/lib/utils";
 import { fetchEscortBySlug } from "@/actions/escort.action";
+import { EscortDetailData } from "@/types/escort.types";
+import { generateEscortStructuredData } from "./utils";
 
-// Generate metadata function
+// Generate metadata for the escort profile page
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> },
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
-  // Read route parameters
   const { slug } = await params;
 
   try {
-    const result = await getEscortByUsername(decodeURIComponent(slug));
+    const result = await fetchEscortBySlug(slug);
 
-    if (!result.success || !result.data) {
+    if (!result || !result.escort) {
       return {
-        title: "Escort Not Found",
-        description: "The requested escort profile could not be found.",
+        title: "Profile Not Found | KENYADIVAS Kenya",
+        description:
+          "The requested escort profile could not be found. Browse other verified companions on KENYADIVAS.",
+        robots: {
+          index: false,
+          follow: true,
+        },
       };
     }
 
-    const escort = result.data;
+    const escort: any = result.escort;
+    const displayName = formatSlugToTitle(escort.name || escort.username);
+    const location =
+      escort.town || escort.workingAreas?.[0]?.countyName || "Kenya";
 
-    // Format the username for display
-    const formatUsername = (username: string) => {
-      return username
-        .split("_")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
+    // Generate description
+    const generateDescription = () => {
+      const age = escort.age ? `${escort.age} year old` : "";
+      const categories =
+        escort.categories?.slice(0, 3).join(", ") || "premium escort";
+
+      if (escort.about) {
+        return `${escort.about.substring(0, 160)}... Book ${displayName} for an unforgettable experience in ${location}.`;
+      }
+
+      return `${displayName} is a ${age} ${categories} based in ${location}. ${escort.measurements ? `Measurements: ${escort.measurements}. ` : ""}Verified companion on KENYADIVAS. Available for incall and outcall services.`;
     };
 
-    const displayName = formatUsername(escort.username);
-    const escortName = escort.name || displayName;
+    // Get primary image
+    const primaryImage =
+      escort.images?.find((img: any) => img.isPrimary)?.url ||
+      escort.previewPhoto ||
+      escort.images?.[0]?.url;
 
-    // Create metadata
-    const metadata: Metadata = {
-      title: `${escortName} - ${escort.town || escort.countyDetails?.name || "Kenya"} | Premium Escort`,
-      description: escort.about
-        ? `${escortName} - ${escort.about.substring(0, 150)}...`
-        : `${escortName} is a ${escort.age ? escort.age + " year old " : ""}escort in ${escort.town || escort.countyDetails?.name || "Kenya"}. Available for incall and outcall services.`,
+    return {
+      title: `${displayName} - ${location} | Premium Escort | KENYADIVAS`,
+      description: generateDescription(),
 
       keywords: [
-        escortName,
-        "escort",
-        "Kenya",
-        escort.town || "",
-        escort.countyDetails?.name || "",
-        "premium",
-        "companion",
+        displayName,
+        `${displayName} escort`,
+        `${location} escorts`,
+        "KENYADIVAS",
+        "Kenya escorts",
+        "premium companions",
+        "verified escorts",
         ...(escort.categories || []),
         ...(escort.labels || []),
-      ].filter(Boolean),
+        escort.ethnicity,
+        escort.age,
+        location,
+      ]
+        .filter(Boolean)
+        .join(", "),
 
       openGraph: {
         type: "profile",
-        title: `${escortName} - Premium Escort Services`,
-        description:
-          escort.about?.substring(0, 200) ||
-          `${escortName} - Professional escort services available.`,
+        title: `${displayName} - Premium Escort in ${location} | KENYADIVAS`,
+        description: generateDescription().substring(0, 200),
         url: `${process.env.NEXT_PUBLIC_SITE_URL}/girls/${escort.username}`,
-        siteName: "Your Site Name",
-        images: escort.previewPhoto
+        siteName: "KENYADIVAS Kenya",
+        images: primaryImage
           ? [
               {
-                url: escort.previewPhoto,
+                url: primaryImage,
                 width: 1200,
                 height: 630,
-                alt: `${escortName} - Escort Profile Photo`,
+                alt: `${displayName} - ${location} Escort Profile`,
               },
             ]
-          : [],
+          : [
+              {
+                url: `${process.env.NEXT_PUBLIC_SITE_URL}/og-image.jpg`,
+                width: 1200,
+                height: 630,
+                alt: "KENYADIVAS - Premium Escorts Kenya",
+              },
+            ],
         locale: "en_KE",
+        countryName: "Kenya",
       },
 
       twitter: {
-        card: "summary_large_image",
-        title: `${escortName} - Premium Escort`,
-        description:
-          escort.about?.substring(0, 150) ||
-          `${escortName} - Available for bookings.`,
-        images: escort.previewPhoto ? [escort.previewPhoto] : [],
+        card: primaryImage ? "summary_large_image" : "summary",
+        title: `${displayName} - ${location} Escort | KENYADIVAS`,
+        description: generateDescription().substring(0, 150),
+        images: primaryImage ? [primaryImage] : undefined,
+        site: "@kenyadivas",
+        creator: "@kenyadivas",
       },
 
       robots: {
@@ -110,16 +135,26 @@ export async function generateMetadata(
       },
 
       alternates: {
-        canonical: `${process.env.NEXT_PUBLIC_PROFILE}/girls/${escort.username}`,
+        canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/girls/${escort.username}`,
+      },
+
+      category: "Adult Entertainment",
+
+      other: {
+        "profile:username": escort.username,
+        "profile:gender": "female",
+        "profile:age": escort.age?.toString() || "",
+        "og:availability": "available",
+        "og:price:amount": escort.ratePerHour?.toString() || "",
+        "og:price:currency": "KES",
       },
     };
-
-    return metadata;
   } catch (error) {
     console.error("Error generating metadata:", error);
     return {
-      title: "Escort Profile",
-      description: "View escort profile details and services.",
+      title: "Escort Profile | KENYADIVAS Kenya",
+      description:
+        "View verified escort profile details, photos, and services on KENYADIVAS - Kenya's premier escort directory.",
     };
   }
 }
@@ -130,7 +165,7 @@ interface EscortPageProps {
   }>;
 }
 
-const page = async ({ params }: EscortPageProps) => {
+const EscortProfilePage = async ({ params }: EscortPageProps) => {
   const { slug } = await params;
 
   const result = await fetchEscortBySlug(slug);
@@ -139,50 +174,164 @@ const page = async ({ params }: EscortPageProps) => {
     notFound();
   }
 
-  console.log("individual escort ==>", result.escort);
+  const escort = result.escort;
+  const displayName = formatSlugToTitle(escort.name || escort.username);
+  const location =
+    escort.town || escort.workingAreas?.[0]?.countyName || "Kenya";
+
+  // Generate structured data
+  const structuredData = generateEscortStructuredData(escort);
+
+  // Generate breadcrumb structured data
+  const breadcrumbData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://kenyadivas.com"}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Escorts",
+        item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://kenyadivas.com"}/girls`,
+      },
+      ...(escort.workingAreas?.[0]?.countyName
+        ? [
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: `${escort.workingAreas[0].countyName} Escorts`,
+              item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://kenyadivas.com"}/girls?county=${encodeURIComponent(escort.workingAreas[0].countyName)}`,
+            },
+          ]
+        : []),
+      {
+        "@type": "ListItem",
+        position: escort.workingAreas?.[0]?.countyName ? 4 : 3,
+        name: displayName,
+        item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://kenyadivas.com"}/girls/${escort.username}`,
+      },
+    ],
+  };
+
+  // Generate FAQ structured data
+  const faqData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: `Where is ${displayName} located?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `${displayName} is based in ${location}. Services available for incall and outcall.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: `What services does ${displayName} offer?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: escort.categories?.length
+            ? `${displayName} offers: ${escort.categories.join(", ")}. Contact directly for specific services and availability.`
+            : `Contact ${displayName} directly for available services and packages.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: `How can I book ${displayName}?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `You can book ${displayName} through KENYADIVAS by contacting them directly via the contact information provided on their profile.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: `Is ${displayName} verified on KENYADIVAS?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, all escorts on KENYADIVAS go through a strict verification process to ensure authenticity and quality service.",
+        },
+      },
+    ],
+  };
 
   return (
-    <div className="w-full lg:max-w-7xl mx-auto p">
-      {/* // introduction */}
+    <>
+      {/* Structured Data Scripts */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqData) }}
+      />
 
-      <Breadcrumb className="p-4">
-        <BreadcrumbList className="items-center flex-nowrap ">
-          <BreadcrumbItem>
-            <Link
-              className="text-primary hover:text-primary bg-transparent text-sm lg:text-lg font-bold"
-              href="/"
-            >
-              Introduction
-            </Link>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator className="text-lg font-bold text-white">
-            -
-          </BreadcrumbSeparator>
-          <BreadcrumbItem>
-            <Link
-              className="text-primary capitalize hover:text-primary bg-transparent text-sm lg:text-lg font-bold"
-              href={`/girls?county=${result.escort.workingAreas[0]?.countyName}`}
-            >
-              sex {result.escort.workingAreas[0]?.countyName}
-            </Link>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator className="text-white text-lg">
-            -
-          </BreadcrumbSeparator>
-          <BreadcrumbItem className="cursor-default">
-            <Link
-              className=" hover:text-white text-white cursor-default bg-transparent text-sm lg:text-lg font-bold"
-              href="#"
-            >
-              {formatSlugToTitle(result.escort.name)}
-            </Link>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      {/* Main Content */}
+      <div className="w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb className="py-4">
+          <BreadcrumbList className="items-center text-lg flex-nowrap overflow-x-auto pb-2 scrollbar-hide">
+            <BreadcrumbItem>
+              <Link
+                className="text-primary font-bold text-lg hover:text-primary/80 bg-transparent  transition-colors whitespace-nowrap"
+                href="/"
+                aria-label="Home"
+              >
+                Introduction
+              </Link>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="text-white/60 ">
+              -
+            </BreadcrumbSeparator>
 
-      <GirlProfile girl={result.escort} />
-    </div>
+            <BreadcrumbItem>
+              <Link
+                className="text-primary text-lg  hover:text-primary/80 bg-transparent font-bold transition-colors whitespace-nowrap"
+                href={`/girls?region=${encodeURIComponent(escort.workingAreas[0]?.name)}`}
+                aria-label={`${escort.workingAreas[0].countyName} Escorts`}
+              >
+                <span className="text-white font-bold">sex</span>
+                {"   "}
+                <span className="capitalize">
+                  {escort.workingAreas[0]?.name}
+                </span>
+              </Link>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="text-white/60  lg:text-base">
+              -
+            </BreadcrumbSeparator>
+
+            <BreadcrumbItem>
+              <span
+                className="text-white/80 bg-transparent text-lg  font-bold whitespace-nowrap"
+                aria-current="page"
+              >
+                {displayName}
+              </span>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
+        {/* Hidden h1 for SEO (visible to search engines but visually hidden) */}
+        <h1 className="sr-only">
+          {displayName} - Premium Escort in {location} | KENYADIVAS Kenya
+        </h1>
+
+        {/* Main Profile Component */}
+        <GirlProfile girl={escort} />
+      </div>
+    </>
   );
 };
 
-export default page;
+export default EscortProfilePage;

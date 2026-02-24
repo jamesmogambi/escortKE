@@ -85,6 +85,7 @@ const nextConfig: NextConfig = {
     // Only disable for production builds, keep during development
     ignoreBuildErrors: process.env.NODE_ENV === "production",
   },
+  allowedDevOrigins: ["local-origin.dev", "*.local-origin.dev"],
 };
 
 export default nextConfig;

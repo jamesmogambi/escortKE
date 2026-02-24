@@ -24,7 +24,7 @@ const PhonePicker = ({ phone, className }: Prop) => {
           {formatKenyanPhoneNumber(phone)}
         </p>
         <p className="lg:text-sm whitespace-nowrap overflow-hidden text-ellipsis  text-nowrap text-[12px] font-semibold">
-          Say you're calling from escortKE.com
+          Say you're calling from kenyadivas.com
         </p>
       </div>
     </div>

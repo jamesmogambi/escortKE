@@ -1,3 +1,309 @@
+// import type { Metadata, Viewport } from "next";
+// import { Geist, Geist_Mono } from "next/font/google";
+// import "./globals.css";
+// import Image from "next/image";
+// import Header from "@/components/Header";
+// import Footer from "@/components/Footer";
+// import MessageAlert from "@/components/MessageAlert";
+// import "quill/dist/quill.core.css";
+// import {
+//   ClerkProvider,
+//   SignInButton,
+//   SignUpButton,
+//   SignedIn,
+//   SignedOut,
+//   UserButton,
+// } from "@clerk/nextjs";
+// import { Toaster } from "@/components/ui/sonner";
+// import { TooltipProvider } from "@/components/ui/tooltip";
+
+// const geistSans = Geist({
+//   variable: "--font-geist-sans",
+//   subsets: ["latin"],
+// });
+
+// const geistMono = Geist_Mono({
+//   variable: "--font-geist-mono",
+//   subsets: ["latin"],
+// });
+
+// // Viewport configuration for responsive design
+// export const viewport: Viewport = {
+//   width: "device-width",
+//   initialScale: 1,
+//   maximumScale: 5,
+//   themeColor: [
+//     { media: "(prefers-color-scheme: light)", color: "#000000" },
+//     { media: "(prefers-color-scheme: dark)", color: "#000000" },
+//   ],
+//   colorScheme: "dark",
+// };
+
+// // Enhanced metadata
+// export const metadata: Metadata = {
+//   metadataBase: new URL(
+//     process.env.NEXT_PUBLIC_SITE_URL || "https://kenyadivas.com",
+//   ),
+
+//   // Title configuration
+//   title: {
+//     default: "Premium Escorts in Kenya | Verified Companions",
+//     template: "%s | YourSiteName", // Dynamic title template
+//   },
+
+//   // Description
+//   description:
+//     "Find verified escorts in Kenya. Browse professional companions with real photos, reviews, rates, and contact information. Safe and discreet bookings.",
+//   // Point to your generated icons
+//   // icons: {
+//   //   icon: [
+//   //     // App favicon (generated from icon.tsx)
+//   //     { url: "/icon?t=1", type: "image/png" }, // Add timestamp for cache busting
+
+//   //     // Fallback to static icons
+//   //     { url: "/favicon.ico" },
+//   //     { url: "/icon-16x16.png", sizes: "16x16", type: "image/png" },
+//   //     { url: "/icon-32x32.png", sizes: "32x32", type: "image/png" },
+//   //   ],
+
+//   //   apple: [
+//   //     { url: "/apple-icon?t=1", type: "image/png" }, // Generated apple icon
+//   //     { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+//   //   ],
+
+//   //   other: [
+//   //     {
+//   //       rel: "mask-icon",
+//   //       url: "/safari-pinned-tab.svg",
+//   //       color: "#000000",
+//   //     },
+//   //   ],
+//   // },
+//   // Keywords
+//   keywords: [
+//     "escorts Kenya",
+//     "Nairobi escorts",
+//     "Mombasa escorts",
+//     "premium companions",
+//     "verified escorts",
+//     "Kenya escorts",
+//     "local escorts",
+//     "companionship",
+//     "adult services",
+//     "discreet dating",
+//     "professional escorts",
+//   ].join(", "),
+
+//   // Authors
+//   authors: [{ name: "YourSiteName" }],
+
+//   // Open Graph
+//   openGraph: {
+//     type: "website",
+//     locale: "en_KE",
+//     url: "/",
+//     siteName: "YourSiteName",
+//     title: "Premium Escorts in Kenya | Verified Companions",
+//     description:
+//       "Find verified escorts in Kenya with real photos, reviews, and contact information.",
+//     images: [
+//       {
+//         url: "/og-image.jpg", // Create this image (1200x630px)
+//         width: 1200,
+//         height: 630,
+//         alt: "YourSiteName - Premium Escorts in Kenya",
+//       },
+//     ],
+//   },
+
+//   // Twitter
+//   twitter: {
+//     card: "summary_large_image",
+//     site: "@yoursite", // Replace with your Twitter handle
+//     creator: "@yoursite",
+//     title: "Premium Escorts in Kenya",
+//     description: "Verified companions with real photos and reviews.",
+//     images: ["/twitter-image.jpg"], // Create this image (1200x600px)
+//   },
+
+//   // Robots
+//   robots: {
+//     index: true,
+//     follow: true,
+//     googleBot: {
+//       index: true,
+//       follow: true,
+//       "max-video-preview": -1,
+//       "max-image-preview": "large",
+//       "max-snippet": -1,
+//     },
+//   },
+
+//   // Verification (add your own)
+//   verification: {
+//     google: "your-google-verification-code",
+//     yandex: "your-yandex-verification-code",
+//     yahoo: "your-yahoo-verification-code",
+//   },
+
+//   // Manifest
+//   manifest: "/manifest.json",
+
+//   // Canonical
+//   alternates: {
+//     canonical: "/",
+//     languages: {
+//       "en-KE": "/",
+//     },
+//   },
+
+//   // Category for adult content
+//   category: "Adult",
+
+//   // Other metadata for SEO
+//   other: {
+//     rating: "RTA-5042-1996-1400-1577-RTA", // Required for adult content
+//     classification: "Adult Content",
+//     distribution: "global",
+//     language: "en",
+//     robots: "index, follow",
+//     "revisit-after": "7 days",
+//     author: "YourSiteName",
+//     copyright: `© ${new Date().getFullYear()} YourSiteName. All rights reserved.`,
+//     "geo.region": "KE",
+//     "geo.placename": "Kenya",
+//     "geo.position": "-1.286389;36.817223", // Nairobi coordinates
+//     ICBM: "-1.286389, 36.817223",
+//     "og:price:currency": "KES",
+//     "fb:app_id": "your-facebook-app-id", // If using Facebook login
+//   },
+// };
+
+// // JSON-LD Structured Data for homepage
+// const structuredData = {
+//   "@context": "https://schema.org",
+//   "@type": "WebSite",
+//   name: "YourSiteName",
+//   description: "Premium escort directory for Kenya",
+//   url: process.env.NEXT_PUBLIC_SITE_URL || "https://escort-site.com",
+//   potentialAction: {
+//     "@type": "SearchAction",
+//     target: {
+//       "@type": "EntryPoint",
+//       urlTemplate: `${process.env.NEXT_PUBLIC_SITE_URL || "https://escort-site.com"}/search?q={search_term_string}`,
+//     },
+//     "query-input": "required name=search_term_string",
+//   },
+//   publisher: {
+//     "@type": "Organization",
+//     name: "YourSiteName",
+//     url: process.env.NEXT_PUBLIC_SITE_URL || "https://escort-site.com",
+//     logo: {
+//       "@type": "ImageObject",
+//       url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://escort-site.com"}/logo.png`,
+//       width: 600,
+//       height: 60,
+//     },
+//   },
+//   inLanguage: "en-KE",
+//   countryOfOrigin: "KE",
+// };
+
+// export default function RootLayout({
+//   children,
+// }: {
+//   children: React.ReactNode;
+// }) {
+//   return (
+//     <ClerkProvider>
+//       <html lang="en-KE">
+//         {/* Structured Data */}
+//         <head>
+//           <script
+//             type="application/ld+json"
+//             dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+//           />
+
+//           {/* Preconnect to important domains */}
+//           <link rel="preconnect" href="https://fonts.googleapis.com" />
+//           <link
+//             rel="preconnect"
+//             href="https://fonts.gstatic.com"
+//             crossOrigin="anonymous"
+//           />
+
+//           {/* Preload critical assets */}
+//           <link rel="preload" href="/background.jpg" as="image" />
+
+//           {/* Apple Touch Icon */}
+//           <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+//           <meta name="apple-mobile-web-app-title" content="YourSiteName" />
+//           <meta name="apple-mobile-web-app-capable" content="yes" />
+//           <meta
+//             name="apple-mobile-web-app-status-bar-style"
+//             content="black-translucent"
+//           />
+
+//           {/* Microsoft Tiles */}
+//           <meta name="msapplication-TileColor" content="#000000" />
+//           <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
+//           <meta name="msapplication-config" content="/browserconfig.xml" />
+
+//           {/* Additional meta tags */}
+//           <meta name="format-detection" content="telephone=no" />
+//           <meta name="mobile-web-app-capable" content="yes" />
+
+//           {/* PWA Configuration */}
+//           <link rel="manifest" href="/manifest.json" />
+
+//           {/* Security headers would be in next.config.js */}
+//         </head>
+//         <body
+//           className={`${geistSans.variable} ${geistMono.variable} antialiased text-white bg-dark-slate min-h-screen flex flex-col`}
+//         >
+//           {/* Fixed Grayscale Background */}
+//           <div
+//             style={{
+//               position: "fixed",
+//               top: 0,
+//               left: 0,
+//               width: "100vw",
+//               height: "100vh",
+//               zIndex: -1,
+//               overflow: "hidden",
+//             }}
+//           >
+//             <Image
+//               src="/background.jpg"
+//               alt="Grayscale Background"
+//               fill
+//               priority
+//               quality={100}
+//               style={{
+//                 objectFit: "cover",
+//                 filter: "grayscale(100%)",
+//               }}
+//             />
+//           </div>
+
+//           <header>
+//             <Header />
+//           </header>
+//           {/* <MessageAlert /> */}
+
+//           {/* Main Content Scrolls Above */}
+//           <main className="  bg-black/80 flex-1 py-4  w-full ">
+//             <TooltipProvider>{children}</TooltipProvider>
+//           </main>
+
+//           <Footer />
+//           <Toaster position="bottom-left" />
+//         </body>
+//       </html>
+//     </ClerkProvider>
+//   );
+// }
+
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -27,7 +333,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Viewport configuration for responsive design
+// Viewport configuration
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -39,38 +345,34 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
-// Enhanced metadata
+// Enhanced metadata with KENYADIVAS branding
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://escort-site.com",
+    process.env.NEXT_PUBLIC_SITE_URL || "https://kenyadivas.com",
   ),
 
-  // Title configuration
+  // Title configuration with brand name
   title: {
-    default: "Premium Escorts in Kenya | Verified Companions",
-    template: "%s | YourSiteName", // Dynamic title template
+    default: "KENYADIVAS - Premium Escorts in Kenya | Verified Companions",
+    template: "%s | KENYADIVAS Kenya",
   },
 
-  // Description
+  // Enhanced description
   description:
-    "Find verified escorts in Kenya. Browse professional companions with real photos, reviews, rates, and contact information. Safe and discreet bookings.",
-  // Point to your generated icons
+    "KENYADIVAS connects you with verified premium escorts in Kenya. Browse real photos, read authentic reviews, check rates, and contact Nairobi's finest companions. Discreet, safe, and professional service.",
+
+  // Favicon and icons - uncommented and updated
   // icons: {
   //   icon: [
-  //     // App favicon (generated from icon.tsx)
-  //     { url: "/icon?t=1", type: "image/png" }, // Add timestamp for cache busting
-
-  //     // Fallback to static icons
   //     { url: "/favicon.ico" },
   //     { url: "/icon-16x16.png", sizes: "16x16", type: "image/png" },
   //     { url: "/icon-32x32.png", sizes: "32x32", type: "image/png" },
+  //     { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
+  //     { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
   //   ],
-
   //   apple: [
-  //     { url: "/apple-icon?t=1", type: "image/png" }, // Generated apple icon
   //     { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
   //   ],
-
   //   other: [
   //     {
   //       rel: "mask-icon",
@@ -79,54 +381,72 @@ export const metadata: Metadata = {
   //     },
   //   ],
   // },
-  // Keywords
+
+  // Expanded keywords for better reach
   keywords: [
-    "escorts Kenya",
+    "KENYADIVAS",
+    "Kenya escorts",
     "Nairobi escorts",
     "Mombasa escorts",
-    "premium companions",
-    "verified escorts",
-    "Kenya escorts",
-    "local escorts",
-    "companionship",
-    "adult services",
-    "discreet dating",
-    "professional escorts",
+    "Kisumu escorts",
+    "premium companions Kenya",
+    "verified escorts Nairobi",
+    "high class escorts Kenya",
+    "Kenya call girls",
+    "Nairobi call girls",
+    "escort services Nairobi",
+    "Kenya adult entertainment",
+    "discreet companions Kenya",
+    "elite escorts Nairobi",
+    "luxury escorts Kenya",
+    "international escorts Kenya",
+    "Kenya escort directory",
+    "Nairobi nightlife",
+    "Kenya companions",
+    "VIP escorts Nairobi",
+    "Kenya female escorts",
+    "Nairobi model escorts",
+    "Kenya escort reviews",
+    "real escort photos Kenya",
   ].join(", "),
 
   // Authors
-  authors: [{ name: "YourSiteName" }],
+  authors: [{ name: "KENYADIVAS", url: "https://kenyadivas.com" }],
 
-  // Open Graph
+  // Open Graph with KENYADIVAS branding
   openGraph: {
     type: "website",
     locale: "en_KE",
-    url: "/",
-    siteName: "YourSiteName",
-    title: "Premium Escorts in Kenya | Verified Companions",
+    url: "https://kenyadivas.com",
+    siteName: "KENYADIVAS Kenya",
+    title: "KENYADIVAS - Premium Escorts in Kenya | Verified Companions",
     description:
-      "Find verified escorts in Kenya with real photos, reviews, and contact information.",
+      "Discover KENYADIVAS - Kenya's premier escort directory. Browse verified companions with real photos, authentic reviews, and transparent rates in Nairobi, Mombasa, and across Kenya.",
     images: [
       {
-        url: "/og-image.jpg", // Create this image (1200x630px)
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "YourSiteName - Premium Escorts in Kenya",
+        alt: "KENYADIVAS - Premium Escorts in Kenya",
       },
     ],
+    emails: ["contact@kenyadivas.com"],
+    phoneNumbers: ["+254701694004"],
+    countryName: "Kenya",
   },
 
-  // Twitter
+  // Twitter card
   twitter: {
     card: "summary_large_image",
-    site: "@yoursite", // Replace with your Twitter handle
-    creator: "@yoursite",
-    title: "Premium Escorts in Kenya",
-    description: "Verified companions with real photos and reviews.",
-    images: ["/twitter-image.jpg"], // Create this image (1200x600px)
+    site: "@kenyadivas",
+    creator: "@kenyadivas",
+    title: "KENYADIVAS - Premium Escorts in Kenya",
+    description:
+      "Kenya's most trusted escort directory. Verified companions, real photos, authentic reviews.",
+    images: ["/twitter-image.jpg"],
   },
 
-  // Robots
+  // Robots configuration
   robots: {
     index: true,
     follow: true,
@@ -139,74 +459,248 @@ export const metadata: Metadata = {
     },
   },
 
-  // Verification (add your own)
+  // Verification codes (replace with actual codes)
   verification: {
-    google: "your-google-verification-code",
-    yandex: "your-yandex-verification-code",
-    yahoo: "your-yahoo-verification-code",
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || "your-google-code",
+    yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION || "your-yandex-code",
+    yahoo: "your-yahoo-code",
   },
 
-  // Manifest
+  // Manifest and PWA
   manifest: "/manifest.json",
 
-  // Canonical
+  // Canonical and alternates
   alternates: {
-    canonical: "/",
+    canonical: "https://kenyadivas.com",
     languages: {
-      "en-KE": "/",
+      "en-KE": "https://kenyadivas.com",
+      "en-US": "https://kenyadivas.com/en",
     },
   },
 
-  // Category for adult content
-  category: "Adult",
+  // Category
+  category: "Adult Entertainment",
 
-  // Other metadata for SEO
+  // Apple web app
+  appleWebApp: {
+    capable: true,
+    title: "KENYADIVAS",
+    statusBarStyle: "black-translucent",
+  },
+
+  // Format detection
+  formatDetection: {
+    telephone: true,
+    date: false,
+    address: false,
+    email: true,
+    url: true,
+  },
+
+  // Other metadata
   other: {
-    rating: "RTA-5042-1996-1400-1577-RTA", // Required for adult content
-    classification: "Adult Content",
+    rating: "RTA-5042-1996-1400-1577-RTA",
+    classification: "Adult Entertainment",
     distribution: "global",
-    language: "en",
-    robots: "index, follow",
+    language: "English",
     "revisit-after": "7 days",
-    author: "YourSiteName",
-    copyright: `© ${new Date().getFullYear()} YourSiteName. All rights reserved.`,
-    "geo.region": "KE",
-    "geo.placename": "Kenya",
-    "geo.position": "-1.286389;36.817223", // Nairobi coordinates
+    author: "KENYADIVAS",
+    copyright: `© ${new Date().getFullYear()} KENYADIVAS. All rights reserved.`,
+    "geo.region": "KE-30", // Nairobi region code
+    "geo.placename": "Nairobi, Kenya",
+    "geo.position": "-1.286389;36.817223",
     ICBM: "-1.286389, 36.817223",
     "og:price:currency": "KES",
-    "fb:app_id": "your-facebook-app-id", // If using Facebook login
+    "fb:app_id":
+      process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "your-facebook-app-id",
+    "twitter:app:country": "KE",
+    "business:contact_data:country": "Kenya",
+    "business:contact_data:region": "Nairobi",
+    "business:contact_data:email": "contact@kenyadivas.com",
+    "business:contact_data:phone_number": "+254700000000",
+    "pinterest-rich-pin": "enabled",
   },
 };
 
-// JSON-LD Structured Data for homepage
+// JSON-LD Structured Data for homepage with KENYADIVAS branding
 const structuredData = {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "YourSiteName",
-  description: "Premium escort directory for Kenya",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://escort-site.com",
-  potentialAction: {
-    "@type": "SearchAction",
-    target: {
-      "@type": "EntryPoint",
-      urlTemplate: `${process.env.NEXT_PUBLIC_SITE_URL || "https://escort-site.com"}/search?q={search_term_string}`,
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://kenyadivas.com/#website",
+      name: "KENYADIVAS",
+      description: "Premium Escort Directory in Kenya",
+      url: "https://kenyadivas.com",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: "https://kenyadivas.com/search?q={search_term_string}",
+        },
+        "query-input": "required name=search_term_string",
+      },
+      publisher: {
+        "@type": "Organization",
+        "@id": "https://kenyadivas.com/#organization",
+        name: "KENYADIVAS",
+        url: "https://kenyadivas.com",
+        logo: {
+          "@type": "ImageObject",
+          url: "https://kenyadivas.com/logo.png",
+          width: 600,
+          height: 60,
+        },
+        sameAs: [
+          "https://twitter.com/kenyadivas",
+          "https://www.instagram.com/kenyadivas",
+          "https://www.facebook.com/kenyadivas",
+        ],
+        email: "contact@kenyadivas.com",
+        telephone: "+254700000000",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Nairobi",
+          addressRegion: "Nairobi",
+          addressCountry: "KE",
+        },
+      },
     },
-    "query-input": "required name=search_term_string",
-  },
-  publisher: {
-    "@type": "Organization",
-    name: "YourSiteName",
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://escort-site.com",
-    logo: {
-      "@type": "ImageObject",
-      url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://escort-site.com"}/logo.png`,
-      width: 600,
-      height: 60,
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://kenyadivas.com/#business",
+      name: "KENYADIVAS Escort Directory",
+      description:
+        "Premium escort directory connecting clients with verified companions across Kenya",
+      url: "https://kenyadivas.com",
+      telephone: "+254700000000",
+      email: "contact@kenyadivas.com",
+      areaServed: [
+        {
+          "@type": "City",
+          name: "Nairobi",
+          sameAs: "https://www.wikidata.org/wiki/Q3870",
+        },
+        {
+          "@type": "City",
+          name: "Mombasa",
+          sameAs: "https://www.wikidata.org/wiki/Q225641",
+        },
+        {
+          "@type": "City",
+          name: "Kisumu",
+          sameAs: "https://www.wikidata.org/wiki/Q220624",
+        },
+        {
+          "@type": "Country",
+          name: "Kenya",
+          sameAs: "https://www.wikidata.org/wiki/Q114",
+        },
+      ],
+      address: {
+        "@type": "PostalAddress",
+        addressCountry: "KE",
+        addressRegion: "Nairobi",
+        addressLocality: "Nairobi",
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: -1.286389,
+        longitude: 36.817223,
+      },
+      openingHoursSpecification: [
+        {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+          ],
+          opens: "00:00",
+          closes: "23:59",
+        },
+      ],
+      priceRange: "$$$",
     },
-  },
-  inLanguage: "en-KE",
-  countryOfOrigin: "KE",
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://kenyadivas.com/#breadcrumb",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://kenyadivas.com",
+        },
+      ],
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://kenyadivas.com/#faq",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "What is KENYADIVAS?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "KENYADIVAS is Kenya's premier escort directory connecting clients with verified, high-quality companions in Nairobi, Mombasa, and across Kenya.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Are the escorts on KENYADIVAS verified?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes, all escorts featured on KENYADIVAS go through a strict verification process to ensure authenticity and quality service.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "How do I book an escort on KENYADIVAS?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Browse our verified listings, view real photos and reviews, and contact escorts directly through their preferred contact method listed on their profile.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Is KENYADIVAS discreet?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes, we prioritize client and escort privacy with discreet booking processes and secure communication channels.",
+          },
+        },
+      ],
+    },
+  ],
+};
+
+// Organization schema for better local SEO
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "KENYADIVAS",
+  url: "https://kenyadivas.com",
+  logo: "https://kenyadivas.com/logo.png",
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      telephone: "+254700000000",
+      contactType: "customer service",
+      email: "support@kenyadivas.com",
+      availableLanguage: ["English", "Swahili"],
+      areaServed: "KE",
+    },
+  ],
+  sameAs: [
+    "https://twitter.com/kenyadivas",
+    "https://www.instagram.com/kenyadivas",
+    "https://www.facebook.com/kenyadivas",
+  ],
 };
 
 export default function RootLayout({
@@ -217,11 +711,17 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en-KE">
-        {/* Structured Data */}
         <head>
+          {/* Structured Data */}
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(organizationSchema),
+            }}
           />
 
           {/* Preconnect to important domains */}
@@ -231,13 +731,16 @@ export default function RootLayout({
             href="https://fonts.gstatic.com"
             crossOrigin="anonymous"
           />
+          <link rel="preconnect" href="https://images.unsplash.com" />
+          <link rel="preconnect" href="https://client.crisp.chat" />
 
           {/* Preload critical assets */}
           <link rel="preload" href="/background.jpg" as="image" />
+          <link rel="preload" href="/logo.png" as="image" />
 
           {/* Apple Touch Icon */}
           <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-          <meta name="apple-mobile-web-app-title" content="YourSiteName" />
+          <meta name="apple-mobile-web-app-title" content="KENYADIVAS" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta
             name="apple-mobile-web-app-status-bar-style"
@@ -252,14 +755,34 @@ export default function RootLayout({
           {/* Additional meta tags */}
           <meta name="format-detection" content="telephone=no" />
           <meta name="mobile-web-app-capable" content="yes" />
+          <meta name="application-name" content="KENYADIVAS" />
+
+          {/* Language and region */}
+          <meta name="language" content="English" />
+          <meta name="geo.country" content="KE" />
+          <meta name="geo.region" content="KE-30" />
 
           {/* PWA Configuration */}
           <link rel="manifest" href="/manifest.json" />
 
-          {/* Security headers would be in next.config.js */}
+          {/* RSS Feed */}
+          <link
+            rel="alternate"
+            type="application/rss+xml"
+            title="KENYADIVAS - Latest Escorts"
+            href="/rss.xml"
+          />
+
+          {/* Sitemap */}
+          <link
+            rel="sitemap"
+            type="application/xml"
+            title="Sitemap"
+            href="/sitemap.xml"
+          />
         </head>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased text-white bg-dark-slate min-h-screen flex flex-col`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased  text-white bg-dark-slate min-h-screen flex flex-col`}
         >
           {/* Fixed Grayscale Background */}
           <div
@@ -275,7 +798,7 @@ export default function RootLayout({
           >
             <Image
               src="/background.jpg"
-              alt="Grayscale Background"
+              alt="KENYADIVAS Background"
               fill
               priority
               quality={100}
@@ -289,10 +812,9 @@ export default function RootLayout({
           <header>
             <Header />
           </header>
-          {/* <MessageAlert /> */}
 
-          {/* Main Content Scrolls Above */}
-          <main className="  bg-black/80 flex-1 py-4  w-full ">
+          {/* Main Content */}
+          <main className="bg-black/80 flex-1 py-4 w-full">
             <TooltipProvider>{children}</TooltipProvider>
           </main>
 

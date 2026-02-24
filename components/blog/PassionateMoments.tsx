@@ -63,9 +63,9 @@ const PassionateMoments = ({ className }: Prop) => {
               <Link
                 passHref
                 rel="noopener noreferrer"
-                href={"https://nai-porn.vercel.app/"}
+                href={"https://kenyadivas.com/"}
               >
-                nai-porn.vercel.app
+                kenyadivas.com
               </Link>
             </span>
             .
