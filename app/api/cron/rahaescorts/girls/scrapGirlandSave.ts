@@ -1,7 +1,7 @@
 import { practices } from "@/fixtures/practice";
 import { initBrightData } from "@/lib/brightData";
 import { connectToDB } from "@/lib/mongoose";
-import Escort, { defaultOpeningHours } from "@/models/Escort";
+import Escort from "@/models/Escort";
 import axios from "axios";
 import * as cheerio from "cheerio";
 
@@ -10,7 +10,7 @@ const sourceURL = "https://rahaescorts.com/escort/";
 export async function ScrapGirlandSave(
   slug: string,
   escortRegion: string,
-  escortTown: string
+  escortTown: string,
 ) {
   await connectToDB();
   const { options } = initBrightData();
@@ -71,7 +71,7 @@ export async function ScrapGirlandSave(
     const languages: { language: string; level: string }[] = [];
 
     $(
-      '.girlinfo-section:has(h4:contains("Languages spoken")) .section-box'
+      '.girlinfo-section:has(h4:contains("Languages spoken")) .section-box',
     ).each((_, el) => {
       const lang = $(el).find("b").text().trim().replace(/:$/, "");
       const level = $(el).find(".valuecolumn").text().trim();
@@ -144,7 +144,8 @@ export async function ScrapGirlandSave(
       videos: [],
       weight: "",
       address: "",
-      openingHours: defaultOpeningHours,
+      // TODO:// SET DEFAULT HOURS CORRECTLY
+      openingHours: "",
       extraServices,
       rates,
       source: destinationPath,
