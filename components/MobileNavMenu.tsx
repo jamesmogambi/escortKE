@@ -189,9 +189,9 @@ const MobileNavMenu = () => {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               className="lucide  lucide-phone-call-icon lucide-phone-call text-gray-700"
             >
               <path d="M13 2a9 9 0 0 1 9 9" />

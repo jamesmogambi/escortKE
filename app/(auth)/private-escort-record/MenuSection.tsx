@@ -11,7 +11,7 @@ const MenuSection = () => {
         <div className="w-full flex justify-end">
           <p className="text-xl font-light">
             Do you need advice? Call
-            <span className="font-bold text-primary"> 773 124 567</span>
+            <span className="font-bold text-primary"> 0701 694 004</span>
           </p>
         </div>
 
@@ -27,7 +27,7 @@ const MenuSection = () => {
                 <li className="flex items-center gap-3">
                   <Check className="text-primary" strokeWidth={4} />
                   <span className="font-bold text-lg text-white/50">
-                    Complete profile on EscortKE.com
+                    Complete profile on KenyaDivas.com
                   </span>
                 </li>
               </ul>
@@ -65,7 +65,7 @@ const MenuSection = () => {
                 <li className="flex items-center gap-3">
                   <Check className="text-primary" strokeWidth={4} />
                   <span className="font-bold text-lg text-white/50">
-                    Complete profile on escortKE.com
+                    Complete profile on KenyaDivas.com
                   </span>
                 </li>
               </ul>
