@@ -13,14 +13,14 @@ const Footer = () => {
 
           <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 mt-4 lg:mt-0">
             <Link
-              href={"girls"}
+              href={"/girls"}
               className="uppercase hover:text-primary group lg:py-5 font-medium text-base lg:text-lg "
             >
               girls for sex
             </Link>
 
             <Link
-              href={""}
+              href={"#"}
               className="uppercase group text-base flex font-medium items-center  gap-2 lg:py-5 lg:text-lg   "
             >
               <svg
@@ -38,12 +38,12 @@ const Footer = () => {
                 ></path>
               </svg>{" "}
               <span className="text-[#e33bb3] group-hover:font-bold font-medium">
-                sexshop
+                erection support
               </span>
             </Link>
 
             <Link
-              href={"private-girl-record"}
+              href={"#"}
               className="uppercase group  font-medium flex items-center  gap-2 lg:py-5 lg:text-lg text-base"
             >
               <svg
@@ -64,7 +64,7 @@ const Footer = () => {
             </Link>
 
             <Link
-              href={"contact"}
+              href={"/contact"}
               className="uppercase group font-medium flex items-center  gap-2 lg:py-5 lg:text-lg text-base  "
             >
               <svg
@@ -85,7 +85,7 @@ const Footer = () => {
             </Link>
 
             <Link
-              href={"contact"}
+              href={"#"}
               className="uppercase group font-medium flex items-center  gap-2 lg:py-5 text-base lg:text-lg   "
             >
               <svg
