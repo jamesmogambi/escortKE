@@ -19,6 +19,7 @@ import {
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import SearchSheet from "./SearchSheet";
 
 const NavActions = () => {
   const { signOut } = useAuth();
@@ -31,20 +32,7 @@ const NavActions = () => {
 
   return (
     <div className="flex items-center gap-4">
-      <Dialog>
-        <DialogTrigger>
-          <Search className="h-8 w-8 text-white" />
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
-            <DialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+      <SearchSheet></SearchSheet>
 
       <DropdownMenu>
         <DropdownMenuTrigger className="bg-primary group text-white rounded-md flex items-center gap-2 p-3 px-2">

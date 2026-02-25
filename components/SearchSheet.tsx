@@ -168,7 +168,7 @@ const SearchSheet = () => {
                 }}
                 aria-label="Search escorts"
                 onFocus={() => setShowResults(true)}
-                className="bg-white h-12 border-gray-1 font-semibold text-black focus-visible:ring-0  rounded-md text-lg"
+                className="bg-white h-12 border-slate-300 focus-visible:border-slate-200 font-semibold text-black focus-visible:ring-0  rounded-md text-lg"
               />
               <button className="bg-primary uppercase  p-2 font-bold text-lg text-white rounded-md px-4">
                 Search

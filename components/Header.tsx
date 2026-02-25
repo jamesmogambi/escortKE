@@ -20,16 +20,6 @@ const Header = () => {
       <div className="lg:flex  hidden items-center gap-12 w-full px-12 bg-dark-slate">
         {/* logo */}
         <Logo />
-        {/* <Link href="/">
-          <Image
-            alt="logo"
-            width={250} 
-            height={115}
-            src={"/logo.jpg"}
-            priority
-            quality={100}
-          />
-        </Link> */}
 
         <div className=" border-white flex flex-1 items-center justify-between">
           {/* menu */}

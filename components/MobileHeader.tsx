@@ -21,12 +21,27 @@ import {
 } from "@/components/ui/dropdown-menu";
 import MobileNavMenu from "./MobileNavMenu";
 import Logo from "./Logo";
+import { useUser, useAuth } from "@clerk/nextjs";
+import LoginFormSheet from "@/app/(auth)/LoginFormSheet";
 
 interface Prop {
   className?: string;
 }
 const MobileHeader = ({}) => {
-  const isLoggedIn = true;
+  // const isLoggedIn = true;
+
+  const [open, setOpen] = React.useState<boolean>(false);
+  const { isLoaded: userLoaded, isSignedIn, user } = useUser();
+  const { signOut } = useAuth();
+
+  // Use the custom hook
+  const onClose = () => {
+    setOpen(false);
+  };
+
+  if (!userLoaded) {
+    return null;
+  }
   return (
     <div className="flex bg-dark-slate lg:hidden items-center w-full justify-between p-4 py-6">
       {/* logo */}
@@ -46,7 +61,7 @@ const MobileHeader = ({}) => {
       <div className="flex items-center gap-4">
         <SearchSheet />
 
-        <Sheet>
+        <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -67,18 +82,18 @@ const MobileHeader = ({}) => {
           </SheetTrigger>
           <SheetContent className="text-white border-none pl-2.5  bg-dark-slate">
             <SheetHeader className="mt-8">
-              {!isLoggedIn ? (
+              {!isSignedIn ? (
                 <div className="w-full flex mt-6 justify-between items-center">
-                  <Link
-                    className="text-white font-medium p-2 px-4 rounded-md hover:text-primary  bg-[#343434]"
-                    href=""
-                  >
-                    apply for
-                  </Link>
+                  <LoginFormSheet>
+                    <span className="text-white font-medium p-2 px-4 rounded-md hover:text-primary  bg-[#343434]">
+                      apply for
+                    </span>
+                  </LoginFormSheet>
 
                   <Link
                     className="text-white p-2  px-4 font-medium rounded-md   bg-primary"
                     href="/private-escort-record"
+                    onClick={onClose}
                   >
                     register escort
                   </Link>
@@ -286,7 +301,7 @@ const MobileHeader = ({}) => {
               )}
             </SheetHeader>
 
-            <MobileNavMenu />
+            <MobileNavMenu onClose={onClose} />
           </SheetContent>
         </Sheet>
       </div>
