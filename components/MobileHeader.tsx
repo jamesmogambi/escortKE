@@ -27,6 +27,12 @@ interface Prop {
 }
 const MobileHeader = ({}) => {
   const isLoggedIn = true;
+
+  const [open, setOpen] = React.useState<boolean>(false);
+
+  const onClose = () => {
+    setOpen(false);
+  };
   return (
     <div className="flex bg-dark-slate lg:hidden items-center w-full justify-between p-4 py-6">
       {/* logo */}
@@ -46,7 +52,7 @@ const MobileHeader = ({}) => {
       <div className="flex items-center gap-4">
         <SearchSheet />
 
-        <Sheet>
+        <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -286,7 +292,7 @@ const MobileHeader = ({}) => {
               )}
             </SheetHeader>
 
-            <MobileNavMenu />
+            <MobileNavMenu onClose={onClose} />
           </SheetContent>
         </Sheet>
       </div>

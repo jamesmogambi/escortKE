@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -8,9 +8,28 @@ import {
 } from "@/components/ui/collapsible";
 import { Minus, PhoneCall, Plus } from "lucide-react";
 import { location } from "@/fixtures/location";
+import { usePathname } from "next/navigation";
 
-const MobileNavMenu = () => {
+interface Prop {
+  onClose?: any;
+}
+const MobileNavMenu = ({ onClose }: Prop) => {
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const pathname = usePathname(); // Get current path
+  // useEffect(() => {
+  //   if (onClose) {
+  //     onClose();
+  //   }
+  // }, [pathname]); // Runs whenever pathname changes
+
+  // Create a wrapper function for handling link clicks
+  const handleLinkClick = (e: any) => {
+    if (onClose) {
+      onClose(); // Close the sidebar
+    }
+  };
+
   return (
     <div className="bg-dark-slate">
       <ul>
@@ -180,7 +199,11 @@ const MobileNavMenu = () => {
           </Link>
         </li>
         <li>
-          <Link className="flex items-center gap-2" href={"blog"}>
+          <Link
+            className="flex items-center gap-2"
+            href={"/contact"}
+            onClick={handleLinkClick}
+          >
             {/* <PhoneCall className="" /> */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
