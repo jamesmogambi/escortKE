@@ -25,10 +25,10 @@ import { useFileStore } from "@/store/fileStore";
 import { saveNewEscortProfile } from "@/actions/escort";
 import { useUser } from "@clerk/nextjs";
 import { useVariantStore } from "@/store/variantStore";
-import { getVariantSettings } from "@/actions/variantsetting";
 import { useLocationStore } from "@/store/locationStore";
 import { toast } from "sonner";
 import SuccessToast from "@/components/Toasts/SuccessToast";
+import { getVariantSettings } from "@/actions/variantsetting.action";
 
 // Define the RichTextEditorHandle type
 type RichTextEditorHandle = {
@@ -51,7 +51,7 @@ const daySchema = z
   .regex(timeRangeRegex, "Invalid time range")
   .default(defaultDay);
 
-export const formSchema = z.object({
+export const formSchema: any = z.object({
   name: z
     .string({ error: "Name is required" })
     .min(2, "Name must be at least 2 characters")

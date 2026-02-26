@@ -202,7 +202,7 @@ const MassageTypeFilterInput = ({ className }: Prop) => {
 
       {/* County Filter */}
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger className="self-end cursor-pointer border-0 flex w-full lg:w-[250px] justify-between items-center p-2 px-5 bg-gray-1 rounded-md">
+        <DropdownMenuTrigger className="self-end cursor-pointer border-0 flex w-full lg:w-1/5 justify-between items-center p-2 px-5 bg-gray-1 rounded-md">
           {county ? (
             <div className="flex items-center gap-2">
               <span className="text-slate-100 text-lg font-bold">
@@ -249,7 +249,7 @@ const MassageTypeFilterInput = ({ className }: Prop) => {
       {/* Region/City Filter */}
       <DropdownMenu open={regionOpen} onOpenChange={setRegionOpen}>
         <DropdownMenuTrigger
-          className="self-end text-nowrap overflow-ellipsis pr-2 cursor-pointer border-0 flex w-full lg:w-[250px] justify-between items-center p-2 px-5 bg-gray-1 rounded-md"
+          className="self-end text-nowrap overflow-ellipsis pr-2 cursor-pointer border-0 flex w-full lg:w-1/5 justify-between items-center p-2 px-5 bg-gray-1 rounded-md"
           disabled={!county}
         >
           {region ? (
@@ -299,7 +299,7 @@ const MassageTypeFilterInput = ({ className }: Prop) => {
 
       {/* Massage Type Filter */}
       <DropdownMenu open={massageTypeOpen} onOpenChange={setMassageTypeOpen}>
-        <DropdownMenuTrigger className="cursor-pointer self-end border-0 flex w-full lg:w-[250px] justify-between items-center p-2 px-5 bg-gray-1 rounded-md">
+        <DropdownMenuTrigger className="cursor-pointer self-end border-0 flex w-full lg:w-1/5 justify-between items-center p-2 px-5 bg-gray-1 rounded-md">
           {massageType ? (
             <div className="flex items-center gap-2">
               <span className="text-slate-100 text-lg font-bold capitalize">

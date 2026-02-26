@@ -5,8 +5,8 @@ import { slugify } from "@/lib/utils";
 import FilterInput from "./FilterInput";
 import Image from "next/image";
 import POPULAR_COUNTIES from "@/data/popular-counties";
-import { getPopularCountiesLimited } from "@/actions/region";
 import GirlFilterInput from "@/app/girls/GirlFIlterInput";
+import { getPopularCountiesLimited } from "@/actions/region.action";
 
 const GirlRegions = async () => {
   // const counties = POPULAR_COUNTIES;
@@ -33,7 +33,7 @@ const GirlRegions = async () => {
 
         {/* // render most popular counties */}
 
-        <div className="md:flex hidden gap-2 gap-y-2 flex-wrap">
+        <div className="md:flex hidden gap-2 gap-y-2 mb-4 flex-wrap">
           {counties.slice(0, 16).map((county) => (
             <Link
               key={county.code}

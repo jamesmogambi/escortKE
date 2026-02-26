@@ -522,7 +522,9 @@ const MassageEscortsPage = async ({ searchParams }: PageProps) => {
 
       {/* Filter Section */}
       <div className="bg-black p-5 pb-6 -mt-4.5">
-        <MassageTypeFilterInput />
+        <div className="max-w-2/3 mx-auto">
+          <MassageTypeFilterInput />
+        </div>
       </div>
 
       {/* Results Header */}

@@ -76,7 +76,7 @@ const GirlItem = ({
                 />
               </svg>
 
-              <span className="text-white text-sm  lg:text-lg">
+              <span className="text-white text-sm font-semibold  lg:text-lg">
                 {formatSlugToTitle(
                   primaryRegion?.name || "Not Specified",
                   // location.regionName || location.countyName || "Not Specified",
@@ -89,7 +89,7 @@ const GirlItem = ({
             </span>
           </div>
 
-          <p className="lg:text-[19px] text-base font-medium mt-2 lg:mt-3  ">
+          <p className="text-lg font-semibold mt-2 lg:mt-3  ">
             {formatPhoneNumber(telephone || whatsappPhone)}
           </p>
         </div>

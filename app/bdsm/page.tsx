@@ -486,7 +486,9 @@ const BDSMPage = async ({ searchParams }: PageProps) => {
 
       {/* Filter Section */}
       <div className="px-4">
-        <BDSMFilterInput />
+        <div className="max-w-2/3 mx-auto">
+          <BDSMFilterInput />
+        </div>
       </div>
 
       {/* Results List */}

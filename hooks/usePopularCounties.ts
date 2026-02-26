@@ -1,5 +1,5 @@
 // hooks/useCounties.ts
-import { getPopularCountiesLimited } from "@/actions/region";
+import { getPopularCountiesLimited } from "@/actions/region.action";
 import { useState, useEffect } from "react";
 // import { getPopularCountiesLimited } from "@/app/actions";
 

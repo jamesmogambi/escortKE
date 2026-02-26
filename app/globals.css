@@ -150,6 +150,42 @@ co
 .swiper-pagination-bullet-active {
   background-color: #fe0032 !important;
 }
+/* 
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+} */
+
+/* Add to see what's overflowing */
+/* .debug * {
+  outline: 1px solid rgba(255, 0, 0, 0.3);
+  background-color: rgba(255, 0, 0, 0.05);
+} */
+
+/* Or more specifically */
+/* main > div {
+  border: 2px solid blue !important;
+} */
+
+/* In your global.css */
+@layer base {
+  html {
+    font-size: 12px; /* Instead of 16px default */
+  }
+
+  /* Optional: Scale up on very large screens */
+  @media (min-width: 1920px) {
+    html {
+      font-size: 14px;
+    }
+  }
+
+  @media (min-width: 2560px) {
+    html {
+      font-size: 16px;
+    }
+  }
+}
 
 /* app/globals.css */
 

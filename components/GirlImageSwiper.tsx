@@ -27,7 +27,7 @@ const GirlImageSwiper = ({ images }: Prop) => {
       >
         {images.map((src, index) => (
           <SwiperSlide key={index}>
-            <div className="relative border-b-[7px] border-primary w-[400px] h-[200px] lg:h-[400px]">
+            <div className="relative border-b-[7px] border-primary w-[400px] h-[200px] lg:h-[300px]">
               <Image
                 src={src}
                 alt={`Slide ${index + 1}`}

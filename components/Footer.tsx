@@ -5,7 +5,7 @@ import FooterBottom from "./FooterBottom";
 
 const Footer = () => {
   return (
-    <footer className="">
+    <footer className="w-full">
       {/* // section 1 */}
       <div className="bg-dark-slate py-4  w-full ">
         <div className="w-full pl-5 lg:p-0 lg:items-center justify-between lg:max-w-[1400] flex flex-col lg:flex-row mx-auto  border-white ">

@@ -416,8 +416,10 @@ const GirlsListingPage = async ({ searchParams }: PageProps) => {
       </div>
 
       {/* Filter Section */}
-      <div className="bg-black p-5 pb-6 -mt-4.5">
-        <GirlFilterInput />
+      <div className="bg-black  p-5 pb-6 -mt-4.5">
+        <div className="max-w-2/3 mx-auto">
+          <GirlFilterInput />
+        </div>
       </div>
 
       {/* Results Header */}

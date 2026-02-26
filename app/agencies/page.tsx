@@ -795,7 +795,7 @@ const AgenciesPage = async ({ searchParams }: Props) => {
         <div className="min-h-screen bg-transparent">
           {/* Header Section */}
           <header className="w-full -mt-4 bg-black">
-            <div className="container mx-auto px-4 py-6">
+            <div className="container max-w-2/3  mx-auto px-4 py-6">
               <AgencyFilterInput className="border-0" />
             </div>
           </header>
