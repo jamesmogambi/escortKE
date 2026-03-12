@@ -1,43 +1,3 @@
-// import { NextRequest, NextResponse } from "next/server";
-// import { initBrightData } from "@/lib/brightData";
-// import axios from "axios";
-// import * as cheerio from "cheerio";
-// import { connectToDB } from "@/lib/mongoose";
-
-// const sourceURL = "https://escort254.com/";
-
-// export async function POST(request: NextRequest) {
-//   await connectToDB();
-//   const { options } = initBrightData();
-
-//   const body = await request.json();
-//   const { county } = body;
-
-//   console.log(`Starting scrape for ${county}`);
-
-//   try {
-//     const destinationPath = `${sourceURL}escorts-from/kenya/${county}`;
-//     const response = await axios.get(destinationPath, options);
-//     const $ = cheerio.load(response.data);
-
-//     // Extract all escorts
-
-//     return NextResponse.json({
-//       message: "",
-//     });
-//   } catch (error: any) {
-//     console.error("Initial scraping error:", error.message);
-//     return NextResponse.json(
-//       {
-//         error: "Scraping failed",
-//         details: error.message,
-//       },
-//       { status: 500 },
-//     );
-//   }
-
-// }
-
 // app/api/scrape/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { initBrightData } from "@/lib/brightData";
@@ -137,7 +97,7 @@ export async function POST(request: NextRequest) {
         if (!Escort254Scraper.hasEscorts(next$)) {
           break;
         }
-
+ 
         const nextScraper = new Escort254Scraper(nextResponse.data);
         const nextPageEscorts = nextScraper.extractAllEscorts();
 
