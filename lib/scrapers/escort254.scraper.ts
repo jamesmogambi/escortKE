@@ -419,7 +419,7 @@ export class Escort254Scraper {
   /**
    * Parse an individual profile page (e.g., /profile/jawel)
    */
-
+  // TODO:// parse profile page correctly
   static parseProfile(profileHtml: string): ScrapedProfileData | null {
     const $ = cheerio.load(profileHtml);
 
