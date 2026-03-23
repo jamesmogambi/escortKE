@@ -76,6 +76,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "afrohot.s3.us-east-005.backblazeb2.com",
       },
+      {
+        protocol: "https",
+        hostname: "thikaescorts.s3.us-east-005.backblazeb2.com",
+      },
     ],
     qualities: [25, 50, 75, 90, 100],
   },

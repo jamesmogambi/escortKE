@@ -91,6 +91,7 @@ const GirlItem = ({
 
           <p className="text-lg font-semibold mt-2 lg:mt-3  ">
             {formatPhoneNumber(telephone || whatsappPhone)}
+            {/* {telephone || whatsappPhone} */}
           </p>
         </div>
       </Link>
