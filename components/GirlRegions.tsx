@@ -1,18 +1,14 @@
 import React from "react";
 import SectionCard from "./SectionCard";
 import Link from "next/link";
-import { slugify } from "@/lib/utils";
-import FilterInput from "./FilterInput";
 import Image from "next/image";
-import POPULAR_COUNTIES from "@/data/popular-counties";
 import GirlFilterInput from "@/app/girls/GirlFIlterInput";
-import { getPopularCountiesLimited } from "@/actions/region.action";
+import { getPopularCounties } from "@/server-actions/region.action";
 
 const GirlRegions = async () => {
-  // const counties = POPULAR_COUNTIES;
-  const res = await getPopularCountiesLimited(15);
-  const counties = res.success ? res.data : [];
+  const { data: popularCounties, success, error } = await getPopularCounties();
 
+  // console.log("counties from firebase", popularCounties);
   return (
     <div>
       <SectionCard className="">
@@ -32,9 +28,8 @@ const GirlRegions = async () => {
         </div>
 
         {/* // render most popular counties */}
-
         <div className="md:flex hidden gap-2 gap-y-2 mb-4 flex-wrap">
-          {counties.slice(0, 16).map((county) => (
+          {popularCounties.slice(0, 16).map((county) => (
             <Link
               key={county.code}
               className="text-primary  uppercase font-bold text-base  bg-gray-1/35 rounded-md p-1.5 px-5"
