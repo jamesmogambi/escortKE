@@ -91,3 +91,29 @@ export async function clearPopularCountiesCache() {
   cachedPopularCounties = null;
   return { success: true, message: "Cache cleared" };
 }
+
+export async function getAllCounties() {
+  try {
+    const countiesRef = collection(db, "counties");
+    const q = query(countiesRef, orderBy("name", "asc"));
+    const querySnapshot = await getDocs(q);
+
+    const counties = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as ICounty[];
+
+    return {
+      success: true,
+      data: counties,
+      count: counties.length,
+    };
+  } catch (error) {
+    console.error("Error fetching all counties:", error);
+    return {
+      success: false,
+      error: "Failed to fetch counties",
+      data: [],
+    };
+  }
+}

@@ -7,30 +7,6 @@ import { usePathname } from "next/navigation"; // Import usePathname
 import { HomeEscort } from "@/actions/list-escort";
 import { EscortCardData, EscortProfileData } from "@/types/escort.types";
 
-// export interface EscortPopulated {
-//   _id: string;
-//   name?: string;
-//   username?: string;
-//   age?: string;
-//   telephone?: string;
-//   images: string[];
-//   videos: string[];
-//   regionDetails?: {
-//     _id: string;
-//     name: string;
-//     code?: string;
-//   };
-//   countyDetails?: {
-//     _id: string;
-//     name: string;
-//     code?: string;
-//   };
-//   town?: string;
-//   estate?: string;
-//   displayLocation?: string;
-//   // ... other fields
-// }
-
 interface Prop {
   girls: EscortCardData[];
   className?: string;
@@ -60,7 +36,7 @@ const GirlList = ({
     <>
       <div
         className={cn(
-          "grid grid-cols-2 mx-6 lg:mx-auto my-6 max-w-7xl lg:grid-cols-4 gap-3 lg:gap-6",
+          "grid grid-cols-2 mx-6 lg:mx-auto my-6 max-w-7xl lg:grid-cols-5 gap-3 lg:gap-6",
           className,
         )}
       >
