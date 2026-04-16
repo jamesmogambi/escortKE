@@ -12,31 +12,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import LocationInitializer from "@/components/FileInputInitializer";
 import { useVariantStore } from "@/store/variantStore";
 import { useFilterInputStore } from "../girls/filterInputStore";
-import page from "./page";
+import { ICounty, IRegion } from "@/server-actions/region.action";
 
 interface Prop {
   className?: string;
-}
-
-interface IRegion {
-  _id: string;
-  name: string;
-  countyCode: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface ICounty {
-  _id: string;
-  name: string;
-  code: string;
-  description?: string;
-  isPopular?: boolean;
-  population?: number;
-  area?: string;
-  capital?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
 const GirlFilterInput = ({ className }: Prop) => {
@@ -234,7 +213,7 @@ const GirlFilterInput = ({ className }: Prop) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="flex border-0 flex-col outline-none p-2 gap-3 w-screen lg:max-w-[900px] bg-gray-1">
           <div className="flex flex-row w-full gap-1.5 flex-wrap">
-            {counties.map((item: any) => (
+            {counties.map((item: ICounty) => (
               <DropdownMenuItem
                 className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
                 onSelect={(e) => {
@@ -242,7 +221,7 @@ const GirlFilterInput = ({ className }: Prop) => {
                   handleCounty(item);
                   setOpen(false);
                 }}
-                key={item.code}
+                key={item.id}
               >
                 {formatSlugToTitle(item.name)}
               </DropdownMenuItem>
@@ -293,7 +272,7 @@ const GirlFilterInput = ({ className }: Prop) => {
                   handleRegion(item);
                   setRegionOpen(false);
                 }}
-                key={item._id}
+                key={item.id}
               >
                 {formatSlugToTitle(item.name)}
               </DropdownMenuItem>

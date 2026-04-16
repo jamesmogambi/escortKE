@@ -1,10 +1,8 @@
 // components/LocationInitializer.tsx
 "use client";
 
-import { getRegions, getTowns } from "@/actions/location";
-// import { getAllCounties, getAllRegions } from "@/actions/region.action";
-import { getVariantSettings } from "@/actions/variantsetting.action";
 import { useFilterInputStore } from "@/app/girls/filterInputStore";
+import { getAllLookupData } from "@/server-actions/lookup.action";
 import { getAllCounties, getAllRegions } from "@/server-actions/region.action";
 import { useVariantStore } from "@/store/variantStore";
 import { useEffect } from "react";
@@ -27,21 +25,21 @@ const LocationInitializer = () => {
         const [countiesRes, regionsRes, variantRes] = await Promise.all<any>([
           getAllCounties(),
           getAllRegions(),
-          getVariantSettings(),
+          getAllLookupData(),
         ]);
 
-        const practices = variantRes?.practices;
-        console.log(
-          "filter input responses",
-          countiesRes,
-          regionsRes,
-          variantRes,
-        );
+        const practices = variantRes?.data?.practices;
+        // console.log(
+        //   "filter input responses",
+        //   countiesRes,
+        //   regionsRes,
+        //   variantRes,
+        // );
         setCounties(countiesRes.data);
         setRegions(regionsRes.data);
-        setMassage(variantRes?.massage || []);
+        setMassage(variantRes?.data?.massage || []);
         setPractices(practices);
-        setBdsm(variantRes?.bdsm || []);
+        setBdsm(variantRes?.data?.bdsm || []);
         setVariantPractices(practices);
       } catch (err) {
         console.error("Failed to fetch filterInput data:", err);
