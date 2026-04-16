@@ -27,26 +27,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Viewport configuration
-// export const viewport: Viewport = {
-//   width: "device-width",
-//   initialScale: 1,
-//   maximumScale: 5,
-//   themeColor: [
-//     { media: "(prefers-color-scheme: light)", color: "#000000" },
-//     { media: "(prefers-color-scheme: dark)", color: "#000000" },
-//   ],
-//   colorScheme: "dark",
-// };
-
-// export const viewport = {
-//   width: "device-width",
-//   initialScale: 0.75,
-//   maximumScale: 1,
-//   minimumScale: 0.75,
-//   userScalable: true,
-// };
-
 // Enhanced metadata with KENYADIVAS branding
 export const metadata: Metadata = {
   metadataBase: new URL(
