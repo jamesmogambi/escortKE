@@ -2,9 +2,10 @@
 "use client";
 
 import { getRegions, getTowns } from "@/actions/location";
-import { getAllCounties, getAllRegions } from "@/actions/region.action";
+// import { getAllCounties, getAllRegions } from "@/actions/region.action";
 import { getVariantSettings } from "@/actions/variantsetting.action";
 import { useFilterInputStore } from "@/app/girls/filterInputStore";
+import { getAllCounties, getAllRegions } from "@/server-actions/region.action";
 import { useVariantStore } from "@/store/variantStore";
 import { useEffect } from "react";
 // import { useLocationStore } from "@/stores/useLocationStore";

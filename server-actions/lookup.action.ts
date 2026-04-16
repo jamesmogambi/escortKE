@@ -10,6 +10,7 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
+import { serializeDocs } from "@/lib/firebase-serializer";
 
 // Generic function to get all items from a collection
 export async function getLookupCollection(collectionName: string) {
@@ -18,10 +19,7 @@ export async function getLookupCollection(collectionName: string) {
     const q = query(collectionRef, orderBy("name", "asc"));
     const querySnapshot = await getDocs(q);
 
-    const items = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const items = serializeDocs(querySnapshot.docs);
 
     return {
       success: true,
@@ -119,50 +117,33 @@ export async function getLookupItemById(collectionName: string, id: number) {
 // Get all lookup data at once (for forms)
 export async function getAllLookupData() {
   try {
-    const [
-      ages,
-      breastSizes,
-      characters,
-      hairColors,
-      nationalities,
-      experienceLevels,
-      languages,
-      availability,
-      categories,
-      practices,
-      bdsm,
-      massageTypes,
-    ] = await Promise.all([
-      getAges(),
-      getBreastSizes(),
-      getCharacters(),
-      getHairColors(),
-      getNationalities(),
-      getExperienceLevels(),
-      getLanguages(),
-      getAvailability(),
-      getCategories(),
-      getPractices(),
-      getBDSM(),
-      getMassageTypes(),
-    ]);
+    const collections = [
+      "age",
+      "breast",
+      "character",
+      "hairColor",
+      "nationality",
+      "experience",
+      "languages",
+      "availability",
+      "categories",
+      "practices",
+      "bdsm",
+      "massage",
+    ];
+
+    const results = await Promise.all(
+      collections.map((name) => getLookupCollection(name)),
+    );
+
+    const data: any = {};
+    collections.forEach((name, index) => {
+      data[name] = results[index].success ? results[index].data : [];
+    });
 
     return {
       success: true,
-      data: {
-        ages: ages.success ? ages.data : [],
-        breastSizes: breastSizes.success ? breastSizes.data : [],
-        characters: characters.success ? characters.data : [],
-        hairColors: hairColors.success ? hairColors.data : [],
-        nationalities: nationalities.success ? nationalities.data : [],
-        experienceLevels: experienceLevels.success ? experienceLevels.data : [],
-        languages: languages.success ? languages.data : [],
-        availability: availability.success ? availability.data : [],
-        categories: categories.success ? categories.data : [],
-        practices: practices.success ? practices.data : [],
-        bdsm: bdsm.success ? bdsm.data : [],
-        massageTypes: massageTypes.success ? massageTypes.data : [],
-      },
+      data,
     };
   } catch (error) {
     console.error("Error fetching all lookup data:", error);
