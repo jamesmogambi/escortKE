@@ -265,7 +265,7 @@ const GirlFilterInput = ({ className }: Prop) => {
             </div>
           ) : (
             <span className="text-white/50 text-lg font-medium">
-              {county ? "City or region" : "Select county first"}
+              City or Region
             </span>
           )}
           <svg
