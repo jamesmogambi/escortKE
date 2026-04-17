@@ -18,6 +18,7 @@ import { formatSlugToTitle } from "@/lib/utils";
 import { fetchEscortBySlug } from "@/actions/escort.action";
 import { EscortDetailData } from "@/types/escort.types";
 import { generateEscortStructuredData } from "./utils";
+import { getEscortById } from "@/server-actions/escort.action";
 
 // Generate metadata for the escort profile page
 export async function generateMetadata(
@@ -27,9 +28,9 @@ export async function generateMetadata(
   const { slug } = await params;
 
   try {
-    const result = await fetchEscortBySlug(slug);
+    const result = await getEscortById(slug);
 
-    if (!result || !result.escort) {
+    if (!result || !result) {
       return {
         title: "Profile Not Found | KENYADIVAS Kenya",
         description:
@@ -41,10 +42,9 @@ export async function generateMetadata(
       };
     }
 
-    const escort: any = result.escort;
+    const escort: any = result;
     const displayName = formatSlugToTitle(escort.name || escort.username);
-    const location =
-      escort.town || escort.workingAreas?.[0]?.countyName || "Kenya";
+    const location = escort.town || escort.primaryRegion || "Kenya";
 
     // Generate description
     const generateDescription = () => {
@@ -168,16 +168,15 @@ interface EscortPageProps {
 const EscortProfilePage = async ({ params }: EscortPageProps) => {
   const { slug } = await params;
 
-  const result = await fetchEscortBySlug(slug);
+  const result = await getEscortById(slug);
 
-  if (!result || !result.escort) {
+  if (!result || !result) {
     notFound();
   }
 
-  const escort = result.escort;
+  const escort = result;
   const displayName = formatSlugToTitle(escort.name || escort.username);
-  const location =
-    escort.town || escort.workingAreas?.[0]?.countyName || "Kenya";
+  const location = escort.primaryRegion || escort.locations?.[0] || "Kenya";
 
   // Generate structured data
   const structuredData = generateEscortStructuredData(escort);
@@ -199,19 +198,19 @@ const EscortProfilePage = async ({ params }: EscortPageProps) => {
         name: "Escorts",
         item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://kenyadivas.com"}/girls`,
       },
-      ...(escort.workingAreas?.[0]?.countyName
+      ...(escort.primaryRegion
         ? [
             {
               "@type": "ListItem",
               position: 3,
-              name: `${escort.workingAreas[0].countyName} Escorts`,
-              item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://kenyadivas.com"}/girls?county=${encodeURIComponent(escort.workingAreas[0].countyName)}`,
+              name: `${escort.county} Escorts`,
+              item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://kenyadivas.com"}/girls?county=${encodeURIComponent(escort.county)}`,
             },
           ]
         : []),
       {
         "@type": "ListItem",
-        position: escort.workingAreas?.[0]?.countyName ? 4 : 3,
+        position: escort.county ? 4 : 3,
         name: displayName,
         item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://kenyadivas.com"}/girls/${escort.username}`,
       },
@@ -297,14 +296,12 @@ const EscortProfilePage = async ({ params }: EscortPageProps) => {
             <BreadcrumbItem>
               <Link
                 className="text-primary text-lg  hover:text-primary/80 bg-transparent font-bold transition-colors whitespace-nowrap"
-                href={`/girls?region=${encodeURIComponent(escort.workingAreas[0]?.name)}`}
-                aria-label={`${escort.workingAreas[0].countyName} Escorts`}
+                href={`/girls?region=${encodeURIComponent(escort.primaryRegion)}`}
+                aria-label={`${escort.county} Escorts`}
               >
                 <span className="text-white font-bold">sex</span>
                 {"   "}
-                <span className="capitalize">
-                  {escort.workingAreas[0]?.name}
-                </span>
+                <span className="capitalize">{escort.primaryRegion}</span>
               </Link>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="text-white/60  lg:text-base">

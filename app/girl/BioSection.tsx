@@ -5,20 +5,19 @@ import AboutTabs from "./AboutTabs";
 // import { categories } from "@/fixtures/categories";
 import Link from "next/link";
 import { slugify } from "@/lib/utils";
-import { EscortDetailData } from "@/types/escort.types";
+import { Escort } from "@/server-actions/escort.action";
 
 interface Prop {
-  girl: EscortDetailData;
+  girl: Escort;
 }
 const BioSection = ({ girl }: Prop) => {
   const {
     about,
     categories,
-    aboutExcerpt,
-    workingAreas,
-    locationDetails,
+
     telephone,
     whatsappPhone,
+    locations,
   } = girl;
   return (
     <div>
@@ -33,7 +32,7 @@ const BioSection = ({ girl }: Prop) => {
           Address:
           <span className="text-white/50 font-light">
             {" "}
-            {locationDetails?.address}
+            {locations[0]?.address}
           </span>
         </h3>
 

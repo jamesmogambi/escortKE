@@ -138,14 +138,10 @@ export interface GetEscortsResponse {
 const convertDocSnapshotToEscort = (
   doc: FirebaseFirestore.DocumentSnapshot,
 ): Escort | null => {
-  if (!doc.exists) {
-    return null;
-  }
+  if (!doc.exists) return null;
 
   const data = doc.data();
-  if (!data) {
-    return null;
-  }
+  if (!data) return null;
 
   return {
     id: doc.id,
@@ -171,7 +167,7 @@ const convertDocSnapshotToEscort = (
     languages: data.languages || [],
     categories: data.categories || [],
     country: data.country,
-    county: data.county,
+    county: data.county, // This is now a string (county name), not an ObjectId
     countyCode: data.countyCode,
     regions: data.regions || [],
     primaryRegion: data.primaryRegion,
@@ -212,7 +208,6 @@ const convertDocSnapshotToEscort = (
     updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
   };
 };
-
 // Helper function to convert Firestore QueryDocumentSnapshot to Escort type (for collections)
 const convertQueryDocToEscort = (
   doc: FirebaseFirestore.QueryDocumentSnapshot,
@@ -578,6 +573,15 @@ export async function getEscortsByRegionAndPractice(
 // Get single escort by ID - FIXED
 export async function getEscortById(id: string): Promise<Escort | null> {
   try {
+    // Add debugging
+    console.log("getEscortById called with id:", id);
+    console.log("id type:", typeof id);
+    console.log("id length:", id?.length);
+
+    if (!id || id.trim() === "") {
+      console.error("Empty ID provided to getEscortById");
+      return null;
+    }
     const doc = await adminDb.collection("escorts").doc(id).get();
 
     if (!doc.exists) {

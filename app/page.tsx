@@ -1,4 +1,3 @@
-import { fetchGirlEscorts } from "@/actions/escort.action";
 import PassionateMoments from "@/components/blog/PassionateMoments";
 import WhyProfile from "@/components/blog/WhyProfile";
 import { ClientPaginationWrapper } from "@/components/ClientPaginationWrapper";
@@ -36,11 +35,11 @@ export default async function Home({ searchParams }: PageProps) {
   });
 
   // If no escorts found and it's the first page, show not found
-  if (escorts.length === 0 && currentPage === 1) {
-    notFound();
-  }
+  // if (escorts.length === 0 && currentPage === 1) {
+  //   notFound();
+  // }
 
-  console.log("escorts", escorts);
+  // console.log("escorts", escorts);
 
   return (
     <>
