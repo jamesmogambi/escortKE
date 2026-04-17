@@ -3,13 +3,12 @@ import { cn, formatSlugToTitle, slugify } from "@/lib/utils";
 import Link from "next/link";
 import React from "react";
 import GirlImageSwiper from "./GirlImageSwiper";
-import { gallery } from "@/fixtures/girl";
 import { Images, X } from "lucide-react";
 import { convertToLocalPhone, formatPhoneNumber } from "@/lib/phone";
-import { EscortCardData, EscortProfileData } from "@/types/escort.types";
+import { Escort } from "@/server-actions/escort.action";
 
 interface GirlItemProps {
-  girl: EscortCardData;
+  girl: Escort;
   className?: string;
   handlePress?: () => void;
   path?: string;
@@ -21,16 +20,15 @@ const GirlItem = ({
   path = `/girl/${girl.slug}`,
 }: GirlItemProps) => {
   const {
-    age,
-    videos = [],
+    images,
     name,
-    telephone,
-    images = [],
-    // location,
-    whatsappPhone,
-    primaryLocationDisplay,
+    slug,
     primaryRegion,
-    countyDetails,
+    age,
+    telephone,
+    whatsappPhone,
+    videos,
+    county,
   } = girl;
 
   // const router = useRouter();
@@ -38,8 +36,6 @@ const GirlItem = ({
   // const handleClick = () => {
   //   router.push(`girl/${userName}`);
   // };\
-
-  console.log("primary", primaryLocationDisplay);
 
   const escortName = name || "Escort";
 
@@ -77,10 +73,7 @@ const GirlItem = ({
               </svg>
 
               <span className="text-white text-sm font-semibold  lg:text-lg">
-                {formatSlugToTitle(
-                  primaryRegion?.name || "Not Specified",
-                  // location.regionName || location.countyName || "Not Specified",
-                )}
+                {formatSlugToTitle(`${primaryRegion}` || "Not Specified")}
               </span>
             </div>
 

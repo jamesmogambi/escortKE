@@ -4,11 +4,10 @@ import GirlItem from "./GirlItem";
 import { cn } from "@/lib/utils";
 import { AppPagination } from "./AppPagination";
 import { usePathname } from "next/navigation"; // Import usePathname
-import { HomeEscort } from "@/actions/list-escort";
-import { EscortCardData, EscortProfileData } from "@/types/escort.types";
+import { Escort } from "@/server-actions/escort.action";
 
 interface Prop {
-  girls: EscortCardData[];
+  girls: Escort[];
   className?: string;
   showPagination?: boolean; // Optional prop to control pagination
   paginationProps?: {
@@ -41,7 +40,7 @@ const GirlList = ({
         )}
       >
         {girls.map((girl, index) => (
-          <GirlItem key={girl._id || girl._id || index} girl={girl} />
+          <GirlItem key={girl.id || girl.id || index} girl={girl} />
         ))}
       </div>
 
