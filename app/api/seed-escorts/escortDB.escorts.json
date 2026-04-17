@@ -40,23 +40,15 @@
     "Webcam Sex"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc52"
-  },
+  "county": "Embu",
   "countyCode": "014",
   "regions": [
-    {
-      "$oid": "69b30d7c4f49151f89b1940e"
-    }
+    "Embu"
   ],
-  "primaryRegion": {
-    "$oid": "69b30d7c4f49151f89b1940e"
-  },
+  "primaryRegion": "Embu",
   "locations": [
     {
-      "region": {
-        "$oid": "69b30d7c4f49151f89b1940e"
-      },
+      "region": "Embu",
       "town": "Embu",
       "estate": "Embu Town",
       "address": "Embu Town, Embu, Kenya",
@@ -123,7 +115,7 @@
     "$date": "2026-03-19T19:40:10.071Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:55:17.892Z"
+    "$date": "2026-04-17T11:58:56.728Z"
   },
   "__v": 0
 },
@@ -166,23 +158,15 @@
     "Threesome"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc37"
-  },
+  "county": "Nairobi",
   "countyCode": "047",
   "regions": [
-    {
-      "$oid": "69bc527329ad2ae23b60d674"
-    }
+    "donholm"
   ],
-  "primaryRegion": {
-    "$oid": "69bc527329ad2ae23b60d674"
-  },
+  "primaryRegion": "donholm",
   "locations": [
     {
-      "region": {
-        "$oid": "69bc527329ad2ae23b60d674"
-      },
+      "region": "donholm",
       "town": "Nairobi",
       "estate": "Donholm",
       "address": "Donholm, Nairobi, Kenya",
@@ -242,12 +226,12 @@
   "totalBookings": 0,
   "totalReviews": 0,
   "rating": 0,
-  "totalViews": 4,
+  "totalViews": 6,
   "createdAt": {
     "$date": "2026-03-19T19:45:55.352Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:24:39.820Z"
+    "$date": "2026-04-17T11:58:56.739Z"
   },
   "__v": 0
 },
@@ -295,23 +279,15 @@
     "Webcam Sex"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc37"
-  },
+  "county": "Nairobi",
   "countyCode": "047",
   "regions": [
-    {
-      "$oid": "69bc52ad29ad2ae23b60d67e"
-    }
+    "githurai-45"
   ],
-  "primaryRegion": {
-    "$oid": "69bc52ad29ad2ae23b60d67e"
-  },
+  "primaryRegion": "githurai-45",
   "locations": [
     {
-      "region": {
-        "$oid": "69bc52ad29ad2ae23b60d67e"
-      },
+      "region": "githurai-45",
       "town": "Nairobi",
       "estate": "Githurai 45",
       "address": "Githurai 45, Nairobi, Kenya",
@@ -378,12 +354,12 @@
   "totalBookings": 0,
   "totalReviews": 0,
   "rating": 0,
-  "totalViews": 4,
+  "totalViews": 6,
   "createdAt": {
     "$date": "2026-03-19T19:46:53.263Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:49:02.181Z"
+    "$date": "2026-04-17T11:58:56.743Z"
   },
   "__v": 0
 },
@@ -436,23 +412,15 @@
     "Webcam Sex"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc37"
-  },
+  "county": "Nairobi",
   "countyCode": "047",
   "regions": [
-    {
-      "$oid": "697a127ca3a21be5ad4bdbe5"
-    }
+    "Kasarani"
   ],
-  "primaryRegion": {
-    "$oid": "697a127ca3a21be5ad4bdbe5"
-  },
+  "primaryRegion": "Kasarani",
   "locations": [
     {
-      "region": {
-        "$oid": "697a127ca3a21be5ad4bdbe5"
-      },
+      "region": "Kasarani",
       "town": "Nairobi",
       "estate": "Kasarani",
       "address": "Kasarani, Nairobi, Kenya",
@@ -534,7 +502,7 @@
     "$date": "2026-03-19T19:47:21.047Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:30:50.223Z"
+    "$date": "2026-04-17T11:58:56.747Z"
   },
   "__v": 0
 },
@@ -582,23 +550,15 @@
     "Webcam Sex"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc37"
-  },
+  "county": "Nairobi",
   "countyCode": "047",
   "regions": [
-    {
-      "$oid": "69805e2b548beeb6775e3871"
-    }
+    "kilimani"
   ],
-  "primaryRegion": {
-    "$oid": "69805e2b548beeb6775e3871"
-  },
+  "primaryRegion": "kilimani",
   "locations": [
     {
-      "region": {
-        "$oid": "69805e2b548beeb6775e3871"
-      },
+      "region": "kilimani",
       "town": "Nairobi",
       "estate": "Kilimani",
       "address": "Kilimani, Nairobi, Kenya",
@@ -664,12 +624,12 @@
   "totalBookings": 0,
   "totalReviews": 0,
   "rating": 0,
-  "totalViews": 6,
+  "totalViews": 8,
   "createdAt": {
     "$date": "2026-03-19T19:47:50.009Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:35:13.543Z"
+    "$date": "2026-04-17T11:58:56.754Z"
   },
   "__v": 0
 },
@@ -717,23 +677,15 @@
     "Threesome"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc37"
-  },
+  "county": "Nairobi",
   "countyCode": "047",
   "regions": [
-    {
-      "$oid": "69805e2b548beeb6775e3871"
-    }
+    "kilimani"
   ],
-  "primaryRegion": {
-    "$oid": "69805e2b548beeb6775e3871"
-  },
+  "primaryRegion": "kilimani",
   "locations": [
     {
-      "region": {
-        "$oid": "69805e2b548beeb6775e3871"
-      },
+      "region": "kilimani",
       "town": "Nairobi",
       "estate": "Kilimani",
       "address": "Kilimani, Nairobi, Kenya",
@@ -804,7 +756,7 @@
     "$date": "2026-03-19T19:47:53.407Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:52:48.259Z"
+    "$date": "2026-04-17T11:58:56.760Z"
   },
   "__v": 0
 },
@@ -865,23 +817,15 @@
     "Webcam Sex"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc37"
-  },
+  "county": "Nairobi",
   "countyCode": "047",
   "regions": [
-    {
-      "$oid": "69bc52fc29ad2ae23b60d6a0"
-    }
+    "kinoo"
   ],
-  "primaryRegion": {
-    "$oid": "69bc52fc29ad2ae23b60d6a0"
-  },
+  "primaryRegion": "kinoo",
   "locations": [
     {
-      "region": {
-        "$oid": "69bc52fc29ad2ae23b60d6a0"
-      },
+      "region": "kinoo",
       "town": "Nairobi",
       "estate": "Kinoo",
       "address": "Kinoo, Nairobi, Kenya",
@@ -981,7 +925,7 @@
     "$date": "2026-03-19T19:48:12.378Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:53:21.291Z"
+    "$date": "2026-04-17T11:58:56.765Z"
   },
   "__v": 0
 },
@@ -1040,23 +984,15 @@
     "Webcam Sex"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc37"
-  },
+  "county": "Nairobi",
   "countyCode": "047",
   "regions": [
-    {
-      "$oid": "69bc531729ad2ae23b60d6ab"
-    }
+    "nairobi-cbd"
   ],
-  "primaryRegion": {
-    "$oid": "69bc531729ad2ae23b60d6ab"
-  },
+  "primaryRegion": "nairobi-cbd",
   "locations": [
     {
-      "region": {
-        "$oid": "69bc531729ad2ae23b60d6ab"
-      },
+      "region": "nairobi-cbd",
       "town": "Nairobi",
       "estate": "Nairobi CBD",
       "address": "Nairobi CBD, Nairobi, Kenya",
@@ -1145,7 +1081,7 @@
     "$date": "2026-03-19T19:48:39.253Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:52:48.259Z"
+    "$date": "2026-04-17T11:58:56.769Z"
   },
   "__v": 0
 },
@@ -1194,23 +1130,15 @@
     "Webcam Sex"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc37"
-  },
+  "county": "Nairobi",
   "countyCode": "047",
   "regions": [
-    {
-      "$oid": "69805d5c548beeb6775e382b"
-    }
+    "nairobi-west"
   ],
-  "primaryRegion": {
-    "$oid": "69805d5c548beeb6775e382b"
-  },
+  "primaryRegion": "nairobi-west",
   "locations": [
     {
-      "region": {
-        "$oid": "69805d5c548beeb6775e382b"
-      },
+      "region": "nairobi-west",
       "town": "Nairobi",
       "estate": "Nairobi west",
       "address": "Nairobi west, Nairobi, Kenya",
@@ -1283,7 +1211,7 @@
     "$date": "2026-03-19T19:49:13.459Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:52:51.271Z"
+    "$date": "2026-04-17T11:58:56.774Z"
   },
   "__v": 0
 },
@@ -1341,23 +1269,15 @@
     "Webcam Sex"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc37"
-  },
+  "county": "Nairobi",
   "countyCode": "047",
   "regions": [
-    {
-      "$oid": "69805d5c548beeb6775e382b"
-    }
+    "nairobi-west"
   ],
-  "primaryRegion": {
-    "$oid": "69805d5c548beeb6775e382b"
-  },
+  "primaryRegion": "nairobi-west",
   "locations": [
     {
-      "region": {
-        "$oid": "69805d5c548beeb6775e382b"
-      },
+      "region": "nairobi-west",
       "town": "Nairobi",
       "estate": "Nairobi west",
       "address": "Nairobi west, Nairobi, Kenya",
@@ -1448,7 +1368,7 @@
     "$date": "2026-03-19T19:49:16.944Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:52:51.271Z"
+    "$date": "2026-04-17T11:58:56.777Z"
   },
   "__v": 0
 },
@@ -1505,23 +1425,15 @@
     "Webcam Sex"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc37"
-  },
+  "county": "Nairobi",
   "countyCode": "047",
   "regions": [
-    {
-      "$oid": "69bc535429ad2ae23b60d6c5"
-    }
+    "ruaka"
   ],
-  "primaryRegion": {
-    "$oid": "69bc535429ad2ae23b60d6c5"
-  },
+  "primaryRegion": "ruaka",
   "locations": [
     {
-      "region": {
-        "$oid": "69bc535429ad2ae23b60d6c5"
-      },
+      "region": "ruaka",
       "town": "Nairobi",
       "estate": "Ruaka",
       "address": "Ruaka, Nairobi, Kenya",
@@ -1613,7 +1525,7 @@
     "$date": "2026-03-19T19:49:41.017Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:52:51.271Z"
+    "$date": "2026-04-17T11:58:56.782Z"
   },
   "__v": 0
 },
@@ -1662,23 +1574,15 @@
     "Threesome"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc37"
-  },
+  "county": "Nairobi",
   "countyCode": "047",
   "regions": [
-    {
-      "$oid": "697a127ca3a21be5ad4bdbdf"
-    }
+    "Westlands"
   ],
-  "primaryRegion": {
-    "$oid": "697a127ca3a21be5ad4bdbdf"
-  },
+  "primaryRegion": "Westlands",
   "locations": [
     {
-      "region": {
-        "$oid": "697a127ca3a21be5ad4bdbdf"
-      },
+      "region": "Westlands",
       "town": "Nairobi",
       "estate": "Westlands",
       "address": "Westlands, Nairobi, Kenya",
@@ -1752,7 +1656,7 @@
     "$date": "2026-03-19T19:49:54.125Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:52:54.285Z"
+    "$date": "2026-04-17T11:58:56.788Z"
   },
   "__v": 0
 },
@@ -1800,23 +1704,15 @@
     "Webcam Sex"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc3a"
-  },
+  "county": "Nakuru",
   "countyCode": "032",
   "regions": [
-    {
-      "$oid": "69b30d7d4f49151f89b19459"
-    }
+    "Nakuru"
   ],
-  "primaryRegion": {
-    "$oid": "69b30d7d4f49151f89b19459"
-  },
+  "primaryRegion": "Nakuru",
   "locations": [
     {
-      "region": {
-        "$oid": "69b30d7d4f49151f89b19459"
-      },
+      "region": "Nakuru",
       "town": "Nakuru",
       "estate": "Pipeline",
       "address": "Pipeline, Nakuru, Kenya",
@@ -1887,7 +1783,7 @@
     "$date": "2026-03-19T19:57:09.688Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:52:54.285Z"
+    "$date": "2026-04-17T11:58:56.796Z"
   },
   "__v": 0
 },
@@ -1934,23 +1830,15 @@
     "Webcam Sex"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc3a"
-  },
+  "county": "Nakuru",
   "countyCode": "032",
   "regions": [
-    {
-      "$oid": "69b30d7d4f49151f89b19459"
-    }
+    "Nakuru"
   ],
-  "primaryRegion": {
-    "$oid": "69b30d7d4f49151f89b19459"
-  },
+  "primaryRegion": "Nakuru",
   "locations": [
     {
-      "region": {
-        "$oid": "69b30d7d4f49151f89b19459"
-      },
+      "region": "Nakuru",
       "town": "Nakuru",
       "estate": "Pipeline",
       "address": "Pipeline, Nakuru, Kenya",
@@ -2019,7 +1907,7 @@
     "$date": "2026-03-19T19:57:12.830Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:52:54.285Z"
+    "$date": "2026-04-17T11:58:56.800Z"
   },
   "__v": 0
 },
@@ -2067,23 +1955,15 @@
     "Threesome"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc45"
-  },
+  "county": "Nyeri",
   "countyCode": "019",
   "regions": [
-    {
-      "$oid": "69bc4c5329ad2ae23b60d500"
-    }
+    "nyeri-town"
   ],
-  "primaryRegion": {
-    "$oid": "69bc4c5329ad2ae23b60d500"
-  },
+  "primaryRegion": "nyeri-town",
   "locations": [
     {
-      "region": {
-        "$oid": "69bc4c5329ad2ae23b60d500"
-      },
+      "region": "nyeri-town",
       "town": "Nyeri",
       "estate": "Nyeri Town",
       "address": "Nyeri Town, Nyeri, Kenya",
@@ -2150,12 +2030,12 @@
   "totalBookings": 0,
   "totalReviews": 0,
   "rating": 0,
-  "totalViews": 4,
+  "totalViews": 6,
   "createdAt": {
     "$date": "2026-03-19T19:58:08.820Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:52:57.293Z"
+    "$date": "2026-04-17T11:58:56.804Z"
   },
   "__v": 0
 },
@@ -2205,23 +2085,15 @@
     "Webcam Sex"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc45"
-  },
+  "county": "Nyeri",
   "countyCode": "019",
   "regions": [
-    {
-      "$oid": "69bc4c5329ad2ae23b60d500"
-    }
+    "nyeri-town"
   ],
-  "primaryRegion": {
-    "$oid": "69bc4c5329ad2ae23b60d500"
-  },
+  "primaryRegion": "nyeri-town",
   "locations": [
     {
-      "region": {
-        "$oid": "69bc4c5329ad2ae23b60d500"
-      },
+      "region": "nyeri-town",
       "town": "Nyeri",
       "estate": "Nyeri Town",
       "address": "Nyeri Town, Nyeri, Kenya",
@@ -2292,12 +2164,12 @@
   "totalBookings": 0,
   "totalReviews": 0,
   "rating": 0,
-  "totalViews": 0,
+  "totalViews": 15,
   "createdAt": {
     "$date": "2026-03-19T19:58:11.658Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:51:54.463Z"
+    "$date": "2026-04-17T11:58:56.808Z"
   },
   "__v": 0
 },
@@ -2354,23 +2226,15 @@
     "Webcam Sex"
   ],
   "country": "Kenya",
-  "county": {
-    "$oid": "697a2bb3a3a21be5ad4bdc45"
-  },
+  "county": "Nyeri",
   "countyCode": "019",
   "regions": [
-    {
-      "$oid": "69bc4c5329ad2ae23b60d500"
-    }
+    "nyeri-town"
   ],
-  "primaryRegion": {
-    "$oid": "69bc4c5329ad2ae23b60d500"
-  },
+  "primaryRegion": "nyeri-town",
   "locations": [
     {
-      "region": {
-        "$oid": "69bc4c5329ad2ae23b60d500"
-      },
+      "region": "nyeri-town",
       "town": "Nyeri",
       "estate": "Nyeri Town",
       "address": "Nyeri Town, Nyeri, Kenya",
@@ -2459,7 +2323,7 @@
     "$date": "2026-03-19T19:58:14.560Z"
   },
   "updatedAt": {
-    "$date": "2026-03-19T20:51:57.478Z"
+    "$date": "2026-04-17T11:58:56.812Z"
   },
   "__v": 0
 }]
