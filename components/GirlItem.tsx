@@ -17,7 +17,7 @@ const GirlItem = ({
   girl,
   className,
   handlePress,
-  path = `/girl/${girl.slug}`,
+  path = `/girl/${girl.id}`,
 }: GirlItemProps) => {
   const {
     images,

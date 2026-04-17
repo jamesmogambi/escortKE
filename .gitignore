@@ -41,6 +41,10 @@ yarn-error.log*
 next-env.d.ts
 
 
+#files
+ *.playground.ts
+
+
 
 # clerk configuration (can include secrets)
 /.clerk/

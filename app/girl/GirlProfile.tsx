@@ -4,18 +4,17 @@ import React from "react";
 import ProfileGallery from "./ProfileGallery";
 import BioSection from "./BioSection";
 import { formatSlugToTitle, slugify } from "@/lib/utils";
-import { EscortDetailData } from "@/types/escort.types";
+import { Escort } from "@/server-actions/escort.action";
 
 interface Prop {
   className?: string;
-  girl: EscortDetailData;
+  girl: Escort;
   // girl: Girl;
 }
 const GirlProfile = ({ girl, className }: Prop) => {
   const {
     images,
     name,
-    workingAreas,
     email,
     telephone,
     whatsappPhone,
@@ -27,7 +26,6 @@ const GirlProfile = ({ girl, className }: Prop) => {
     videos,
     username,
     about,
-    aboutExcerpt,
     age,
   } = girl;
 
@@ -54,14 +52,14 @@ const GirlProfile = ({ girl, className }: Prop) => {
             from{" "}
             <span className="font-bold capitalize">
               {" "}
-              {formatSlugToTitle(workingAreas[0]?.name)}
+              {formatSlugToTitle(girl.primaryRegion)}
             </span>
           </span>
         </h3>
 
         <Link
           className="text-primary lg:text-lg hover:underline gap-2 pb-1.5 flex items-center font-bold "
-          href={`/girls/${slugify(workingAreas[0]?.name)}`}
+          href={`/girls/${slugify(girl.primaryRegion)}`}
         >
           back to list of girls
           <svg
