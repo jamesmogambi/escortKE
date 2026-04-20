@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack --port 4000",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "fix-ages": "tsx scripts/fix-invalid-ages.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.876.0",

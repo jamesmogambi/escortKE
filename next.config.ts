@@ -80,6 +80,19 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "thikaescorts.s3.us-east-005.backblazeb2.com",
       },
+
+      {
+        protocol: "https",
+        hostname: "rahaescorts.com",
+      },
+      {
+        protocol: "https",
+        hostname: "i0.wp.com",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
     ],
     qualities: [25, 50, 75, 90, 100],
   },
@@ -92,6 +105,43 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: process.env.NODE_ENV === "production",
   },
   allowedDevOrigins: ["local-origin.dev", "*.local-origin.dev"],
+
+  // Add server configuration for longer timeouts
+  serverRuntimeConfig: {
+    // Will be available on both server and client
+    maxDuration: 300, // 5 minutes for serverless functions
+  },
+
+  // Add headers for better image caching
+  async headers() {
+    return [
+      {
+        source: "/api/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Credentials", value: "true" },
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          {
+            key: "Access-Control-Allow-Methods",
+            value: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+          },
+          {
+            key: "Access-Control-Allow-Headers",
+            value:
+              "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+          },
+        ],
+      },
+      {
+        source: "/_next/image",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
