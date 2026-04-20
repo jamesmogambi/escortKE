@@ -1,280 +1,263 @@
-// app/api/scrape-nairobihot/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { initBrightData } from "@/lib/brightData";
-import axios from "axios";
+// lib/scrapers/nairobihot.scraper.ts
 import * as cheerio from "cheerio";
-import { NairobiHotScraper } from "@/lib/scrapers/nairobihot.scrapers";
-import { NairobiHotDatabaseService } from "@/lib/scrapers/nairobihot-db.service";
 
-const listingURL =
-  "https://www.nairobihot.com/nairobi-hot-sexy-girls-sweet-erotic-massage-sex/";
-
-// Helper function to make requests with retries
-async function makeRequest(
-  url: string,
-  proxyConfig: any,
-  retries = 3,
-): Promise<any> {
-  for (let i = 0; i < retries; i++) {
-    try {
-      console.log(`📡 Attempt ${i + 1}/${retries}: Fetching ${url}`);
-
-      const response = await axios.get(url, {
-        proxy: proxyConfig,
-        timeout: 30000,
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-          Accept:
-            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-          "Accept-Language": "en-US,en;q=0.9",
-          "Accept-Encoding": "gzip, deflate, br",
-          Connection: "keep-alive",
-          "Upgrade-Insecure-Requests": "1",
-        },
-      });
-
-      console.log(`✅ Request successful (Status: ${response.status})`);
-      return response;
-    } catch (error: any) {
-      console.error(`❌ Attempt ${i + 1} failed:`, error.message);
-
-      if (error.response) {
-        console.error(`Status: ${error.response.status}`);
-        console.error(`Status Text: ${error.response.statusText}`);
-      }
-
-      if (i === retries - 1) throw error;
-
-      // Wait longer between retries
-      const waitTime = 5000 * (i + 1);
-      console.log(`⏳ Waiting ${waitTime}ms before retry...`);
-      await new Promise((resolve) => setTimeout(resolve, waitTime));
-    }
-  }
-  throw new Error("Max retries exceeded");
+export interface NairobiHotEscort {
+  id: string;
+  name: string;
+  username: string;
+  previewPhoto: string;
+  telephone: string;
+  age: string;
+  description: string;
+  location: string;
+  county: string;
+  town: string;
+  isVip: boolean;
+  profileUrl: string;
+  images: string[];
+  services: string[];
+  about: string;
+  nationality: string;
+  gender: string;
+  sexualOrientation: string;
+  incallRate: string;
+  outcallRate: string;
 }
 
-export async function POST(request: NextRequest) {
-  const { options } = initBrightData();
+export class NairobiHotScraper {
+  private $: cheerio.CheerioAPI;
+  private html: string;
 
-  const body = await request.json();
-  const { fetchFullDetails = true, maxConcurrent = 2, testMode = false } = body;
+  constructor(html: string) {
+    this.html = html;
+    this.$ = cheerio.load(html);
+  }
 
-  console.log(`🚀 Starting scrape for Nairobi Hot Escorts`);
-  console.log(`📄 Fetch full details: ${fetchFullDetails}`);
-  console.log(`🔧 Test mode: ${testMode}`);
+  static hasEscorts($: cheerio.CheerioAPI): boolean {
+    const profileCount = $(".profiles-listing .profile-preview").length;
+    const altProfileCount = $(".profile-preview").length;
+    return profileCount > 0 || altProfileCount > 0;
+  }
 
-  try {
-    // Test mode - just fetch and return HTML structure info
-    if (testMode) {
-      console.log("🔍 Running in test mode...");
+  // Clean and validate age
+  private cleanAge(ageText: string): string {
+    if (!ageText || ageText === "0" || ageText === "N/A") return "";
 
-      const response = await makeRequest(listingURL, options);
-      const $ = cheerio.load(response.data);
+    // Extract only numbers from the string
+    const numbers = ageText.match(/\d+/g);
+    if (!numbers) return "";
 
-      // Analyze page structure
-      const structure = {
-        title: $("title").text(),
-        htmlLength: response.data.length,
-        hasProfilesListing: $(".profiles-listing").length > 0,
-        profilePreviewCount: $(".profile-preview").length,
-        columnCount: $(".column.threecol").length,
-        hasProfiles: NairobiHotScraper.hasEscorts($),
-        sampleHTML:
-          $(".profiles-listing").html()?.substring(0, 1000) ||
-          $("body").html()?.substring(0, 1000),
-        firstFewProfiles: $(".profile-preview")
-          .slice(0, 2)
-          .map((_, el) => {
-            return {
-              name: $(el).find(".profile-text h5 a").text().trim(),
-              phone: $(el).find(".profile-text h3").text().trim(),
-              hasLink: $(el).find(".profile-image a").attr("href")
-                ? true
-                : false,
-            };
-          })
-          .get(),
-      };
+    // Get the first number found (usually the age)
+    let age = parseInt(numbers[0], 10);
 
-      return NextResponse.json({
-        success: true,
-        testMode: true,
-        structure,
-        message: "Test mode - no data saved",
-      });
+    // Validate age range (18-65 for escorts)
+    if (isNaN(age) || age < 18 || age > 65) {
+      console.log(`⚠️ Invalid age detected: "${ageText}" -> ignoring`);
+      return "";
     }
 
-    console.log(`📡 Fetching main page: ${listingURL}`);
-    const response = await makeRequest(listingURL, options);
+    return age.toString();
+  }
 
-    const $ = cheerio.load(response.data);
+  extractEscortFromCard(cardElement: any): Partial<NairobiHotEscort> | null {
+    const $card = this.$(cardElement);
 
-    // Check if page has escorts
-    if (!NairobiHotScraper.hasEscorts($)) {
-      console.log("No escorts found on page");
-      return NextResponse.json({
-        success: false,
-        message: "No escorts found on page",
-        url: listingURL,
-        htmlPreview: response.data.substring(0, 1000),
-      });
-    }
+    const profileUrl = $card.find(".profile-image a").attr("href");
+    if (!profileUrl) return null;
 
-    const scraper = new NairobiHotScraper(response.data);
+    const username = profileUrl.split("/author/")[1]?.replace("/", "") || "";
+    const name = $card.find(".profile-text h5 a").text().trim();
+    const phoneText = $card.find(".profile-text h3").text();
+    const telephone = phoneText.replace("Phone:", "").trim();
+    const description = $card.find(".profile-text p").text().trim();
 
-    // Extract all escorts from the page
-    console.log("🔍 Extracting all escorts from page...");
-    const escorts = scraper.extractAllEscortsFromPage();
-
-    console.log(`📊 Found ${escorts.length} escorts on the page`);
-
-    if (escorts.length === 0) {
-      return NextResponse.json({
-        success: false,
-        message: "No escorts extracted from page",
-        htmlPreview: response.data.substring(0, 2000),
-      });
-    }
-
-    let totalSaved = 0;
-    let totalFailed = 0;
-
-    // Fetch full details for each escort if requested
-    if (fetchFullDetails) {
-      console.log("🔍 Fetching full details for each escort...");
-
-      // Process in batches to avoid overwhelming the server
-      const batchSize = maxConcurrent;
-      for (let i = 0; i < escorts.length; i += batchSize) {
-        const batch = escorts.slice(i, i + batchSize);
-        console.log(
-          `📝 Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(escorts.length / batchSize)}`,
-        );
-
-        const batchPromises = batch.map(async (escort, index) => {
-          if (!escort.profileUrl) {
-            console.log(`  ⏭️ No profile URL for ${escort.name}`);
-            totalFailed++;
-            return;
-          }
-
-          try {
-            console.log(
-              `  📝 Fetching details for ${escort.name} (${escort.profileUrl})...`,
-            );
-
-            // Use the retry function for profile requests too
-            const profileResponse = await makeRequest(
-              escort.profileUrl!,
-              ,
-              2,
-            );
-
-            const profileScraper = new NairobiHotScraper(profileResponse.data);
-            const fullDetails = await profileScraper.extractFullProfileDetails(
-              profileResponse.data,
-            );
-
-            // Save to database with full details
-            const result = await NairobiHotDatabaseService.saveEscort(
-              escort,
-              fullDetails,
-            );
-            if (result.success) {
-              totalSaved++;
-              console.log(`  ✅ Saved: ${escort.name}`);
-            } else {
-              totalFailed++;
-              console.log(`  ❌ Failed: ${escort.name} - ${result.error}`);
-            }
-          } catch (error: any) {
-            console.error(
-              `  ❌ Error fetching details for ${escort.name}:`,
-              error.message,
-            );
-            totalFailed++;
-          }
-        });
-
-        await Promise.all(batchPromises);
-
-        // Wait between batches
-        if (i + batchSize < escorts.length) {
-          console.log("⏳ Waiting 3 seconds before next batch...");
-          await new Promise((resolve) => setTimeout(resolve, 3000));
-        }
-      }
-    } else {
-      // Save without full details
-      for (const escort of escorts) {
-        const result = await NairobiHotDatabaseService.saveEscort(escort);
-        if (result.success) {
-          totalSaved++;
-          console.log(`✅ Saved: ${escort.name}`);
-        } else {
-          totalFailed++;
-          console.log(`❌ Failed: ${escort.name}`);
-        }
-      }
-    }
-
-    console.log(`
-    📊 Scraping Results:
-    - Total escorts found: ${escorts.length}
-    - Successfully saved: ${totalSaved}
-    - Failed to save: ${totalFailed}
-    `);
-
-    return NextResponse.json({
-      success: true,
-      message: `✅ Successfully scraped ${escorts.length} escorts from Nairobi Hot`,
-      results: {
-        totalFound: escorts.length,
-        saved: totalSaved,
-        failed: totalFailed,
-        escorts: escorts.slice(0, 10).map((e) => ({
-          name: e.name,
-          phone: e.telephone,
-          location: e.location,
-          isVip: e.isVip,
-          profileUrl: e.profileUrl,
-        })),
-      },
-    });
-  } catch (error: any) {
-    console.error("❌ Scraping error:", error.message);
-
-    // Provide more detailed error information
-    let errorDetails = error.message;
-    if (error.response) {
-      errorDetails = `Status: ${error.response.status} - ${error.response.statusText}`;
-      console.error("Response data:", error.response.data?.substring(0, 500));
-    }
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Scraping failed",
-        details: errorDetails,
-        tip: "Make sure your BrightData credentials are correct in .env.local",
-      },
-      { status: 500 },
+    // Extract age from description with better regex
+    let age = "";
+    const ageMatch = description.match(
+      /\b(\d{1,2})\s*(?:years? old|yrs?|years? of age)\b/i,
     );
+    if (ageMatch) {
+      age = this.cleanAge(ageMatch[1]);
+    }
+
+    // Extract preview photo
+    let previewPhoto = "";
+    const imgElement = $card.find(".profile-image img");
+    if (imgElement.length) {
+      previewPhoto =
+        imgElement.attr("data-src") || imgElement.attr("src") || "";
+      if (previewPhoto && previewPhoto.startsWith("//")) {
+        previewPhoto = "https:" + previewPhoto;
+      }
+    }
+
+    // Extract location
+    let location = "";
+    let town = "";
+    let county = "Nairobi";
+
+    const locationMatch = description.match(/from\s+([^.]+)/i);
+    if (locationMatch) {
+      location = locationMatch[1].trim();
+      if (location.includes("Nairobi")) {
+        county = "Nairobi";
+        town = location.replace("Nairobi", "").trim();
+      } else if (location.includes("Kiambu")) {
+        county = "Kiambu";
+        town = location.replace("Kiambu", "").trim();
+      } else if (location.includes("Mombasa")) {
+        county = "Mombasa";
+        town = location.replace("Mombasa", "").trim();
+      } else {
+        town = location.split(" ")[0];
+      }
+    }
+
+    const isVip = $card.find(".badge").text().trim() === "VIP";
+
+    return {
+      id: username,
+      name: name || username,
+      username,
+      telephone,
+      previewPhoto,
+      age,
+      description,
+      location,
+      county,
+      town,
+      isVip,
+      profileUrl,
+    };
   }
-}
 
-// GET endpoint for testing
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const fetchFullDetails = searchParams.get("fetchFullDetails") === "true";
-  const maxConcurrent = parseInt(searchParams.get("maxConcurrent") || "2");
-  const testMode = searchParams.get("testMode") === "true";
+  extractAllEscortsFromPage(): Partial<NairobiHotEscort>[] {
+    const escorts: Partial<NairobiHotEscort>[] = [];
 
-  const mockRequest = {
-    json: async () => ({ fetchFullDetails, maxConcurrent, testMode }),
-  } as NextRequest;
+    let profileCards = this.$(".profiles-listing .profile-preview");
+    if (profileCards.length === 0) {
+      profileCards = this.$(".profile-preview");
+    }
+    if (profileCards.length === 0) {
+      profileCards = this.$(".column.threecol");
+    }
 
-  return POST(mockRequest);
+    console.log(`Found ${profileCards.length} profile cards on page`);
+
+    profileCards.each((_, element) => {
+      const escort = this.extractEscortFromCard(element);
+      if (escort && escort.name) {
+        escorts.push(escort);
+      }
+    });
+
+    return escorts;
+  }
+
+  async extractFullProfileDetails(
+    profileHtml: string,
+  ): Promise<Partial<NairobiHotEscort>> {
+    const $profile = cheerio.load(profileHtml);
+    const details: Partial<NairobiHotEscort> = {};
+
+    // Extract name
+    const nameElement = $profile(".full-profile .section-title h2").first();
+    if (nameElement.length) {
+      details.name = nameElement
+        .text()
+        .replace("Name:", "")
+        .replace("Offline", "")
+        .replace("Online", "")
+        .trim();
+    }
+
+    // Extract phone
+    const phoneElement = $profile(".full-profile .section-title h3").first();
+    if (phoneElement.length) {
+      const phoneText = phoneElement.text().replace("Phone:", "").trim();
+      const phoneMatch = phoneText.match(/(\d{10,12})/);
+      if (phoneMatch) details.telephone = phoneMatch[1];
+    }
+
+    // Extract age with validation
+    let ageText = "";
+    $profile(".profile-fields ul li").each((_, el) => {
+      const label = $profile(el).find("span:first-child").text().trim();
+      const value = $profile(el).find("span:last-child").text().trim();
+      if (label === "Age") {
+        ageText = value;
+      }
+    });
+    details.age = this.cleanAge(ageText);
+
+    // Extract gender
+    $profile(".profile-fields ul li").each((_, el) => {
+      const label = $profile(el).find("span:first-child").text().trim();
+      const value = $profile(el).find("span:last-child").text().trim();
+      if (label === "Gender") {
+        details.gender = value;
+      }
+      if (label === "Sexual Orientation") {
+        details.sexualOrientation = value;
+      }
+      if (label === "Nationality") {
+        details.nationality = value;
+      }
+      if (label === "County") {
+        details.county = value;
+      }
+      if (label === "City / Town") {
+        details.town = value;
+      }
+    });
+
+    // Extract all images
+    const images: string[] = [];
+    $profile(".profile-image img, .gallery img").each((_, el) => {
+      let src = $profile(el).attr("data-src") || $profile(el).attr("src") || "";
+      if (
+        src &&
+        !src.includes("lazy_placeholder") &&
+        !src.includes("gravatar")
+      ) {
+        if (src.startsWith("//")) src = "https:" + src;
+        images.push(src);
+      }
+    });
+    details.images = images;
+    details.previewPhoto = images[0] || details.previewPhoto;
+
+    // Extract services
+    const services: string[] = [];
+    $profile(
+      ".profile-fields ul li.service-list span:last-child a, .sid_profile_list ul li:contains('Services') span:last-child a",
+    ).each((_, el) => {
+      const service = $profile(el).text().trim();
+      if (service) services.push(service);
+    });
+    details.services = services;
+
+    // Extract about
+    let about = "";
+    $profile(".profile-description p, .about-text").each((_, el) => {
+      about += $profile(el).text().trim() + " ";
+    });
+    details.about = about.trim();
+
+    // Extract rates
+    $profile(".profile-fields ul li").each((_, el) => {
+      const html = $profile(el).html() || "";
+      if (html.includes("Incalls per hour from")) {
+        details.incallRate = $profile(el).find(".text-secondary").text().trim();
+      }
+      if (html.includes("Outcalls per hour from")) {
+        details.outcallRate = $profile(el)
+          .find(".text-secondary")
+          .text()
+          .trim();
+      }
+    });
+
+    return details;
+  }
 }
