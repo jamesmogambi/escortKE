@@ -11,6 +11,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 import { generateBDSMStructuredData } from "./seo-utils";
 import { generateBreadcrumbList } from "../girls/seo-utils";
+import { getBDSMEscortsClientSide } from "@/server-actions/escort.action";
 
 interface PageProps {
   searchParams: Promise<{
@@ -75,22 +76,29 @@ export async function generateMetadata(
   let uniqueLocations: string[] = [];
 
   try {
-    const data = await getBDSMEscorts({
-      county: params.county,
-      region: params.region,
-      practice: params.practice,
-      page: pageNumber,
+    // Fetch BDSM escorts
+    const {
+      escorts,
+      total,
+      totalPages,
+      page: currentPageFromResponse,
+      hasMore,
+    } = await getBDSMEscortsClientSide({
+      page: params.page ? parseInt(params.page, 10) : 1,
       limit: ITEMS_PER_PAGE,
-      gender: "girl",
+      county: params.county === "all" ? undefined : params.county,
+      region: params.region === "all" ? undefined : params.region,
+      isActive: true,
+      isVerified: undefined, // Show all verified and unverified
+      isFeatured: undefined, // Show all featured and non-featured
     });
-
-    if (data) {
-      totalBDSM = data.total || 0;
-      if (data.escorts && data.escorts.length > 0) {
-        firstBDSM = data.escorts[0];
+    if (escorts) {
+      totalBDSM = total || 0;
+      if (escorts && escorts.length > 0) {
+        firstBDSM = escorts[0];
 
         // Extract unique locations for keywords
-        const locations = data.escorts
+        const locations = escorts
           .map((e: any) => e.town || e.workingAreas?.[0]?.countyName)
           .filter(Boolean);
         uniqueLocations = [...new Set(locations)] as string[];
@@ -389,36 +397,37 @@ const BDSMPage = async ({ searchParams }: PageProps) => {
   const formattedPractice = formatPracticeType(practice || "");
 
   // Fetch BDSM escorts
-  const res = await getBDSMEscorts({
-    county: params.county,
-    region: params.region,
-    practice: params.practice,
+  const {
+    escorts,
+    total,
+    totalPages,
+    page: currentPageFromResponse,
+    hasMore,
+  } = await getBDSMEscortsClientSide({
     page: currentPage,
     limit: ITEMS_PER_PAGE,
-    gender: "girl",
+    county: params.county === "all" ? undefined : params.county,
+    region: params.region === "all" ? undefined : params.region,
+    isActive: true,
+    isVerified: undefined, // Show all verified and unverified
+    isFeatured: undefined, // Show all featured and non-featured
   });
 
-  if (!res) {
-    notFound();
-  }
-
   const title = getDynamicTitle({ county, region, practice });
-
-  console.log("BDSM Escorts Response:", res);
 
   // Generate structured data
   const structuredData = generateBDSMStructuredData({
     title,
     description: `Professional ${formattedPractice || "BDSM"} services ${formattedCounty ? `in ${formattedCounty}` : "across Kenya"}.`,
-    totalItems: res.total,
+    totalItems: total,
     currentPage,
-    totalPages: res.totalPages,
+    totalPages: totalPages,
     filters: {
       county: formattedCounty,
       region: formattedRegion,
       practice: formattedPractice,
     },
-    items: res.escorts?.slice(0, 10) || [],
+    items: escorts?.slice(0, 10) || [],
   });
 
   // Generate breadcrumb structured data
@@ -492,14 +501,14 @@ const BDSMPage = async ({ searchParams }: PageProps) => {
       </div>
 
       {/* Results List */}
-      {res && res.total > 0 && <GirlList girls={res.escorts} />}
-      {res && res.total === 0 && <NotFoundList />}
+      {total > 0 && <GirlList girls={escorts} />}
+      {total === 0 && <NotFoundList />}
 
       {/* Pagination */}
       <ClientPaginationWrapper
-        totalPages={res.totalPages}
-        currentPage={res.page}
-        totalItems={res.total}
+        totalPages={totalPages}
+        currentPage={currentPageFromResponse}
+        totalItems={total}
         itemsPerPage={ITEMS_PER_PAGE}
       />
 
