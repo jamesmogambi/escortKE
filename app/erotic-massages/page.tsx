@@ -14,6 +14,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 import { generateMassageStructuredData } from "./seo-utils";
 import { generateBreadcrumbList } from "../girls/seo-utils";
+import { getEroticMassageEscortsClientSide } from "@/server-actions/escort.action";
 // import { generateMassageStructuredData, generateBreadcrumbList } from "@/lib/seo-utils";
 
 interface PageProps {
@@ -75,22 +76,26 @@ export async function generateMetadata(
   let uniqueLocations: string[] = [];
 
   try {
-    const data = await fetchMassageEscorts({
+    const {
+      escorts,
+      total,
+      totalPages,
+      page: currentPageFromResponse,
+      hasMore,
+    } = await getEroticMassageEscortsClientSide({
+      page: params.page ? parseInt(params.page) : 1,
+      limit: ITEMS_PER_PAGE,
       county: params.county,
       region: params.region,
-      massageType: params.massageType,
-      page: pageNumber,
-      limit: ITEMS_PER_PAGE,
-      gender: "girl",
+      isActive: true,
     });
-
-    if (data) {
-      totalMasseuses = data.total || 0;
-      if (data.escorts && data.escorts.length > 0) {
-        firstMasseuse = data.escorts[0];
+    if (escorts) {
+      totalMasseuses = total || 0;
+      if (escorts && escorts.length > 0) {
+        firstMasseuse = escorts[0];
 
         // Extract unique locations for keywords
-        const locations = data.escorts
+        const locations = escorts
           .map((e: any) => e.town || e.workingAreas?.[0]?.countyName)
           .filter(Boolean);
         uniqueLocations = [...new Set(locations)] as string[];
@@ -422,20 +427,19 @@ const MassageEscortsPage = async ({ searchParams }: PageProps) => {
   const formattedMassageType = formatMassageType(params.massageType || "");
 
   // Fetch massage escorts based on filters
-  const data = await fetchMassageEscorts({
-    county: params.county,
-    region: params.region,
-    massageType: params.massageType,
+  const {
+    escorts,
+    total,
+    totalPages,
+    page: currentPageFromResponse,
+    hasMore,
+  } = await getEroticMassageEscortsClientSide({
     page: currentPage,
     limit: ITEMS_PER_PAGE,
-    gender: "girl",
+    county: params.county,
+    region: params.region,
+    isActive: true,
   });
-
-  if (!data) {
-    notFound();
-  }
-
-  console.log("Fetched massage escorts:", data);
 
   // Generate dynamic title
   const listHeaderTitle = generateListHeaderTitle({
@@ -449,15 +453,15 @@ const MassageEscortsPage = async ({ searchParams }: PageProps) => {
   const structuredData = generateMassageStructuredData({
     title: listHeaderTitle,
     description: `Find professional ${formattedMassageType || "erotic"} massage therapists ${formattedCounty ? `in ${formattedCounty}` : "across Kenya"}.`,
-    totalItems: data.total,
+    totalItems: total,
     currentPage,
-    totalPages: data.totalPages,
+    totalPages: totalPages,
     filters: {
       county: formattedCounty,
       region: formattedRegion,
       massageType: formattedMassageType,
     },
-    items: data.escorts?.slice(0, 10) || [],
+    items: escorts?.slice(0, 10) || [],
   });
 
   // Generate breadcrumb structured data
@@ -538,14 +542,14 @@ const MassageEscortsPage = async ({ searchParams }: PageProps) => {
       />
 
       {/* Results List */}
-      {data.total === 0 && <NotFoundList />}
-      {data.total > 0 && <GirlList girls={data.escorts as any} />}
+      {total === 0 && <NotFoundList />}
+      {total > 0 && <GirlList girls={escorts as any} />}
 
       {/* Pagination */}
       <ClientPaginationWrapper
-        totalPages={data.totalPages}
+        totalPages={totalPages}
         currentPage={currentPage}
-        totalItems={data.total}
+        totalItems={total}
         itemsPerPage={ITEMS_PER_PAGE}
       />
 
