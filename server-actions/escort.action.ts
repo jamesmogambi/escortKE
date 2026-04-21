@@ -100,12 +100,12 @@ export interface Plan {
 export interface GetEscortsParams {
   page?: number;
   limit?: number;
-  county?: string; // countyCode
-  region?: string; // region ID
+  county?: string;
+  region?: string;
   town?: string;
   estate?: string;
-  practice?: string; // single practice
-  practices?: string[]; // multiple practices
+  practice?: string;
+  practices?: string[];
   category?: string;
   categories?: string[];
   nationality?: string;
@@ -279,7 +279,47 @@ const convertQueryDocToEscort = (
   };
 };
 
+// Validation functions (optional - for logging only, won't throw errors)
+async function logInvalidCounty(county: string): Promise<void> {
+  try {
+    const countiesRef = adminDb.collection("counties");
+    const snapshot = await countiesRef
+      .where("name", "==", county)
+      .limit(1)
+      .get();
+    if (snapshot.empty) {
+      console.warn(`County not found in database: ${county}`);
+    }
+  } catch (error) {
+    console.error("Error checking county:", error);
+  }
+}
+
+async function logInvalidRegion(
+  region: string,
+  county?: string,
+): Promise<void> {
+  try {
+    const regionsRef = adminDb.collection("regions");
+    let query = regionsRef.where("name", "==", region);
+
+    if (county) {
+      query = query.where("county", "==", county);
+    }
+
+    const snapshot = await query.limit(1).get();
+    if (snapshot.empty) {
+      console.warn(
+        `Region not found in database: ${region}${county ? ` in ${county}` : ""}`,
+      );
+    }
+  } catch (error) {
+    console.error("Error checking region:", error);
+  }
+}
+
 // Main get escorts function with all filters
+// Main function - returns empty array when no escorts found
 export async function getEscorts(
   params: GetEscortsParams = {},
 ): Promise<GetEscortsResponse> {
@@ -307,9 +347,13 @@ export async function getEscorts(
       sortOrder = "desc",
     } = params;
 
+    // Validate page and limit
+    const validPage = Math.max(1, page);
+    const validLimit = Math.min(100, Math.max(1, limit));
+
     let query: FirebaseFirestore.Query = adminDb.collection("escorts");
 
-    // Apply basic filters
+    // Apply basic filters (non-array filters first)
     if (isActive !== undefined) {
       query = query.where("isActive", "==", isActive);
     }
@@ -323,70 +367,184 @@ export async function getEscorts(
     }
 
     // County filter
-    if (county) {
-      query = query.where("countyCode", "==", county);
-    }
-
-    // Region filter - regions is an array
-    if (region) {
-      query = query.where("regions", "array-contains", region);
-    }
-
-    // Practice filter - practices is an array
-    if (practice) {
-      query = query.where("practices", "array-contains", practice);
-    }
-
-    // Category filter
-    if (category) {
-      query = query.where("categories", "array-contains", category);
+    if (county && county !== "all") {
+      query = query.where("county", "==", county);
     }
 
     // Nationality filter
-    if (nationality) {
+    if (nationality && nationality !== "all") {
       query = query.where("nationality", "==", nationality);
     }
 
     // Age range filter
-    if (minAge !== undefined && maxAge !== undefined) {
-      query = query
-        .where("age", ">=", minAge.toString())
-        .where("age", "<=", maxAge.toString());
-    } else if (minAge !== undefined) {
+    if (minAge !== undefined && minAge > 0) {
       query = query.where("age", ">=", minAge.toString());
-    } else if (maxAge !== undefined) {
+    }
+    if (maxAge !== undefined && maxAge > 0) {
       query = query.where("age", "<=", maxAge.toString());
     }
 
     // Rating filter
-    if (minRating !== undefined) {
+    if (minRating !== undefined && minRating > 0) {
       query = query.where("rating", ">=", minRating);
     }
 
     // Search by name or username
-    if (search) {
+    if (search && search.trim()) {
+      const searchTerm = search.trim();
       query = query
-        .where("name", ">=", search)
-        .where("name", "<=", search + "\uf8ff");
+        .where("name", ">=", searchTerm)
+        .where("name", "<=", searchTerm + "\uf8ff");
+    }
+
+    // CRITICAL FIX: Only ONE array-contains filter per query
+    // Priority: region > practice > category (choose the most important one)
+    let hasArrayFilter = false;
+
+    if (region && region !== "all" && !hasArrayFilter) {
+      query = query.where("regions", "array-contains", region);
+      hasArrayFilter = true;
+    }
+
+    if (practice && practice !== "all" && !hasArrayFilter) {
+      query = query.where("practices", "array-contains", practice);
+      hasArrayFilter = true;
+    }
+
+    if (category && category !== "all" && !hasArrayFilter) {
+      query = query.where("categories", "array-contains", category);
+      hasArrayFilter = true;
     }
 
     // Apply sorting
-    query = query.orderBy(sortBy, sortOrder);
+    const validSortFields = [
+      "createdAt",
+      "updatedAt",
+      "age",
+      "totalViews",
+      "rating",
+      "totalBookings",
+    ];
+    const sortField = validSortFields.includes(sortBy) ? sortBy : "createdAt";
+    query = query.orderBy(sortField, sortOrder);
 
-    // Get total count (without pagination)
-    const totalSnapshot = await query.count().get();
-    const total = totalSnapshot.data().count;
+    // Get total count - use a simpler approach to avoid array-contains issues
+    let total = 0;
+    let escorts: Escort[] = [];
 
-    // Apply pagination
-    const startAt = (page - 1) * limit;
-    let snapshot = await query.limit(limit).offset(startAt).get();
+    try {
+      // Try to get count using a simpler query without array-contains if possible
+      let countQuery: any = adminDb.collection("escorts");
 
-    let escorts = snapshot.docs.map(convertQueryDocToEscort);
+      // Rebuild query for counting without array-contains filters
+      if (isActive !== undefined) {
+        countQuery = countQuery.where("isActive", "==", isActive);
+      }
+      if (isVerified !== undefined) {
+        countQuery = countQuery.where("isVerified", "==", isVerified);
+      }
+      if (isFeatured !== undefined) {
+        countQuery = countQuery.where("isFeatured", "==", isFeatured);
+      }
+      if (county && county !== "all") {
+        countQuery = countQuery.where("county", "==", county);
+      }
+      if (nationality && nationality !== "all") {
+        countQuery = countQuery.where("nationality", "==", nationality);
+      }
 
-    // Filter by town/estate (client-side since it's nested)
+      // For age filters
+      if (minAge !== undefined && minAge > 0) {
+        countQuery = countQuery.where("age", ">=", minAge.toString());
+      }
+      if (maxAge !== undefined && maxAge > 0) {
+        countQuery = countQuery.where("age", "<=", maxAge.toString());
+      }
+
+      const countSnapshot = await countQuery.count().get();
+      total = countSnapshot.data().count;
+
+      // Now get the actual data with pagination
+      const startAt = (validPage - 1) * validLimit;
+
+      if (startAt < total) {
+        const dataSnapshot = await query
+          .limit(validLimit)
+          .offset(startAt)
+          .get();
+        escorts = dataSnapshot.docs.map(convertQueryDocToEscort);
+      }
+    } catch (countError: any) {
+      console.error("Error with count query:", countError.message);
+
+      // Fallback: Get all documents and filter client-side
+      // This is slower but works for multiple array-contains
+      let fallbackQuery: any = adminDb.collection("escorts");
+
+      // Apply only non-array filters for the fallback
+      if (isActive !== undefined) {
+        fallbackQuery = fallbackQuery.where("isActive", "==", isActive);
+      }
+      if (isVerified !== undefined) {
+        fallbackQuery = fallbackQuery.where("isVerified", "==", isVerified);
+      }
+      if (isFeatured !== undefined) {
+        fallbackQuery = fallbackQuery.where("isFeatured", "==", isFeatured);
+      }
+      if (county && county !== "all") {
+        fallbackQuery = fallbackQuery.where("county", "==", county);
+      }
+      if (nationality && nationality !== "all") {
+        fallbackQuery = fallbackQuery.where("nationality", "==", nationality);
+      }
+
+      const fallbackSnapshot = await fallbackQuery.get();
+      let allEscorts: Escort[] = fallbackSnapshot.docs.map(
+        convertQueryDocToEscort,
+      );
+
+      // Apply array filters client-side
+      if (region && region !== "all") {
+        allEscorts = allEscorts.filter((escort) =>
+          escort.regions?.includes(region),
+        );
+      }
+
+      if (practice && practice !== "all") {
+        allEscorts = allEscorts.filter((escort) =>
+          escort.practices?.includes(practice),
+        );
+      }
+
+      if (category && category !== "all") {
+        allEscorts = allEscorts.filter((escort) =>
+          escort.categories?.includes(category),
+        );
+      }
+
+      // Apply age filters client-side if needed
+      if (minAge !== undefined && minAge > 0) {
+        allEscorts = allEscorts.filter(
+          (escort) => escort.age && parseInt(escort.age) >= minAge,
+        );
+      }
+      if (maxAge !== undefined && maxAge > 0) {
+        allEscorts = allEscorts.filter(
+          (escort) => escort.age && parseInt(escort.age) <= maxAge,
+        );
+      }
+
+      total = allEscorts.length;
+
+      // Apply pagination client-side
+      const startAt = (validPage - 1) * validLimit;
+      escorts = allEscorts.slice(startAt, startAt + validLimit);
+    }
+
+    // Apply client-side filters for town/estate
     if (town || estate) {
       escorts = escorts.filter((escort) => {
-        const hasLocation = escort.locations.some((loc) => {
+        const hasLocation = escort.locations?.some((loc) => {
           let match = true;
           if (town) {
             match = match && (loc.town === town || loc.estate === town);
@@ -403,8 +561,8 @@ export async function getEscorts(
     // Filter by multiple practices (client-side)
     if (practices && practices.length > 0) {
       escorts = escorts.filter((escort) => {
-        return practices.some((practice) =>
-          escort.practices.includes(practice),
+        return practices.some((practiceItem) =>
+          escort.practices?.includes(practiceItem),
         );
       });
     }
@@ -412,20 +570,135 @@ export async function getEscorts(
     // Filter by multiple categories (client-side)
     if (categories && categories.length > 0) {
       escorts = escorts.filter((escort) => {
-        return categories.some((cat) => escort.categories.includes(cat));
+        return categories.some((cat) => escort.categories?.includes(cat));
       });
     }
+
+    // Recalculate totals after client-side filters
+    const filteredTotal = escorts.length;
+    const effectiveTotal =
+      town || estate || practices?.length || categories?.length
+        ? filteredTotal
+        : total;
+
+    return {
+      escorts,
+      total: effectiveTotal,
+      page: validPage,
+      totalPages: Math.max(0, Math.ceil(effectiveTotal / validLimit)),
+      hasMore: validPage * validLimit < effectiveTotal,
+    };
+  } catch (error) {
+    console.error("Error fetching escorts:", error);
+
+    // Return empty array on error
+    return {
+      escorts: [],
+      total: 0,
+      page: params.page || 1,
+      totalPages: 0,
+      hasMore: false,
+    };
+  }
+}
+
+// Helper function to get escorts with client-side filtering only
+export async function getEscortsWithClientFiltering(
+  params: GetEscortsParams = {},
+): Promise<GetEscortsResponse> {
+  try {
+    const {
+      page = 1,
+      limit = 20,
+      county,
+      region,
+      practice,
+      isActive = true,
+    } = params;
+
+    // Simple query with minimal filters
+    let query: any = adminDb.collection("escorts");
+
+    if (isActive !== undefined) {
+      query = query.where("isActive", "==", isActive);
+    }
+
+    if (county && county !== "all") {
+      query = query.where("county", "==", county);
+    }
+
+    // Get all matching documents (limited to reasonable amount)
+    const snapshot = await query.limit(1000).get();
+    let allEscorts: Escort[] = snapshot.docs.map(convertQueryDocToEscort);
+
+    // Apply all array filters client-side
+    if (region && region !== "all") {
+      allEscorts = allEscorts.filter((escort) =>
+        escort.regions?.includes(region),
+      );
+    }
+
+    if (practice && practice !== "all") {
+      allEscorts = allEscorts.filter((escort) =>
+        escort.practices?.includes(practice),
+      );
+    }
+
+    const total = allEscorts.length;
+    const validPage = Math.max(1, page);
+    const validLimit = Math.min(100, Math.max(1, limit));
+    const startAt = (validPage - 1) * validLimit;
+    const escorts = allEscorts.slice(startAt, startAt + validLimit);
 
     return {
       escorts,
       total,
-      page,
-      totalPages: Math.ceil(total / limit),
-      hasMore: page * limit < total,
+      page: validPage,
+      totalPages: Math.ceil(total / validLimit),
+      hasMore: validPage * validLimit < total,
     };
   } catch (error) {
-    console.error("Error fetching escorts:", error);
-    throw new Error("Failed to fetch escorts");
+    console.error("Error in client-side filtering:", error);
+    return {
+      escorts: [],
+      total: 0,
+      page: params.page || 1,
+      totalPages: 0,
+      hasMore: false,
+    };
+  }
+}
+// Helper function that ensures empty array on no results
+export async function getEscortsSafe(
+  params: GetEscortsParams = {},
+): Promise<GetEscortsResponse> {
+  const result = await getEscorts(params);
+
+  // Ensure escorts is always an array
+  if (!result.escorts) {
+    result.escorts = [];
+  }
+
+  // Ensure total is correct
+  if (result.escorts.length === 0 && result.total > 0) {
+    result.total = 0;
+    result.totalPages = 0;
+    result.hasMore = false;
+  }
+
+  return result;
+}
+
+// Helper to check if any escorts exist (without fetching all data)
+export async function hasEscorts(
+  params: GetEscortsParams = {},
+): Promise<boolean> {
+  try {
+    const result = await getEscorts({ ...params, limit: 1 });
+    return result.total > 0;
+  } catch (error) {
+    console.error("Error checking escorts existence:", error);
+    return false;
   }
 }
 
