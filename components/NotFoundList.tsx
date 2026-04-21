@@ -16,7 +16,7 @@ const NotFoundList = async ({ className }: Prop) => {
   return (
     <>
       {res.total > 0 && (
-        <section className={cn("my-6", className)}>
+        <section className={cn("my-6 mt-14", className)}>
           <p className="font-semibold mb-8 text-center text-xl">
             {" "}
             <span className="text-primary">
