@@ -96,16 +96,18 @@ export class RahaEscortsDatabaseService {
       ? this.cleanPhoneNumber(merged.whatsappPhone)
       : cleanTelephone;
 
+    // Create location object matching your Location interface
+    // Use only fields that exist in the merged object
     const locations: Location[] = [
       {
-        region: merged.region || merged.county || "",
+        region: merged.regionId || merged.region || merged.county || "",
         town: merged.town || merged.region || "",
         estate: merged.city || "",
-        address: "",
-        street: "",
-        postalCode: "",
+        address: "", // Default empty string since not in scraper data
+        street: "", // Default empty string since not in scraper data
+        postalCode: "", // Default empty string since not in scraper data
         isActive: true,
-        notes: "",
+        notes: "", // Default empty string since not in scraper data
       },
     ];
 
@@ -164,7 +166,9 @@ export class RahaEscortsDatabaseService {
       country: "Kenya",
       county: merged.county || "",
       countyCode: (merged.county || "").toLowerCase().replace(/\s+/g, "_"),
-      regions: [merged.region || merged.county || ""].filter((r) => r),
+      regions: [merged.regionId || merged.region || merged.county || ""].filter(
+        (r) => r,
+      ),
       primaryRegion: merged.region || merged.county || "",
       locations: locations,
       source: "rahaescorts.com",

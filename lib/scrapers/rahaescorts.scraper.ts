@@ -2,6 +2,7 @@
 
 import * as cheerio from "cheerio";
 
+// lib/scrapers/rahaescorts.scraper.ts - add optional fields if you want to capture them
 export interface RahaEscort {
   id: string;
   name: string;
@@ -34,8 +35,14 @@ export interface RahaEscort {
   bustSize: string;
   sexualOrientation: string;
   availability: string;
+  regionId?: string;
+  regionName?: string;
+  // Optional fields that might be available in some scrapers
+  address?: string;
+  street?: string;
+  postalCode?: string;
+  notes?: string;
 }
-
 export class RahaEscortsScraper {
   private $: cheerio.CheerioAPI;
   private html: string;
