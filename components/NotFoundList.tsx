@@ -1,22 +1,21 @@
-// import { getSimpleFeaturedEscorts } from "@/actions/list-escort";
 import React from "react";
 import GirlList from "./GirlList";
 import { cn } from "@/lib/utils";
-import { fetchGirlEscorts } from "@/actions/escort.action";
 import { ITEMS_PER_PAGE } from "@/constants";
+import { getEscorts } from "@/server-actions/escort.action";
 
 interface Prop {
   className?: string;
 }
 const NotFoundList = async ({ className }: Prop) => {
-  const res = await fetchGirlEscorts({
-    sortBy: "newest",
+  const res = await getEscorts({
+    sortBy: "createdAt",
     limit: ITEMS_PER_PAGE,
   });
 
   return (
     <>
-      {res.success && res.total > 0 && (
+      {res.total > 0 && (
         <section className={cn("my-6", className)}>
           <p className="font-semibold mb-8 text-center text-xl">
             {" "}
@@ -28,9 +27,7 @@ const NotFoundList = async ({ className }: Prop) => {
             advertised in this region yet , try girls from other regions
             below.{" "}
           </p>
-          <div>
-            {res.success && res.total > 0 && <GirlList girls={res.escorts} />}
-          </div>
+          <div>{res.total > 0 && <GirlList girls={res.escorts} />}</div>
         </section>
       )}
     </>

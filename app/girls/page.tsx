@@ -12,6 +12,11 @@ import {
   generateBreadcrumbList,
   generateListStructuredData,
 } from "./seo-utils";
+import {
+  getEscorts,
+  GetEscortsResponse,
+  getEscortsWithClientFiltering,
+} from "@/server-actions/escort.action";
 
 interface PageProps {
   searchParams: Promise<{
@@ -52,15 +57,15 @@ export async function generateMetadata(
   let uniqueLocations: string[] = [];
 
   try {
-    const result = await fetchGirlEscorts({
-      countyName: params.county,
-      regionName: params.region,
+    const result = await getEscorts({
+      county: params.county,
+      region: params.region,
       practice: params.practice,
       page: params.page ? parseInt(params.page, 10) : 1,
       limit: ITEMS_PER_PAGE,
     });
 
-    if (result.success) {
+    if (result && result.escorts) {
       totalEscorts = result.total;
       if (result.escorts.length > 0) {
         firstEscort = result.escorts[0];
@@ -346,32 +351,36 @@ const GirlsListingPage = async ({ searchParams }: PageProps) => {
 
   const title = getDynamicTitle();
 
-  const res = await fetchGirlEscorts({
-    countyName: params.county,
-    regionName: params.region,
+  const {
+    escorts,
+    total,
+    totalPages,
+    page: currentPageFromResponse,
+    hasMore,
+  } = await getEscortsWithClientFiltering({
+    county: params.county,
+    region: params.region,
     practice: params.practice,
-    page: currentPage,
+    page: params.page ? parseInt(params.page, 10) : 1,
     limit: ITEMS_PER_PAGE,
-    sortBy: "oldest",
   });
 
-  if (!res.success) {
-    notFound();
-  }
-
+  // if (escorts.length === 0 && currentPage === 1) {
+  //   return notFound();
+  // }
   // Generate structured data
   const structuredData = generateListStructuredData({
     title,
     description: defaultDescription,
-    totalItems: res.total,
+    totalItems: total,
     currentPage,
-    totalPages: res.totalPages,
+    totalPages: totalPages,
     filters: {
       county: formattedCounty,
       region: formattedRegion,
       practice: formattedPractice,
     },
-    items: res.escorts.slice(0, 10), // Include first 10 escorts in structured data
+    items: escorts.slice(0, 10), // Include first 10 escorts in structured data
   });
 
   // Generate breadcrumb structured data
@@ -430,20 +439,20 @@ const GirlsListingPage = async ({ searchParams }: PageProps) => {
       />
 
       {/* Results List */}
-      {res.success && res.total > 0 && (
+      {total > 0 && (
         <>
-          <GirlList girls={res.escorts} />
+          <GirlList girls={escorts} />
           <ClientPaginationWrapper
-            totalPages={res.totalPages}
-            currentPage={res.page}
-            totalItems={res.total}
+            totalPages={totalPages}
+            currentPage={currentPageFromResponse}
+            totalItems={total}
             itemsPerPage={ITEMS_PER_PAGE}
           />
         </>
       )}
 
       {/* No Results */}
-      {res.success && res.total === 0 && <NotFoundList />}
+      {total === 0 && <NotFoundList />}
 
       {/* SEO Content Section */}
       <SectionArticle />
