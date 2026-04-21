@@ -1409,3 +1409,157 @@ export async function getEroticMassageEscortsClientSide(
     };
   }
 }
+
+// Client-side filtering for BDSM (recommended)
+export async function getBDSMEscortsClientSide(
+  params: GetEscortsParams = {},
+): Promise<GetEscortsResponse> {
+  try {
+    const {
+      page = 1,
+      limit = 20,
+      county,
+      region,
+      isActive = true,
+      isVerified,
+      isFeatured,
+      minAge,
+      maxAge,
+      sortBy = "createdAt",
+      sortOrder = "desc",
+    } = params;
+
+    // Build base query without array-contains
+    let query: any = adminDb.collection("escorts");
+
+    if (isActive !== undefined) {
+      query = query.where("isActive", "==", isActive);
+    }
+
+    if (isVerified !== undefined) {
+      query = query.where("isVerified", "==", isVerified);
+    }
+
+    if (isFeatured !== undefined) {
+      query = query.where("isFeatured", "==", isFeatured);
+    }
+
+    if (county && county !== "all") {
+      query = query.where("county", "==", county);
+    }
+
+    // Apply sorting
+    const validSortFields = [
+      "createdAt",
+      "updatedAt",
+      "age",
+      "totalViews",
+      "rating",
+      "totalBookings",
+    ];
+    const sortField = validSortFields.includes(sortBy) ? sortBy : "createdAt";
+    query = query.orderBy(sortField, sortOrder);
+
+    // Get all matching escorts (limit to reasonable amount)
+    const snapshot = await query.limit(1000).get();
+    let allEscorts: Escort[] = snapshot.docs.map(convertQueryDocToEscort);
+
+    // Filter by region (if specified)
+    if (region && region !== "all") {
+      allEscorts = allEscorts.filter((escort) =>
+        escort.regions?.includes(region),
+      );
+    }
+
+    // Filter by BDSM practice
+    const bdsmTerms = [
+      "BDSM",
+      "bdsm",
+      "Domination",
+      "domination",
+      "Submission",
+      "submission",
+      "Bondage",
+      "bondage",
+      "Discipline",
+      "discipline",
+      "Sadomasochism",
+      "sadomasochism",
+      "Dominatrix",
+      "dominatrix",
+      "Mistress",
+      "mistress",
+      "Slave",
+      "slave",
+      "Master",
+      "master",
+      "Kinky",
+      "kinky",
+      "Fetish",
+      "fetish",
+      "Spanking",
+      "spanking",
+      "Whipping",
+      "whipping",
+      "Role play",
+      "role play",
+      "Roleplay",
+      "roleplay",
+      "Leather",
+      "leather",
+      "Latex",
+      "latex",
+      "Pegging",
+      "pegging",
+      "Strap-on",
+      "strap-on",
+    ];
+
+    allEscorts = allEscorts.filter((escort) => {
+      if (!escort.practices || escort.practices.length === 0) return false;
+
+      return escort.practices.some((practice) => {
+        const lowerPractice = practice.toLowerCase();
+        return bdsmTerms.some((term) =>
+          lowerPractice.includes(term.toLowerCase()),
+        );
+      });
+    });
+
+    // Apply age filters
+    if (minAge !== undefined && minAge > 0) {
+      allEscorts = allEscorts.filter(
+        (escort) => escort.age && parseInt(escort.age) >= minAge,
+      );
+    }
+
+    if (maxAge !== undefined && maxAge > 0) {
+      allEscorts = allEscorts.filter(
+        (escort) => escort.age && parseInt(escort.age) <= maxAge,
+      );
+    }
+
+    const total = allEscorts.length;
+    const validPage = Math.max(1, page);
+    const validLimit = Math.min(100, Math.max(1, limit));
+    const startAt = (validPage - 1) * validLimit;
+    const escorts = allEscorts.slice(startAt, startAt + validLimit);
+
+    return {
+      escorts,
+      total,
+      page: validPage,
+      totalPages: Math.ceil(total / validLimit),
+      hasMore: validPage * validLimit < total,
+    };
+  } catch (error) {
+    console.error("Error fetching BDSM escorts:", error);
+    return {
+      escorts: [],
+      total: 0,
+      page: params.page || 1,
+      totalPages: 0,
+      hasMore: false,
+    };
+  }
+}
