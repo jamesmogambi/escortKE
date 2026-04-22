@@ -1,8 +1,15 @@
 "use server";
 
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
-import { adminDb } from "@/lib/firebase-admin";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { serializeDoc, serializeDocs } from "@/lib/firebase-serializer";
 
 export interface ICounty {
@@ -14,8 +21,26 @@ export interface ICounty {
   population?: number;
   area?: string;
   capital?: string;
-  createdAt: string; // Changed from Date to string (ISO format)
-  updatedAt: string; // Changed from Date to string (ISO format)
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IRegion {
+  id: string;
+  name: string;
+  countyCode: string;
+  county: string;
+  countyNumericCode?: string;
+  countyId: string;
+  isActive: boolean;
+  town?: string;
+  estate?: string;
+  address?: string;
+  street?: string;
+  postalCode?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Simple in-memory cache
@@ -119,7 +144,6 @@ export async function getAllCounties() {
 // Get county by ID
 export async function getCountyById(id: string) {
   try {
-    const { doc, getDoc } = await import("firebase/firestore");
     const docRef = doc(db, "counties", id);
     const docSnap = await getDoc(docRef);
 
@@ -293,15 +317,9 @@ export async function getCountyWithRegions(countyCode: string) {
   }
 }
 
-export interface IRegion {
-  id?: string;
-  name: string;
-  countyCode: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+// ============== UPDATED REGION FUNCTIONS ==============
 
+// Get all regions (returns all regions in the new format)
 export async function getAllRegions() {
   try {
     const regionsRef = collection(db, "regions");
@@ -325,12 +343,13 @@ export async function getAllRegions() {
   }
 }
 
+// Get regions by county code (using the new countyCode field)
 export async function getRegionsByCountyCode(countyCode: string) {
   try {
     const regionsRef = collection(db, "regions");
     const q = query(
       regionsRef,
-      where("countyCode", "==", countyCode),
+      where("countyCode", "==", countyCode.toLowerCase()),
       orderBy("name", "asc"),
     );
     const querySnapshot = await getDocs(q);
@@ -344,7 +363,7 @@ export async function getRegionsByCountyCode(countyCode: string) {
       countyCode,
     };
   } catch (error) {
-    console.error("Error fetching regions by county:", error);
+    console.error("Error fetching regions by county code:", error);
     return {
       success: false,
       error: "Failed to fetch regions",
@@ -353,11 +372,39 @@ export async function getRegionsByCountyCode(countyCode: string) {
   }
 }
 
+// Get regions by county name
+export async function getRegionsByCountyName(countyName: string) {
+  try {
+    const regionsRef = collection(db, "regions");
+    const q = query(
+      regionsRef,
+      where("county", "==", countyName),
+      orderBy("name", "asc"),
+    );
+    const querySnapshot = await getDocs(q);
+
+    const regions = serializeDocs<IRegion>(querySnapshot.docs);
+
+    return {
+      success: true,
+      data: regions,
+      count: regions.length,
+      countyName,
+    };
+  } catch (error) {
+    console.error("Error fetching regions by county name:", error);
+    return {
+      success: false,
+      error: "Failed to fetch regions",
+      data: [],
+    };
+  }
+}
+
+// Get region by ID (works with new ID format like "nairobi_westlands")
 export async function getRegionById(id: string) {
   try {
-    const { doc } = await import("firebase/firestore");
     const docRef = doc(db, "regions", id);
-    const { getDoc } = await import("firebase/firestore");
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -379,6 +426,182 @@ export async function getRegionById(id: string) {
       success: false,
       error: "Failed to fetch region",
       data: null,
+    };
+  }
+}
+
+// Get region by name and county
+export async function getRegionByNameAndCounty(name: string, county: string) {
+  try {
+    const regionsRef = collection(db, "regions");
+    const q = query(
+      regionsRef,
+      where("name", "==", name),
+      where("county", "==", county),
+    );
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const region = serializeDoc<IRegion>(querySnapshot.docs[0]);
+      return {
+        success: true,
+        data: region,
+      };
+    }
+
+    return {
+      success: false,
+      error: "Region not found",
+      data: null,
+    };
+  } catch (error) {
+    console.error("Error fetching region by name and county:", error);
+    return {
+      success: false,
+      error: "Failed to fetch region",
+      data: null,
+    };
+  }
+}
+
+// Get active regions only
+export async function getActiveRegions() {
+  try {
+    const regionsRef = collection(db, "regions");
+    const q = query(
+      regionsRef,
+      where("isActive", "==", true),
+      orderBy("name", "asc"),
+    );
+    const querySnapshot = await getDocs(q);
+
+    const regions = serializeDocs<IRegion>(querySnapshot.docs);
+
+    return {
+      success: true,
+      data: regions,
+      count: regions.length,
+    };
+  } catch (error) {
+    console.error("Error fetching active regions:", error);
+    return {
+      success: false,
+      error: "Failed to fetch active regions",
+      data: [],
+    };
+  }
+}
+
+// Get regions with pagination
+export async function getRegionsPaginated(
+  page: number = 1,
+  limit: number = 20,
+) {
+  try {
+    const regionsRef = collection(db, "regions");
+    const q = query(regionsRef, orderBy("name", "asc"));
+    const querySnapshot = await getDocs(q);
+
+    const allRegions = serializeDocs<IRegion>(querySnapshot.docs);
+    const start = (page - 1) * limit;
+    const end = start + limit;
+    const paginatedRegions = allRegions.slice(start, end);
+
+    return {
+      success: true,
+      data: paginatedRegions,
+      total: allRegions.length,
+      page,
+      limit,
+      totalPages: Math.ceil(allRegions.length / limit),
+      hasMore: end < allRegions.length,
+    };
+  } catch (error) {
+    console.error("Error fetching paginated regions:", error);
+    return {
+      success: false,
+      error: "Failed to fetch regions",
+      data: [],
+    };
+  }
+}
+
+// Search regions by name
+export async function searchRegions(searchTerm: string) {
+  try {
+    const result = await getAllRegions();
+    if (!result.success) {
+      return result;
+    }
+
+    const searchLower = searchTerm.toLowerCase();
+    const filtered = result.data.filter(
+      (region) =>
+        region.name.toLowerCase().includes(searchLower) ||
+        region.county.toLowerCase().includes(searchLower) ||
+        region.town?.toLowerCase().includes(searchLower),
+    );
+
+    return {
+      success: true,
+      data: filtered,
+      count: filtered.length,
+      searchTerm,
+    };
+  } catch (error) {
+    console.error("Error searching regions:", error);
+    return {
+      success: false,
+      error: "Failed to search regions",
+      data: [],
+    };
+  }
+}
+
+// Get popular regions (regions that have escorts)
+export async function getPopularRegions(limit: number = 10) {
+  try {
+    // Get all regions
+    const regionsResult = await getAllRegions();
+    if (!regionsResult.success) {
+      return regionsResult;
+    }
+
+    // Get escorts to see which regions have listings
+    const escortsRef = collection(db, "escorts");
+    const escortsSnapshot = await getDocs(escortsRef);
+
+    // Count escorts per region
+    const regionCount: Record<string, number> = {};
+    escortsSnapshot.docs.forEach((doc) => {
+      const data = doc.data();
+      const regionId = data.regionId;
+      if (regionId) {
+        regionCount[regionId] = (regionCount[regionId] || 0) + 1;
+      }
+    });
+
+    // Sort regions by escort count
+    const regionsWithCount = regionsResult.data
+      .map((region) => ({
+        ...region,
+        escortCount: regionCount[region.id] || 0,
+      }))
+      .filter((region) => region.escortCount > 0)
+      .sort((a, b) => b.escortCount - a.escortCount)
+      .slice(0, limit);
+
+    return {
+      success: true,
+      data: regionsWithCount,
+      count: regionsWithCount.length,
+    };
+  } catch (error) {
+    console.error("Error fetching popular regions:", error);
+    return {
+      success: false,
+      error: "Failed to fetch popular regions",
+      data: [],
     };
   }
 }

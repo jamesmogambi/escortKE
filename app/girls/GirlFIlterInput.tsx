@@ -1,6 +1,6 @@
 "use client";
 import { cn, formatSlugToTitle } from "@/lib/utils";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +12,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import LocationInitializer from "@/components/FileInputInitializer";
 import { useVariantStore } from "@/store/variantStore";
 import { useFilterInputStore } from "../girls/filterInputStore";
-import { ICounty, IRegion } from "@/server-actions/region.action";
+import { ICounty } from "@/server-actions/region.action";
+import { IRegion } from "@/types/region.types";
 
 interface Prop {
   className?: string;
@@ -47,29 +48,94 @@ const GirlFilterInput = ({ className }: Prop) => {
     practices: variantPractices,
   } = useVariantStore();
 
+  // Memoize filtered regions based on selected county
+  const filteredRegionsByCounty = useMemo(() => {
+    if (!county) return [];
+    return fetchedRegions.filter(
+      (region: IRegion) =>
+        region.countyCode?.toLowerCase() === county.code?.toLowerCase() ||
+        region.county?.toLowerCase() === county.name?.toLowerCase(),
+    );
+  }, [county, fetchedRegions]);
+
   // Initialize from URL params on mount
   useEffect(() => {
     if (initialCountyCode && counties.length > 0) {
+      // Find county by code (slug) or name
       const foundCounty = counties.find(
-        (c: { name: string }) => c.name === initialCountyCode,
+        (c: ICounty) =>
+          c.code?.toLowerCase() === initialCountyCode.toLowerCase() ||
+          c.name?.toLowerCase() === initialCountyCode.toLowerCase(),
       );
+
       if (foundCounty) {
         setCounty(foundCounty);
-        // Load regions for this county
-        const filteredRegions = fetchedRegions.filter(
-          (region: any) => region.countyCode === foundCounty.code,
+
+        // Filter regions based on found county
+        const filtered = fetchedRegions.filter(
+          (region: IRegion) =>
+            region.countyCode?.toLowerCase() ===
+              foundCounty.code?.toLowerCase() ||
+            region.county?.toLowerCase() === foundCounty.name?.toLowerCase(),
         );
-        setRegions(filteredRegions);
+        setRegions(filtered);
       }
     }
 
     if (initialRegionName && regions.length > 0) {
-      const foundRegion = regions.find((r) => r.name === initialRegionName);
+      const foundRegion = regions.find(
+        (r) => r.name?.toLowerCase() === initialRegionName.toLowerCase(),
+      );
       if (foundRegion) {
         setRegion(foundRegion);
       }
     }
   }, [counties, fetchedRegions, initialCountyCode, initialRegionName]);
+
+  // Update regions when county changes (for the dropdown)
+  useEffect(() => {
+    if (county) {
+      const filtered = fetchedRegions.filter(
+        (region: IRegion) =>
+          region.countyCode?.toLowerCase() === county.code?.toLowerCase() ||
+          region.county?.toLowerCase() === county.name?.toLowerCase(),
+      );
+      setRegions(filtered);
+    } else {
+      setRegions([]);
+    }
+  }, [county, fetchedRegions]);
+
+  // Update URL params helper - navigates to /girls with params
+  const updateURLParams = (params: {
+    county: string;
+    region: string;
+    practice: string;
+  }) => {
+    const urlParams = new URLSearchParams();
+
+    // Add non-empty params only
+    if (params.county && params.county !== "") {
+      urlParams.set("county", params.county);
+    }
+
+    if (params.region && params.region !== "") {
+      urlParams.set("region", params.region);
+    }
+
+    if (params.practice && params.practice !== "") {
+      urlParams.set("practice", params.practice);
+    }
+
+    // Always reset to page 1 when filters change
+    urlParams.set("page", "1");
+
+    // Build the URL and navigate
+    const queryString = urlParams.toString();
+    const targetUrl = queryString ? `/girls?${queryString}` : "/girls";
+
+    router.push(targetUrl);
+  };
 
   // Clear all filters
   const clearFilters = () => {
@@ -78,35 +144,20 @@ const GirlFilterInput = ({ className }: Prop) => {
     setPractice("");
     setRegions([]);
 
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("county");
-    params.delete("region");
-    params.delete("practice");
-    router.replace(`?${params.toString()}`);
+    // Navigate to girls page with no params
+    router.push("/girls");
   };
 
   // Handle county selection
   const handleCounty = (val: ICounty) => {
     setCounty(val);
     setRegion(null); // Reset region when county changes
-    setRegions([]);
-
-    // Filter regions based on selected county
-    const filteredRegions = fetchedRegions.filter(
-      (region: any) => region.countyCode === val.code,
-    );
-    setRegions(filteredRegions);
-
-    // Update URL params immediately or wait for filter button
-    // For immediate update, uncomment:
-    // updateURLParams({ county: val.name, region: "", practice });
+    // Regions will be automatically updated by the useEffect above
   };
 
-  // Handle massage type selection
-  const handlepractice = (val: string) => {
+  // Handle practice selection
+  const handlePractice = (val: string) => {
     setPractice(val);
-    // For immediate update, uncomment:
-    // updateURLParams({ county: county?.name || "", region: region?.name || "", practice: val });
   };
 
   // Handle region selection
@@ -116,37 +167,6 @@ const GirlFilterInput = ({ className }: Prop) => {
       return;
     }
     setRegion(val);
-    // For immediate update, uncomment:
-    // updateURLParams({ county: county.name, region: val.name, practice });
-  };
-
-  // Update URL params helper
-  const updateURLParams = (params: {
-    county: string;
-    region: string;
-    practice: string;
-  }) => {
-    const urlParams = new URLSearchParams(searchParams.toString());
-
-    if (params.county) {
-      urlParams.set("county", params.county);
-    } else {
-      urlParams.delete("county");
-    }
-
-    if (params.region) {
-      urlParams.set("region", params.region);
-    } else {
-      urlParams.delete("region");
-    }
-
-    if (params.practice) {
-      urlParams.set("practice", params.practice);
-    } else {
-      urlParams.delete("practice");
-    }
-
-    router.replace(`?${urlParams.toString()}`);
   };
 
   // Apply filters
@@ -155,7 +175,6 @@ const GirlFilterInput = ({ className }: Prop) => {
       county: county?.name || "",
       region: region?.name || "",
       practice: practice,
-      page: "1", // Reset to first page on new filter
     };
 
     updateURLParams(params);
@@ -172,7 +191,7 @@ const GirlFilterInput = ({ className }: Prop) => {
     setRegion(null);
   };
 
-  const clearpractice = () => {
+  const clearPractice = () => {
     setPractice("");
   };
 
@@ -184,14 +203,26 @@ const GirlFilterInput = ({ className }: Prop) => {
       )}
     >
       <LocationInitializer />
+
       {/* County Filter */}
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger className="self-end cursor-pointer  border-0 flex w-full lg:w-1/5 justify-between items-center p-2 px-5 bg-gray-1 rounded-md">
+        <DropdownMenuTrigger className="self-end cursor-pointer border-0 flex w-full lg:w-1/5 justify-between items-center p-2 px-5 bg-gray-1 rounded-md">
           {county ? (
             <div className="flex items-center gap-2">
               <span className="text-slate-100 text-lg font-bold">
                 {county.name}
               </span>
+              {county && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearCounty();
+                  }}
+                  className="ml-2 text-white/50 hover:text-white"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
           ) : (
             <span className="text-white/50 text-lg font-medium">County</span>
@@ -211,7 +242,7 @@ const GirlFilterInput = ({ className }: Prop) => {
             ></path>
           </svg>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="flex border-0 flex-col outline-none p-2 gap-3 w-screen lg:max-w-[900px] bg-gray-1">
+        <DropdownMenuContent className="flex border-0 flex-col outline-none p-2 gap-3 w-screen lg:max-w-[900px] bg-gray-1 max-h-[400px] overflow-y-auto">
           <div className="flex flex-row w-full gap-1.5 flex-wrap">
             {counties.map((item: ICounty) => (
               <DropdownMenuItem
@@ -241,6 +272,17 @@ const GirlFilterInput = ({ className }: Prop) => {
               <span className="text-slate-100 text-lg font-bold">
                 {region.name}
               </span>
+              {region && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearRegion();
+                  }}
+                  className="ml-2 text-white/50 hover:text-white"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
           ) : (
             <span className="text-white/50 text-lg font-medium">
@@ -262,26 +304,34 @@ const GirlFilterInput = ({ className }: Prop) => {
             ></path>
           </svg>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="flex border-0 flex-col outline-none p-2 gap-3 w-screen lg:max-w-[900px] bg-gray-1">
-          <div className="flex flex-wrap gap-1.5">
-            {regions.map((item: IRegion) => (
-              <DropdownMenuItem
-                className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
-                onSelect={(e) => {
-                  e.preventDefault();
-                  handleRegion(item);
-                  setRegionOpen(false);
-                }}
-                key={item.id}
-              >
-                {formatSlugToTitle(item.name)}
-              </DropdownMenuItem>
-            ))}
-          </div>
+        <DropdownMenuContent className="flex border-0 flex-col outline-none p-2 gap-3 w-screen lg:max-w-[900px] bg-gray-1 max-h-[400px] overflow-y-auto">
+          {regions.length === 0 ? (
+            <div className="text-white/50 text-center py-4">
+              {county
+                ? "No regions found for this county"
+                : "Select a county first"}
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-1.5">
+              {regions.map((item: IRegion) => (
+                <DropdownMenuItem
+                  className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    handleRegion(item);
+                    setRegionOpen(false);
+                  }}
+                  key={item.id}
+                >
+                  {formatSlugToTitle(item.name)}
+                </DropdownMenuItem>
+              ))}
+            </div>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* BDSM Practices */}
+      {/* Practices Filter */}
       <DropdownMenu open={practiceOpen} onOpenChange={setPracticeOpen}>
         <DropdownMenuTrigger className="cursor-pointer self-end border-0 flex w-full lg:w-1/5 justify-between items-center p-2 px-5 bg-gray-1 rounded-md">
           {practice ? (
@@ -289,6 +339,17 @@ const GirlFilterInput = ({ className }: Prop) => {
               <span className="text-slate-100 text-lg font-bold capitalize">
                 {practice}
               </span>
+              {practice && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearPractice();
+                  }}
+                  className="ml-2 text-white/50 hover:text-white"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
           ) : (
             <span className="text-white/50 text-lg font-medium">Practice</span>
@@ -308,14 +369,14 @@ const GirlFilterInput = ({ className }: Prop) => {
             ></path>
           </svg>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="flex border-0 flex-col outline-none p-2 gap-3 w-screen lg:max-w-[900px] bg-gray-1">
+        <DropdownMenuContent className="flex border-0 flex-col outline-none p-2 gap-3 w-screen lg:max-w-[900px] bg-gray-1 max-h-[400px] overflow-y-auto">
           <div className="flex flex-wrap gap-1.5">
             {variantPractices?.map((item: any) => (
               <DropdownMenuItem
                 className="rounded-lg cursor-pointer hover:bg-[#262322] p-1.5 px-6 text-white/70 text-base font-medium bg-[#262322]"
                 onSelect={(e) => {
                   e.preventDefault();
-                  handlepractice(item.name);
+                  handlePractice(item.name);
                   setPracticeOpen(false);
                 }}
                 key={item.id}
@@ -331,7 +392,7 @@ const GirlFilterInput = ({ className }: Prop) => {
       <div className="flex flex-col items-center gap-2">
         <button
           onClick={clearFilters}
-          className="text-pink-600 cursor-pointer flex items-center gap-1"
+          className="text-pink-600 cursor-pointer flex items-center gap-1 hover:text-pink-500 transition-colors"
         >
           <X className="h-5 w-5" />
           <span className="font-bold text-base">Cancel Filters</span>
@@ -339,7 +400,7 @@ const GirlFilterInput = ({ className }: Prop) => {
 
         <button
           onClick={onFilter}
-          className="rounded-md cursor-pointer hover:bg-primary/80 text-white bg-primary text-lg font-medium p-2 px-5"
+          className="rounded-md cursor-pointer hover:bg-primary/80 text-white bg-primary text-lg font-medium p-2 px-5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           disabled={!county && !region && !practice}
         >
           Apply Filters

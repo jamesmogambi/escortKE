@@ -7,7 +7,6 @@ import SectionArticle from "./SectionArticle";
 import { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 import NotFoundList from "@/components/NotFoundList";
-import { fetchGirlEscorts } from "@/actions/escort.action";
 import {
   generateBreadcrumbList,
   generateListStructuredData,
