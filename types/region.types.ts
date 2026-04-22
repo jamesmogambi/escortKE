@@ -1,25 +1,26 @@
 // types/region.types.ts
 export interface IRegion {
   id: string;
-  name: string; // Region name (e.g., "Samburu North")
-  countyCode: string; // e.g., "025"
-  county?: string; // County name (e.g., "Samburu")
+  name: string;
+  countyCode: string; // Region's slug (e.g., "kericho")
+  county: string; // County name (e.g., "Kericho")
+  countyNumericCode?: string; // Original numeric county code (e.g., "035")
+  countyId: string; // County slug/ID
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-  // Optional fields
   town?: string;
   estate?: string;
   address?: string;
   street?: string;
   postalCode?: string;
   notes?: string;
-  countyId?: string;
 }
 
 export interface CreateRegionDTO {
   name: string;
   county: string;
+  countyNumericCode?: string;
   countyId?: string;
   countyCode?: string;
   town?: string;

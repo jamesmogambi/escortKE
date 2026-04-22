@@ -1,8 +1,6 @@
-// lib/scrapers/rahaescorts.scraper.ts - Complete version with deduplication
-
+// lib/scrapers/rahaescorts.scraper.ts
 import * as cheerio from "cheerio";
 
-// lib/scrapers/rahaescorts.scraper.ts - add optional fields if you want to capture them
 export interface RahaEscort {
   id: string;
   name: string;
@@ -15,6 +13,8 @@ export interface RahaEscort {
   about: string;
   languages: string[];
   region: string;
+  regionId?: string;
+  regionName?: string;
   county: string;
   town: string;
   city: string;
@@ -35,14 +35,8 @@ export interface RahaEscort {
   bustSize: string;
   sexualOrientation: string;
   availability: string;
-  regionId?: string;
-  regionName?: string;
-  // Optional fields that might be available in some scrapers
-  address?: string;
-  street?: string;
-  postalCode?: string;
-  notes?: string;
 }
+
 export class RahaEscortsScraper {
   private $: cheerio.CheerioAPI;
   private html: string;
@@ -131,8 +125,6 @@ export class RahaEscortsScraper {
 
   private cleanImageUrl(url: string): string {
     if (!url) return "";
-
-    // Remove WordPress size parameters
     url = url.replace(/\?.*$/, "");
     url = url.replace(/-\d+x\d+\./g, ".");
     url = url.replace(/\?fit=\d+%2C\d+/, "");
@@ -141,23 +133,14 @@ export class RahaEscortsScraper {
     url = url.replace(/resize=\d+%2C\d+/, "");
     url = url.replace(/fit=\d+%2C\d+/, "");
     url = url.replace(/-\d+x\d+(?=\.)/g, "");
-
-    // Remove WordPress.com CDN parameters
     url = url.replace(/https:\/\/i\d\.wp\.com\//, "https://");
-
-    // Ensure HTTPS
     if (url.startsWith("//")) url = "https:" + url;
-
-    // Remove trailing garbage
     url = url.split("#")[0].split("?")[0];
-
     return url;
   }
 
   private getImageFingerprint(url: string): string {
-    // Create a unique fingerprint for each image
     const filename = url.split("/").pop() || url;
-    // Remove size variations and extension
     return filename
       .replace(/-\d+x\d+/, "")
       .replace(/\.[^.]+$/, "")
@@ -165,21 +148,18 @@ export class RahaEscortsScraper {
   }
 
   private extractGender($profile: cheerio.CheerioAPI): string {
-    // Method 1: Look for span with itemprop="gender"
     const genderSpan = $profile('.aboutme span[itemprop="gender"]');
     if (genderSpan.length) {
       const gender = genderSpan.text().trim();
       if (gender) return gender;
     }
 
-    // Method 2: Look for pattern in the bold text of about me section
     const aboutBoldText = $profile(".aboutme b").first().text();
     const genderMatch = aboutBoldText.match(/\d+ year old (\w+) escort/i);
     if (genderMatch) {
       return genderMatch[1];
     }
 
-    // Method 3: Look for gender pattern in the entire about section
     const aboutText = $profile(".aboutme").text();
     const genderPatterns = [
       { pattern: /(\bFemale\b)/i, gender: "Female" },
@@ -206,10 +186,8 @@ export class RahaEscortsScraper {
     const $profile = cheerio.load(profileHtml);
     const details: Partial<RahaEscort> = {};
 
-    // Extract name
     details.name = $profile('.profile-title[itemprop="name"]').text().trim();
 
-    // Extract labels from profile page
     const labels: string[] = [];
     $profile(".girlsinglelabels span").each((_, el) => {
       const label = $profile(el).text().trim();
@@ -221,7 +199,6 @@ export class RahaEscortsScraper {
     details.isNew = labels.includes("NEW");
     details.isVerified = labels.includes("VERIFIED");
 
-    // Extract age from profile header
     let ageText = "";
     $profile(".profile-header-name-info .section-box").each((_, el) => {
       const value = $profile(el).find(".valuecolumn").text().trim();
@@ -239,18 +216,15 @@ export class RahaEscortsScraper {
 
     details.age = this.cleanAge(ageText);
     details.gender = this.extractGender($profile);
+    details.region = region;
+    details.county = county;
+    details.town = region;
 
-    console.log(
-      `🚺 ${details.name}: Age ${details.age || "N/A"}, Gender ${details.gender}`,
-    );
-
-    // Extract telephone
     const phoneElement = $profile(".phone-box a");
     if (phoneElement.length) {
       details.telephone = phoneElement.text().trim();
     }
 
-    // Extract WhatsApp
     const whatsappLink = $profile(".available-on a").attr("href");
     if (whatsappLink) {
       details.whatsappPhone = whatsappLink
@@ -258,9 +232,7 @@ export class RahaEscortsScraper {
         .split("?")[0];
     }
 
-    // Extract images - WITH DEDUPLICATION
     const imageFingerprints = new Map<string, string>();
-
     const imageSelectors = [
       '.profile-img-thumb-wrapper a[itemprop="contentURL"]',
       ".profile-img-thumb-wrapper img",
@@ -298,34 +270,13 @@ export class RahaEscortsScraper {
       });
     }
 
-    // Check for background images
-    $profile("[style*='background-image']").each((_, el) => {
-      const style = $profile(el).attr("style") || "";
-      const bgMatch = style.match(/url\(['"]?([^'"\)]+)['"]?\)/);
-      if (bgMatch && bgMatch[1]) {
-        let bgUrl = bgMatch[1];
-        if (bgUrl.startsWith("//")) bgUrl = "https:" + bgUrl;
-        bgUrl = this.cleanImageUrl(bgUrl);
-        if (bgUrl.startsWith("http") && !bgUrl.includes("placeholder")) {
-          const fingerprint = this.getImageFingerprint(bgUrl);
-          if (!imageFingerprints.has(fingerprint)) {
-            imageFingerprints.set(fingerprint, bgUrl);
-          }
-        }
-      }
-    });
-
     details.images = Array.from(imageFingerprints.values());
     details.previewPhoto = details.images[0] || "";
 
-    console.log(`📸 ${details.name}: ${details.images.length} unique images`);
-
-    // Extract about text
     const aboutClone = $profile(".aboutme").clone();
     aboutClone.find("b").remove();
     details.about = aboutClone.text().replace(/\s+/g, " ").trim();
 
-    // Extract languages
     const languages: string[] = [];
     $profile(
       '.girlinfo-section:has(h4:contains("Languages spoken")) .section-box',
@@ -335,7 +286,6 @@ export class RahaEscortsScraper {
     });
     details.languages = languages;
 
-    // Extract estate and city
     $profile(".b-label").each((_, el) => {
       const label = $profile(el).text().trim();
       const value = $profile(el).parent().next(".valuecolumn").text().trim();
@@ -344,7 +294,6 @@ export class RahaEscortsScraper {
       }
     });
 
-    // Extract profile metadata
     $profile(".section-box").each((_, el) => {
       const label = $profile(el).find("b").text().trim();
       const value = $profile(el).find(".valuecolumn").text().trim();
@@ -356,12 +305,6 @@ export class RahaEscortsScraper {
       if (label === "Availability") details.availability = value;
     });
 
-    // Set region and county
-    details.region = region;
-    details.county = county;
-    details.town = region;
-
-    // Extract services/practices
     const practices: string[] = [];
     $profile(".services > div").each((_, el) => {
       let service = $profile(el).text().trim();
@@ -370,7 +313,6 @@ export class RahaEscortsScraper {
     });
     details.practices = practices;
 
-    // Extract extra services
     const extraServices: string[] = [];
     $profile(".services .icon-ok").each((_, el) => {
       const service = $profile(el)
@@ -382,7 +324,6 @@ export class RahaEscortsScraper {
     });
     details.extraServices = extraServices;
 
-    // Extract rates
     const rates: Array<{ duration: string; incall: string; outcall: string }> =
       [];
     $profile(".rates-table tr").each((_, row) => {
