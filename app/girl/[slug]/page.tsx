@@ -15,7 +15,6 @@ import { girls } from "@/fixtures/girl";
 import { getEscortByUsername } from "@/actions/escort";
 import { Metadata, ResolvingMetadata } from "next";
 import { formatSlugToTitle } from "@/lib/utils";
-import { fetchEscortBySlug } from "@/actions/escort.action";
 import { EscortDetailData } from "@/types/escort.types";
 import { generateEscortStructuredData } from "./utils";
 import { getEscortById } from "@/server-actions/escort.action";
