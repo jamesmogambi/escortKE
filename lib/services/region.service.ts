@@ -1,4 +1,4 @@
-// lib/services/region.service.ts (updated)
+// lib/services/region.service.ts
 import { db } from "@/lib/firebase";
 import {
   collection,
@@ -12,7 +12,6 @@ import {
   Timestamp,
   QueryDocumentSnapshot,
   DocumentData,
-  deleteDoc,
 } from "firebase/firestore";
 import { slugify } from "@/lib/utils";
 
@@ -22,7 +21,9 @@ export interface IRegion {
   id: string;
   name: string;
   countyCode: string;
-  county?: string;
+  county: string;
+  countyNumericCode?: string;
+  countyId: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -32,12 +33,12 @@ export interface IRegion {
   street?: string;
   postalCode?: string;
   notes?: string;
-  countyId?: string;
 }
 
 export interface CreateRegionDTO {
   name: string;
   county: string;
+  countyNumericCode?: string;
   countyId?: string;
   countyCode?: string;
   town?: string;
@@ -48,6 +49,80 @@ export interface CreateRegionDTO {
   notes?: string;
 }
 
+// Kenya counties mapping
+export const COUNTY_MAP: Record<
+  string,
+  { code: string; name: string; numericCode: string }
+> = {
+  mombasa: { code: "mombasa", name: "Mombasa", numericCode: "001" },
+  kwale: { code: "kwale", name: "Kwale", numericCode: "002" },
+  kilifi: { code: "kilifi", name: "Kilifi", numericCode: "003" },
+  "tana-river": { code: "tana-river", name: "Tana River", numericCode: "004" },
+  lamu: { code: "lamu", name: "Lamu", numericCode: "005" },
+  "taita-taveta": {
+    code: "taita-taveta",
+    name: "Taita Taveta",
+    numericCode: "006",
+  },
+  garissa: { code: "garissa", name: "Garissa", numericCode: "007" },
+  wajir: { code: "wajir", name: "Wajir", numericCode: "008" },
+  mandera: { code: "mandera", name: "Mandera", numericCode: "009" },
+  marsabit: { code: "marsabit", name: "Marsabit", numericCode: "010" },
+  isiolo: { code: "isiolo", name: "Isiolo", numericCode: "011" },
+  meru: { code: "meru", name: "Meru", numericCode: "012" },
+  "tharaka-nithi": {
+    code: "tharaka-nithi",
+    name: "Tharaka Nithi",
+    numericCode: "013",
+  },
+  embu: { code: "embu", name: "Embu", numericCode: "014" },
+  kitui: { code: "kitui", name: "Kitui", numericCode: "015" },
+  machakos: { code: "machakos", name: "Machakos", numericCode: "016" },
+  makueni: { code: "makueni", name: "Makueni", numericCode: "017" },
+  nyandarua: { code: "nyandarua", name: "Nyandarua", numericCode: "018" },
+  nyeri: { code: "nyeri", name: "Nyeri", numericCode: "019" },
+  kirinyaga: { code: "kirinyaga", name: "Kirinyaga", numericCode: "020" },
+  muranga: { code: "muranga", name: "Murang'a", numericCode: "021" },
+  kiambu: { code: "kiambu", name: "Kiambu", numericCode: "022" },
+  turkana: { code: "turkana", name: "Turkana", numericCode: "023" },
+  "west-pokot": { code: "west-pokot", name: "West Pokot", numericCode: "024" },
+  samburu: { code: "samburu", name: "Samburu", numericCode: "025" },
+  "trans-nzoia": {
+    code: "trans-nzoia",
+    name: "Trans Nzoia",
+    numericCode: "026",
+  },
+  "uasin-gishu": {
+    code: "uasin-gishu",
+    name: "Uasin Gishu",
+    numericCode: "027",
+  },
+  "elgeyo-marakwet": {
+    code: "elgeyo-marakwet",
+    name: "Elgeyo Marakwet",
+    numericCode: "028",
+  },
+  nandi: { code: "nandi", name: "Nandi", numericCode: "029" },
+  baringo: { code: "baringo", name: "Baringo", numericCode: "030" },
+  laikipia: { code: "laikipia", name: "Laikipia", numericCode: "031" },
+  nakuru: { code: "nakuru", name: "Nakuru", numericCode: "032" },
+  narok: { code: "narok", name: "Narok", numericCode: "033" },
+  kajiado: { code: "kajiado", name: "Kajiado", numericCode: "034" },
+  kericho: { code: "kericho", name: "Kericho", numericCode: "035" },
+  bomet: { code: "bomet", name: "Bomet", numericCode: "036" },
+  kakamega: { code: "kakamega", name: "Kakamega", numericCode: "037" },
+  vihiga: { code: "vihiga", name: "Vihiga", numericCode: "038" },
+  bungoma: { code: "bungoma", name: "Bungoma", numericCode: "039" },
+  busia: { code: "busia", name: "Busia", numericCode: "040" },
+  siaya: { code: "siaya", name: "Siaya", numericCode: "041" },
+  kisumu: { code: "kisumu", name: "Kisumu", numericCode: "042" },
+  "homa-bay": { code: "homa-bay", name: "Homa Bay", numericCode: "043" },
+  migori: { code: "migori", name: "Migori", numericCode: "044" },
+  kisii: { code: "kisii", name: "Kisii", numericCode: "045" },
+  nyamira: { code: "nyamira", name: "Nyamira", numericCode: "046" },
+  nairobi: { code: "nairobi", name: "Nairobi", numericCode: "047" },
+};
+
 export class RegionService {
   private static convertDocToRegion(
     doc: QueryDocumentSnapshot<DocumentData>,
@@ -55,9 +130,11 @@ export class RegionService {
     const data = doc.data();
     return {
       id: doc.id,
-      name: data.name || data.region || "", // Handle both 'name' and 'region' fields
-      countyCode: data.countyCode || data.code || "",
-      county: data.county || data.countyName || "",
+      name: data.name,
+      countyCode: data.countyCode,
+      county: data.county,
+      countyNumericCode: data.countyNumericCode,
+      countyId: data.countyId,
       isActive: data.isActive !== false,
       createdAt: data.createdAt?.toDate(),
       updatedAt: data.updatedAt?.toDate(),
@@ -67,7 +144,6 @@ export class RegionService {
       street: data.street,
       postalCode: data.postalCode,
       notes: data.notes,
-      countyId: data.countyId,
     };
   }
 
@@ -77,34 +153,15 @@ export class RegionService {
   ): Promise<IRegion | null> {
     try {
       const regionsRef = collection(db, COLLECTION_NAME);
-
-      // Try exact match first
-      let q = query(
+      const q = query(
         regionsRef,
         where("name", "==", name),
         where("county", "==", county),
       );
-      let snapshot = await getDocs(q);
+      const snapshot = await getDocs(q);
 
       if (!snapshot.empty) {
         return this.convertDocToRegion(snapshot.docs[0]);
-      }
-
-      // Try case-insensitive by using lowercase comparison (client-side)
-      const allRegionsQuery = query(regionsRef);
-      const allSnapshot = await getDocs(allRegionsQuery);
-
-      for (const doc of allSnapshot.docs) {
-        const data = doc.data();
-        const docName = data.name || data.region || "";
-        const docCounty = data.county || data.countyName || "";
-
-        if (
-          docName.toLowerCase() === name.toLowerCase() &&
-          docCounty.toLowerCase() === county.toLowerCase()
-        ) {
-          return this.convertDocToRegion(doc);
-        }
       }
 
       return null;
@@ -132,13 +189,23 @@ export class RegionService {
     }
   }
 
+  static async getCountyInfo(countyName: string) {
+    const countySlug = slugify(countyName);
+    return (
+      COUNTY_MAP[countySlug] || {
+        code: countySlug,
+        name: countyName,
+        numericCode: "",
+      }
+    );
+  }
+
   static async createRegion(data: CreateRegionDTO): Promise<IRegion> {
     try {
       const slug = slugify(data.name);
       const countySlug = slugify(data.county);
       const regionId = `${countySlug}_${slug}`;
 
-      // Check if region already exists (case-insensitive)
       const existing = await this.getRegionByNameAndCounty(
         data.name,
         data.county,
@@ -149,12 +216,14 @@ export class RegionService {
       }
 
       const now = new Date();
+      const countyInfo = await this.getCountyInfo(data.county);
 
       const regionData = {
         name: data.name,
-        countyCode: data.countyCode || countySlug,
+        countyCode: countySlug,
         county: data.county,
-        countyId: data.countyId || countySlug,
+        countyNumericCode: data.countyNumericCode || countyInfo.numericCode,
+        countyId: countySlug,
         isActive: true,
         createdAt: Timestamp.fromDate(now),
         updatedAt: Timestamp.fromDate(now),
@@ -188,22 +257,17 @@ export class RegionService {
   static async getOrCreateRegion(
     regionName: string,
     county: string,
-    countyId?: string,
     additionalData?: Partial<CreateRegionDTO>,
   ): Promise<IRegion> {
-    // Try to find existing region (case-insensitive)
     const existing = await this.getRegionByNameAndCounty(regionName, county);
     if (existing) {
       console.log(`Found existing region: ${regionName} in ${county}`);
       return existing;
     }
 
-    // Create new region
     return await this.createRegion({
       name: regionName,
       county: county,
-      countyId: countyId || slugify(county),
-      countyCode: slugify(county),
       town: additionalData?.town || regionName,
       estate: additionalData?.estate || "",
       address: additionalData?.address || "",
@@ -216,24 +280,12 @@ export class RegionService {
   static async getRegionsByCounty(county: string): Promise<IRegion[]> {
     try {
       const regionsRef = collection(db, COLLECTION_NAME);
-      const snapshot = await getDocs(regionsRef);
+      const q = query(regionsRef, where("county", "==", county));
+      const snapshot = await getDocs(q);
 
-      const regions: IRegion[] = [];
-      const normalizedCounty = county.toLowerCase();
-
-      for (const doc of snapshot.docs) {
-        const data = doc.data();
-        const docCounty = (data.county || data.countyName || "").toLowerCase();
-
-        if (docCounty === normalizedCounty) {
-          regions.push(this.convertDocToRegion(doc));
-        }
-      }
-
-      // Sort by name
+      const regions = snapshot.docs.map((doc) => this.convertDocToRegion(doc));
       regions.sort((a, b) => a.name.localeCompare(b.name));
 
-      console.log(`Found ${regions.length} regions for county: ${county}`);
       return regions;
     } catch (error) {
       console.error("Error getting regions by county:", error);
@@ -247,73 +299,17 @@ export class RegionService {
       const snapshot = await getDocs(regionsRef);
 
       const regions = snapshot.docs.map((doc) => this.convertDocToRegion(doc));
-
-      // Sort by name
-      regions.sort((a, b) => a.name.localeCompare(b.name));
+      regions.sort((a, b) => {
+        if (a.county !== b.county) {
+          return a.county.localeCompare(b.county);
+        }
+        return a.name.localeCompare(b.name);
+      });
 
       return regions;
     } catch (error) {
       console.error("Error getting all regions:", error);
       return [];
-    }
-  }
-
-  static async updateRegion(
-    id: string,
-    data: Partial<CreateRegionDTO>,
-  ): Promise<IRegion | null> {
-    try {
-      const regionRef = doc(db, COLLECTION_NAME, id);
-      const regionDoc = await getDoc(regionRef);
-
-      if (!regionDoc.exists()) {
-        return null;
-      }
-
-      const updateData: any = {
-        updatedAt: Timestamp.fromDate(new Date()),
-      };
-
-      if (data.name) updateData.name = data.name;
-      if (data.county) updateData.county = data.county;
-      if (data.countyCode) updateData.countyCode = data.countyCode;
-      if (data.town !== undefined) updateData.town = data.town;
-      if (data.estate !== undefined) updateData.estate = data.estate;
-      if (data.address !== undefined) updateData.address = data.address;
-      if (data.street !== undefined) updateData.street = data.street;
-      if (data.postalCode !== undefined)
-        updateData.postalCode = data.postalCode;
-      if (data.notes !== undefined) updateData.notes = data.notes;
-
-      await updateDoc(regionRef, updateData);
-
-      return await this.getRegionById(id);
-    } catch (error) {
-      console.error("Error updating region:", error);
-      return null;
-    }
-  }
-
-  static async deleteRegion(
-    id: string,
-    hardDelete: boolean = false,
-  ): Promise<boolean> {
-    try {
-      const regionRef = doc(db, COLLECTION_NAME, id);
-
-      if (hardDelete) {
-        await deleteDoc(regionRef);
-      } else {
-        await updateDoc(regionRef, {
-          isActive: false,
-          updatedAt: Timestamp.fromDate(new Date()),
-        });
-      }
-
-      return true;
-    } catch (error) {
-      console.error("Error deleting region:", error);
-      return false;
     }
   }
 }

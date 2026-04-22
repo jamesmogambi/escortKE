@@ -17,6 +17,7 @@ import {
   OpeningHours,
   Plan,
 } from "@/server-actions/escort.action";
+import RegionService from "@/lib/services/region.service";
 
 export class RahaEscortsDatabaseService {
   static async escortExists(slug: string): Promise<boolean> {
@@ -96,18 +97,16 @@ export class RahaEscortsDatabaseService {
       ? this.cleanPhoneNumber(merged.whatsappPhone)
       : cleanTelephone;
 
-    // Create location object matching your Location interface
-    // Use only fields that exist in the merged object
     const locations: Location[] = [
       {
         region: merged.regionId || merged.region || merged.county || "",
         town: merged.town || merged.region || "",
         estate: merged.city || "",
-        address: "", // Default empty string since not in scraper data
-        street: "", // Default empty string since not in scraper data
-        postalCode: "", // Default empty string since not in scraper data
+        address: "",
+        street: "",
+        postalCode: "",
         isActive: true,
-        notes: "", // Default empty string since not in scraper data
+        notes: "",
       },
     ];
 
@@ -209,11 +208,18 @@ export class RahaEscortsDatabaseService {
   static async saveEscort(
     scrapedData: Partial<RahaEscort>,
     fullDetails: Partial<RahaEscort>,
+    regionDoc?: any,
   ): Promise<{ success: boolean; error?: string }> {
     try {
       const escortId = fullDetails.slug || scrapedData.slug;
       if (!escortId) {
         return { success: false, error: "No escort slug provided" };
+      }
+
+      // Add region reference if provided
+      if (regionDoc) {
+        fullDetails.regionId = regionDoc.id;
+        fullDetails.regionName = regionDoc.name;
       }
 
       const escort = this.convertToEscortModel(scrapedData, fullDetails);
@@ -227,7 +233,7 @@ export class RahaEscortsDatabaseService {
       await setDoc(escortRef, escort, { merge: true });
 
       console.log(
-        `✅ Saved: ${escort.name} | Age: ${escort.age || "N/A"} | Gender: ${escort.gender} | Images: ${escort.images.length}`,
+        `✅ Saved: ${escort.name} | Age: ${escort.age || "N/A"} | Gender: ${escort.gender} | Images: ${escort.images.length} | Region: ${regionDoc?.name || fullDetails.region || "N/A"}`,
       );
       return { success: true };
     } catch (error) {
