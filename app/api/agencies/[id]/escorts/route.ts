@@ -1,13 +1,8 @@
 // app/api/agencies/[id]/escorts/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { EscortModel } from "@/lib/models/escort.model";
-import { getAuth } from "firebase-admin/auth";
-// import { initAdmin } from "@/lib/firebase-admin";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
-
-// Initialize Firebase Admin
-// initAdmin();
 
 // Create a new escort for an agency
 export async function POST(
@@ -17,20 +12,7 @@ export async function POST(
   try {
     const { id: agencyId } = await params;
 
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-    const decodedToken = await getAuth().verifyIdToken(token);
-    const userId = decodedToken.uid;
-
-    // Verify user owns the agency
+    // Verify agency exists
     const agencyRef = doc(db, "agencies", agencyId);
     const agencyDoc = await getDoc(agencyRef);
 
@@ -38,17 +20,6 @@ export async function POST(
       return NextResponse.json(
         { success: false, error: "Agency not found" },
         { status: 404 },
-      );
-    }
-
-    const agency = agencyDoc.data();
-    if (agency.ownerId !== userId && !decodedToken.admin) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "You don't have permission to add escorts to this agency",
-        },
-        { status: 403 },
       );
     }
 
