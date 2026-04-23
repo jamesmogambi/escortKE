@@ -6,11 +6,11 @@ import "swiper/css/pagination";
 import { cn, getFirstName } from "@/lib/utils";
 import Image from "next/image";
 import React from "react";
-import { AgencyListing, EscortSummary, IAgency } from "@/types/agency.types";
+import { IAgency } from "@/types/agency.types";
 
 interface Prop {
   className?: string;
-  agency: AgencyListing; // Replace 'any' with the actual type of agency if known
+  agency: any; // Replace 'any' with the actual type of agency if known
 }
 const AgencyListItem = ({ agency, className }: Prop) => {
   const { name, description, coverImage, employees, contactPhone } = agency;
@@ -68,7 +68,7 @@ const AgencyListItem = ({ agency, className }: Prop) => {
           scrollbar={{ draggable: true }}
           className="w-full h-[270px] mt-4 "
         >
-          {employees?.map((member: EscortSummary, index: any) => (
+          {employees?.map((member: any, index: any) => (
             <SwiperSlide key={index} className="w-full border border-white/30">
               {member.previewPhoto && (
                 <div className="relative  border-white/40 w-full h-[150px] ">
