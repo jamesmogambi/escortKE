@@ -16,7 +16,10 @@ export async function POST(
   try {
     const { id } = await params;
 
-    // Log the content type for debugging
+    // Debug: Log all headers
+    console.log("All headers:", Object.fromEntries(request.headers.entries()));
+
+    // Get content type
     const contentType = request.headers.get("content-type") || "";
     console.log("Received Content-Type:", contentType);
 
@@ -119,20 +122,26 @@ export async function POST(
           { status: 400 },
         );
       }
-    } else {
-      // If content type is not recognized, try to parse as form data anyway (fallback)
+    }
+    // Auto-detect format when Content-Type is missing or unrecognized
+    else {
       console.log(
-        "Unrecognized content type, attempting to parse as form data...",
+        "Unrecognized or missing content type, attempting to detect format...",
       );
+
+      // Try to parse as form-data first (most common for file uploads)
       try {
         const formData = await request.formData();
         const uploadedFiles = formData.getAll("gallery") as File[];
-        files = uploadedFiles.filter((file) => file && file.size > 0);
+        const detectedFiles = uploadedFiles.filter(
+          (file) => file && file.size > 0,
+        );
 
-        if (files.length > 0) {
+        if (detectedFiles.length > 0) {
           console.log(
-            `Successfully parsed ${files.length} files as form data despite content type: ${contentType}`,
+            `✅ Detected form-data upload with ${detectedFiles.length} files`,
           );
+          files = detectedFiles;
 
           // Validate files
           const allowedTypes = [
@@ -156,7 +165,7 @@ export async function POST(
               return NextResponse.json(
                 {
                   success: false,
-                  error: `Invalid file type. Only JPEG, PNG, GIF, and WEBP are allowed`,
+                  error: `Invalid file type: ${file.name || "unknown"}. Only JPEG, PNG, GIF, and WEBP are allowed`,
                 },
                 { status: 400 },
               );
@@ -166,30 +175,60 @@ export async function POST(
               return NextResponse.json(
                 {
                   success: false,
-                  error: `File too large. Max 5MB per file`,
+                  error: `File ${file.name || "unknown"} is too large. Max 5MB per file`,
                 },
                 { status: 400 },
               );
             }
           }
         } else {
-          return NextResponse.json(
-            {
-              success: false,
-              error:
-                "Content-Type must be 'multipart/form-data' or 'application/json'",
-              receivedContentType: contentType,
-            },
-            { status: 400 },
-          );
+          // Try to parse as JSON
+          const clonedRequest = request.clone();
+          const text = await clonedRequest.text();
+
+          if (text && text.trim()) {
+            try {
+              const body = JSON.parse(text);
+              base64Images = body.gallery || body.images || body.files || [];
+
+              if (base64Images.length > 0) {
+                console.log(
+                  `✅ Detected JSON/base64 upload with ${base64Images.length} images`,
+                );
+
+                const maxFiles = 20;
+                if (base64Images.length > maxFiles) {
+                  return NextResponse.json(
+                    {
+                      success: false,
+                      error: `Maximum ${maxFiles} files allowed`,
+                    },
+                    { status: 400 },
+                  );
+                }
+              } else {
+                throw new Error("No images found in JSON");
+              }
+            } catch (jsonError) {
+              throw new Error("Could not parse as JSON or form-data");
+            }
+          } else {
+            throw new Error("Empty request body");
+          }
         }
-      } catch (fallbackError) {
+      } catch (detectionError: any) {
         return NextResponse.json(
           {
             success: false,
-            error:
-              "Content-Type must be 'multipart/form-data' or 'application/json'",
-            receivedContentType: contentType,
+            error: "Unable to process request",
+            message: "Please ensure you're using either:",
+            details: {
+              fileUpload: "Use multipart/form-data with field name 'gallery'",
+              base64Upload:
+                "Use application/json with { 'gallery': ['base64string'] }",
+              receivedContentType: contentType || "none",
+              error: detectionError.message,
+            },
           },
           { status: 400 },
         );
@@ -208,8 +247,14 @@ export async function POST(
     }
 
     const agency = agencyDoc.data();
-    const currentGallery = agency.gallery || [];
+
+    // FIX: Ensure gallery is always an array
+    const currentGallery = Array.isArray(agency.gallery) ? agency.gallery : [];
     const maxImages = agency.plan?.maxGalleryImages || 20;
+
+    console.log("Current gallery:", currentGallery);
+    console.log("Gallery type:", typeof agency.gallery);
+    console.log("Is array:", Array.isArray(agency.gallery));
 
     // Check if adding these images would exceed the limit
     const totalFiles = files.length || base64Images.length;
@@ -285,10 +330,19 @@ export async function POST(
 
     // Update agency document with new gallery URLs
     if (uploadedUrls.length > 0) {
+      // FIX: Ensure we're using an array for the spread operator
+      const existingGallery = Array.isArray(agency.gallery)
+        ? agency.gallery
+        : [];
+
       await updateDoc(agencyRef, {
-        gallery: [...currentGallery, ...uploadedUrls],
+        gallery: [...existingGallery, ...uploadedUrls],
         updatedAt: new Date(),
       });
+
+      console.log(
+        `✅ Updated agency ${id} gallery: ${existingGallery.length} -> ${existingGallery.length + uploadedUrls.length} images`,
+      );
     }
 
     return NextResponse.json({
@@ -303,6 +357,83 @@ export async function POST(
     });
   } catch (error: any) {
     console.error("Error uploading gallery images:", error);
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 },
+    );
+  }
+}
+
+// Optional: Add DELETE endpoint for removing gallery images
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const { id } = await params;
+    const { imageUrls } = await request.json();
+
+    if (!imageUrls || !Array.isArray(imageUrls) || imageUrls.length === 0) {
+      return NextResponse.json(
+        { success: false, error: "No image URLs provided" },
+        { status: 400 },
+      );
+    }
+
+    // Get agency data
+    const agencyRef = doc(db, "agencies", id);
+    const agencyDoc = await getDoc(agencyRef);
+
+    if (!agencyDoc.exists()) {
+      return NextResponse.json(
+        { success: false, error: "Agency not found" },
+        { status: 404 },
+      );
+    }
+
+    const agency = agencyDoc.data();
+    const currentGallery = Array.isArray(agency.gallery) ? agency.gallery : [];
+
+    // Filter out the images to delete
+    const newGallery = currentGallery.filter((url) => !imageUrls.includes(url));
+
+    // Delete files from storage
+    const deletionErrors: string[] = [];
+    for (const imageUrl of imageUrls) {
+      try {
+        // Extract storage path from URL
+        const decodedUrl = decodeURIComponent(imageUrl);
+        const pathMatch = decodedUrl.match(/\/o\/(.+?)\?/);
+
+        if (pathMatch && pathMatch[1]) {
+          const storagePath = decodeURIComponent(pathMatch[1]);
+          const storageRef = ref(storage, storagePath);
+          await deleteObject(storageRef);
+          console.log(`✅ Deleted image from storage: ${storagePath}`);
+        }
+      } catch (error: any) {
+        deletionErrors.push(`Failed to delete ${imageUrl}: ${error.message}`);
+        console.error(`❌ Failed to delete image:`, error.message);
+      }
+    }
+
+    // Update Firestore
+    await updateDoc(agencyRef, {
+      gallery: newGallery,
+      updatedAt: new Date(),
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        deleted: imageUrls.length - deletionErrors.length,
+        failed: deletionErrors,
+        remainingImages: newGallery.length,
+      },
+      message: `Deleted ${imageUrls.length - deletionErrors.length} images successfully`,
+    });
+  } catch (error: any) {
+    console.error("Error deleting gallery images:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 },
