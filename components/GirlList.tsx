@@ -35,7 +35,7 @@ const GirlList = ({
     <>
       <div
         className={cn(
-          "grid grid-cols-2 mx-6 lg:mx-auto my-6 max-w-7xl lg:grid-cols-5 gap-3 lg:gap-6",
+          "grid grid-cols-2 mx-6 lg:mx-auto my-6 max-w-7xl lg:grid-cols-4 gap-3 lg:gap-6",
           className,
         )}
       >
