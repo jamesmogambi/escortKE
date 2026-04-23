@@ -1,12 +1,8 @@
 // app/api/agencies/[id]/escorts/[escortId]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { EscortModel } from "@/lib/models/escort.model";
-import { getAuth } from "firebase-admin/auth";
-// import { initAdmin } from "@/lib/firebase-admin";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
-
-// initAdmin();
 
 // Get a specific escort from an agency
 export async function GET(
@@ -15,6 +11,19 @@ export async function GET(
 ) {
   try {
     const { id: agencyId, escortId } = await params;
+
+    console.log("Fetching escort with ID:", escortId, "for agency:", agencyId);
+
+    // Verify agency exists
+    const agencyRef = doc(db, "agencies", agencyId);
+    const agencyDoc = await getDoc(agencyRef);
+
+    if (!agencyDoc.exists()) {
+      return NextResponse.json(
+        { success: false, error: "Agency not found" },
+        { status: 404 },
+      );
+    }
 
     const escort = await EscortModel.getById(escortId);
 
@@ -53,20 +62,7 @@ export async function PUT(
   try {
     const { id: agencyId, escortId } = await params;
 
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-    const decodedToken = await getAuth().verifyIdToken(token);
-    const userId = decodedToken.uid;
-
-    // Verify agency ownership
+    // Verify agency exists
     const agencyRef = doc(db, "agencies", agencyId);
     const agencyDoc = await getDoc(agencyRef);
 
@@ -74,17 +70,6 @@ export async function PUT(
       return NextResponse.json(
         { success: false, error: "Agency not found" },
         { status: 404 },
-      );
-    }
-
-    const agency = agencyDoc.data();
-    if (agency.ownerId !== userId && !decodedToken.admin) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "You don't have permission to update escorts in this agency",
-        },
-        { status: 403 },
       );
     }
 
@@ -128,20 +113,7 @@ export async function DELETE(
   try {
     const { id: agencyId, escortId } = await params;
 
-    // Verify authentication
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
-
-    const token = authHeader.split("Bearer ")[1];
-    const decodedToken = await getAuth().verifyIdToken(token);
-    const userId = decodedToken.uid;
-
-    // Verify agency ownership
+    // Verify agency exists
     const agencyRef = doc(db, "agencies", agencyId);
     const agencyDoc = await getDoc(agencyRef);
 
@@ -149,17 +121,6 @@ export async function DELETE(
       return NextResponse.json(
         { success: false, error: "Agency not found" },
         { status: 404 },
-      );
-    }
-
-    const agency = agencyDoc.data();
-    if (agency.ownerId !== userId && !decodedToken.admin) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "You don't have permission to remove escorts from this agency",
-        },
-        { status: 403 },
       );
     }
 

@@ -12,9 +12,7 @@ import {
   where,
   orderBy,
   limit,
-  startAfter,
   increment,
-  Timestamp,
 } from "firebase/firestore";
 import {
   IEscort,
@@ -32,6 +30,10 @@ export class EscortModel {
     agencyId?: string,
   ): Promise<IEscort> {
     try {
+      if (!db) {
+        throw new Error("Firebase db not initialized");
+      }
+
       let isAgencyOwned = false;
       let agencyData = null;
 
@@ -133,17 +135,27 @@ export class EscortModel {
   // Get escort by ID
   static async getById(id: string): Promise<IEscort | null> {
     try {
+      if (!db) {
+        throw new Error("Firebase db not initialized");
+      }
+
+      console.log("Getting escort with ID:", id);
       const docRef = doc(db, COLLECTION_NAME, id);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        // Increment view count
-        await updateDoc(docRef, {
-          totalViews: increment(1),
-        });
+        const data = docSnap.data();
+        console.log("Escort found:", data);
 
-        return { id: docSnap.id, ...docSnap.data() } as IEscort;
+        // Increment view count asynchronously (don't await to not block response)
+        updateDoc(docRef, {
+          totalViews: increment(1),
+        }).catch((err) => console.error("Error incrementing view count:", err));
+
+        return { id: docSnap.id, ...data } as IEscort;
       }
+
+      console.log("Escort not found with ID:", id);
       return null;
     } catch (error) {
       console.error("Error getting escort:", error);
@@ -156,6 +168,10 @@ export class EscortModel {
     params: GetEscortsParams = {},
   ): Promise<{ escorts: IEscort[]; total: number; hasMore: boolean }> {
     try {
+      if (!db) {
+        throw new Error("Firebase db not initialized");
+      }
+
       const {
         page = 1,
         limit: limitCount = 20,
@@ -220,11 +236,6 @@ export class EscortModel {
       constraints.push(orderBy(sortBy, sortOrder));
       constraints.push(limit(limitCount));
 
-      if (page > 1) {
-        // For pagination, you'd need to implement startAfter
-        // This is simplified - consider using cursor-based pagination
-      }
-
       const q = query(collection(db, COLLECTION_NAME), ...constraints);
       const querySnapshot = await getDocs(q);
 
@@ -266,6 +277,10 @@ export class EscortModel {
   // Update escort
   static async update(id: string, data: UpdateEscortDTO): Promise<void> {
     try {
+      if (!db) {
+        throw new Error("Firebase db not initialized");
+      }
+
       const docRef = doc(db, COLLECTION_NAME, id);
       const oldData = await getDoc(docRef);
 
@@ -329,6 +344,10 @@ export class EscortModel {
   // Delete escort
   static async delete(id: string): Promise<void> {
     try {
+      if (!db) {
+        throw new Error("Firebase db not initialized");
+      }
+
       const escortDoc = await getDoc(doc(db, COLLECTION_NAME, id));
 
       if (!escortDoc.exists()) {
@@ -361,6 +380,10 @@ export class EscortModel {
     agencyId?: string,
   ): Promise<string[]> {
     try {
+      if (!db) {
+        throw new Error("Firebase db not initialized");
+      }
+
       const uploadedUrls: string[] = [];
       const escortRef = doc(db, COLLECTION_NAME, escortId);
       const escortDoc = await getDoc(escortRef);
