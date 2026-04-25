@@ -8,14 +8,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Minus } from "lucide-react";
 import Link from "next/link";
 import GirlProfile from "../GirlProfile";
-import { girls } from "@/fixtures/girl";
-import { getEscortByUsername } from "@/actions/escort";
 import { Metadata, ResolvingMetadata } from "next";
 import { formatSlugToTitle } from "@/lib/utils";
-import { EscortDetailData } from "@/types/escort.types";
 import { generateEscortStructuredData } from "./utils";
 import { getEscortById } from "@/server-actions/escort.action";
 
