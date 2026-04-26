@@ -120,6 +120,7 @@ export interface CreateEscortDTO {
   region?: string;
   town?: string;
   profileImage?: string;
+  gallery?: string[];
 }
 
 export interface UpdateEscortDTO extends Partial<CreateEscortDTO> {

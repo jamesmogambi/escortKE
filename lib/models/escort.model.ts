@@ -94,7 +94,8 @@ export class EscortModel {
           outcall: { hour: 250, twoHours: 450, overnight: 1200 },
         },
         profileImage: data.profileImage || "",
-        gallery: [],
+        gallery: data.gallery || [], // Ensure gallery is included
+        // gallery: [],
         videos: [],
         country: data.country || "Kenya",
         county: data.county || "Nairobi",
