@@ -8,10 +8,10 @@ import CompanyGirls from "./CompanyGirls";
 
 interface Prop {
   className?: string;
-  agency: any;
+  agency: IAgency;
 }
 const AgencyProfile = ({ agency, className }: Prop) => {
-  const { county, region, name, gallery, coverImage, _id } = agency;
+  const { county, region, name, gallery, coverImage, id } = agency;
 
   const photos: string[] = Array.isArray(gallery) ? [...gallery] : [];
   // const allPhotos: string[] = coverImage
@@ -24,15 +24,14 @@ const AgencyProfile = ({ agency, className }: Prop) => {
     ...(Array.isArray(gallery) ? gallery : []),
   ];
 
-  console.log("allPhotos", allPhotos);
   return (
     <SectionCard>
       {/* header */}
       <div className="flex gap-y-6 lg:gap-y-0  flex-col lg:flex-row justify-between lg:items-center ">
         <h3 className="text-3xl font-semibold text-primary">
-          {name} {region?.name}{" "}
+          {name} {region}{" "}
           <span className="text-lg text-stone-400/70 font-extralight">
-            from <span className="font-bold">{county?.name}</span>
+            from <span className="font-bold">{county}</span>
           </span>
         </h3>
 
@@ -69,7 +68,7 @@ const AgencyProfile = ({ agency, className }: Prop) => {
       </div>
 
       {/* companyGirls Section */}
-      <CompanyGirls agencyId={_id} />
+      <CompanyGirls agencyId={id} />
     </SectionCard>
   );
 };

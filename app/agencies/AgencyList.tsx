@@ -29,7 +29,7 @@ const AgencyList = ({
         )}
       >
         {agencies.map((agency, _) => (
-          <Link key={_} href={`/agencies/${slugify(agency.name)}`}>
+          <Link key={_} href={`/agencies/${agency.id}`}>
             <AgencyListItem agency={agency} />
           </Link>
         ))}
