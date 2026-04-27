@@ -67,8 +67,11 @@ const GirlImageSwiper = ({ images }: Prop) => {
       <style jsx global>{`
         .swiper-button-next,
         .swiper-button-prev {
-          color: white;
-          background-color: rgba(0, 0, 0, 0.5);
+          // color: white;
+          // background-color: rgba(0, 0, 0, 0.5);
+          color: black;
+          background-color: oklch(96.7% 0.001 286.375);
+          opacity: 0.5;
           border-radius: 50%;
           width: 40px;
           height: 40px;
@@ -79,8 +82,10 @@ const GirlImageSwiper = ({ images }: Prop) => {
 
         .swiper-button-next:hover,
         .swiper-button-prev:hover {
-          background-color: rgba(0, 0, 0, 0.8);
-          color: white;
+          // background-color: rgba(0, 0, 0, 0.8);
+          // color: white;
+          color: black;
+          background-color: oklch(96.7% 0.001 286.375);
         }
 
         .swiper-button-next::after,

@@ -4,11 +4,12 @@ import { cn, slugify } from "@/lib/utils";
 import React from "react";
 import AgencyListItem from "./AgencyListItem";
 import Link from "next/link";
+import { IAgency } from "@/types/agency.types";
 
 interface AgencyListProps {
   className?: string;
   title?: string;
-  agencies: any[]; // Replace 'any' with the actual type of agencies if known
+  agencies: IAgency[]; // Replace 'any' with the actual type of agencies if known
 }
 const AgencyList = ({
   agencies,

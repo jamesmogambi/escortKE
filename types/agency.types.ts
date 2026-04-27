@@ -168,3 +168,14 @@ export interface GetAgenciesResponse {
   totalPages: number;
   hasMore: boolean;
 }
+
+export interface AgenciesResponse {
+  success: boolean;
+  data: {
+    agencies: IAgency[];
+    total: number;
+    page: number;
+    totalPages: number;
+    hasMore: boolean;
+  };
+}
