@@ -15,16 +15,19 @@ import {
   increment,
 } from "firebase/firestore";
 import {
-  IEscort,
+  // IEscort,
   CreateEscortDTO,
   UpdateEscortDTO,
   GetEscortsParams,
+  IEscort,
 } from "@/types/escort.types";
 
 const COLLECTION_NAME = "escorts";
 
 export class EscortModel {
   // Create a new escort (independent or agency-owned)
+  // services/escortService.ts or wherever your create function is
+
   static async create(
     data: CreateEscortDTO,
     agencyId?: string,
@@ -59,63 +62,237 @@ export class EscortModel {
       }
 
       // Generate slug from name
-      const slug = data.name
+      const baseSlug = data.name
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)/g, "");
 
+      const slug = `${baseSlug}-${Date.now()}`;
+
       const now = new Date();
+
+      // Build availability array for the Escort interface
+      const availabilityArray: string[] = [];
+      if (data.availability) {
+        Object.entries(data.availability).forEach(
+          ([day, value]: [string, any]) => {
+            if (value?.available) {
+              availabilityArray.push(
+                day.charAt(0).toUpperCase() + day.slice(1),
+              );
+            }
+          },
+        );
+      } else {
+        // Default availability (all days)
+        availabilityArray.push(
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        );
+      }
+
+      // Build rates array from pricing
+      const rates: any[] = [];
+      if (data.pricing) {
+        if (data.pricing.incall?.hour || data.pricing.outcall?.hour) {
+          rates.push({
+            duration: "1 Hour",
+            incall: data.pricing.incall?.hour?.toString() || "0",
+            outcall: data.pricing.outcall?.hour?.toString() || "0",
+          });
+        }
+        if (data.pricing.incall?.twoHours || data.pricing.outcall?.twoHours) {
+          rates.push({
+            duration: "2 Hours",
+            incall: data.pricing.incall?.twoHours?.toString() || "0",
+            outcall: data.pricing.outcall?.twoHours?.toString() || "0",
+          });
+        }
+        if (data.pricing.incall?.overnight || data.pricing.outcall?.overnight) {
+          rates.push({
+            duration: "Overnight",
+            incall: data.pricing.incall?.overnight?.toString() || "0",
+            outcall: data.pricing.outcall?.overnight?.toString() || "0",
+          });
+        }
+      }
+
+      // Build opening hours object
+      const openingHours = {
+        monday: data.availability?.monday
+          ? `${data.availability.monday.start}-${data.availability.monday.end}`
+          : "09:00-23:00",
+        tuesday: data.availability?.tuesday
+          ? `${data.availability.tuesday.start}-${data.availability.tuesday.end}`
+          : "09:00-23:00",
+        wednesday: data.availability?.wednesday
+          ? `${data.availability.wednesday.start}-${data.availability.wednesday.end}`
+          : "09:00-23:00",
+        thursday: data.availability?.thursday
+          ? `${data.availability.thursday.start}-${data.availability.thursday.end}`
+          : "09:00-23:00",
+        friday: data.availability?.friday
+          ? `${data.availability.friday.start}-${data.availability.friday.end}`
+          : "09:00-23:00",
+        saturday: data.availability?.saturday
+          ? `${data.availability.saturday.start}-${data.availability.saturday.end}`
+          : "10:00-02:00",
+        sunday: data.availability?.sunday
+          ? `${data.availability.sunday.start}-${data.availability.sunday.end}`
+          : "10:00-22:00",
+      };
+
+      // Build locations array
+      const locations = [
+        {
+          region: data.region || data.primaryRegion || "Nairobi Central",
+          town: data.town || "Nairobi CBD",
+          estate: data.estate || "",
+          address: data.address || "",
+          street: data.street || "",
+          postalCode: data.postalCode || "",
+          isActive: true,
+          notes: "",
+        },
+      ];
+
+      // Get all images (profile + gallery)
+      const allImages: string[] = [];
+      if (data.profileImage) {
+        allImages.push(data.profileImage);
+      }
+      if (data.gallery && Array.isArray(data.gallery)) {
+        allImages.push(...data.gallery);
+      }
+
+      // Extract labels from services (first 5)
+      const labels = (data.services || []).slice(0, 5);
+
+      // Create the escort document with the correct Escort interface structure
       const escortData: any = {
-        ...data,
-        slug: `${slug}-${Date.now()}`,
-        agencyId: agencyId || null,
-        isAgencyOwned,
-        gender: data.gender || "female",
-        ethnicity: data.ethnicity || [],
+        // Basic Info
+        id: "", // Will be set by Firestore
+        name: data.name,
+        username: slug,
+        previewPhoto: data.profileImage || data.gallery?.[0] || "",
+        labels: labels,
+        email: data.email || "",
+        age: data.age?.toString() || "",
+        telephone: data.phone || data.telephone || "",
+        whatsappPhone: data.whatsappPhone || data.phone || "",
+
+        // Media
+        images: allImages,
+        videos: data.videos || [],
+
+        // About
+        about: data.about || "",
+
+        // Availability (array format for easy filtering)
+        availability: availabilityArray,
+
+        // Physical Attributes
+        ethnicity: Array.isArray(data.ethnicity)
+          ? data.ethnicity[0] || ""
+          : data.ethnicity || "",
         nationality: data.nationality || "",
-        languages: data.languages || ["English"],
-        height: data.height || 0,
-        weight: data.weight || 0,
+        bustSize: data.bustSize || "",
+        weight: data.weight?.toString() || "",
+        zodiacSign: data.zodiacSign || "",
+        sexualOrientation: data.sexualOrientation || "",
+        gender: data.gender || "female",
         hairColor: data.hairColor || "",
         eyeColor: data.eyeColor || "",
-        services: data.services || [],
-        specialties: [],
-        availability: {
-          monday: { start: "09:00", end: "23:00", available: true },
-          tuesday: { start: "09:00", end: "23:00", available: true },
-          wednesday: { start: "09:00", end: "23:00", available: true },
-          thursday: { start: "09:00", end: "23:00", available: true },
-          friday: { start: "09:00", end: "23:00", available: true },
-          saturday: { start: "10:00", end: "02:00", available: true },
-          sunday: { start: "10:00", end: "22:00", available: true },
-        },
-        pricing: data.pricing || {
-          incall: { hour: 200, twoHours: 350, overnight: 1000 },
-          outcall: { hour: 250, twoHours: 450, overnight: 1200 },
-        },
-        profileImage: data.profileImage || "",
-        gallery: data.gallery || [], // Ensure gallery is included
-        // gallery: [],
-        videos: [],
+        breastSize: data.breastSize || "",
+        height: data.height || 0,
+
+        // Languages & Categories
+        languages: data.languages || ["English"],
+        categories: data.categories || [],
+
+        // Location
         country: data.country || "Kenya",
         county: data.county || "Nairobi",
-        region: data.region || "Nairobi Central",
-        town: data.town || "Nairobi CBD",
-        isVerified: false,
-        verificationStatus: "pending",
-        rating: 0,
-        totalReviews: 0,
-        totalBookings: 0,
-        totalViews: 0,
+        countyCode: data.countyCode || "",
+        regions: data.region
+          ? [data.region]
+          : data.regions || ["Nairobi Central"],
+        primaryRegion: data.region || data.primaryRegion || "Nairobi Central",
+        locations: locations,
+
+        // Source & Practices
+        source: isAgencyOwned ? "agency" : "direct",
+        practices: data.services || [],
+        bdsm: data.bdsm || [],
+        massage: data.massage || [],
+        extraServices: data.extraServices || [],
+
+        // Slug & Role
+        slug: slug,
+        role: "escort",
+
+        // Opening Hours
+        openingHours: openingHours,
+
+        // Rates/Pricing
+        rates: rates,
+
+        // Additional attributes
+        ageCategory: data.ageCategory || "",
+        character: data.character || "",
+        experience: data.experience || "",
+        workType: data.workType || "",
+
+        // Status Flags
+        isAgencyOwned: isAgencyOwned,
+        isAgencyFeatured: false,
         isActive: true,
+        isVerified: false,
         isFeatured: false,
-        isAvailable: true,
+        isAvailable: data.isAvailable !== undefined ? data.isAvailable : true,
+
+        // Plan
+        plan: {
+          type: isAgencyOwned ? "agency" : "basic",
+          isActive: true,
+          features: [],
+        },
+
+        // Stats
+        totalBookings: 0,
+        totalReviews: 0,
+        rating: 0,
+        totalViews: 0,
+
+        // Agency Reference
+        agencyId: agencyId || null,
+
+        // Verification
+        verificationStatus: "pending",
+
+        // Timestamps
         joinedDate: now,
         createdAt: now,
         updatedAt: now,
       };
 
-      const docRef = await addDoc(collection(db, COLLECTION_NAME), escortData);
+      // Store the availability object separately if needed for detailed availability
+      if (data.availability) {
+        escortData.availabilityDetails = data.availability;
+      }
+
+      // Store pricing separately if needed
+      if (data.pricing) {
+        escortData.pricing = data.pricing;
+      }
+
+      // Create the document in Firestore
+      const docRef = await addDoc(collection(db, "escorts"), escortData);
 
       // If agency-owned, update agency's employee count
       if (isAgencyOwned && agencyId) {
@@ -126,13 +303,16 @@ export class EscortModel {
         });
       }
 
-      return { id: docRef.id, ...escortData } as IEscort;
+      // Return the created escort with its ID
+      return {
+        id: docRef.id,
+        ...escortData,
+      } as IEscort;
     } catch (error) {
       console.error("Error creating escort:", error);
       throw error;
     }
   }
-
   // Get escort by ID
   static async getById(id: string): Promise<IEscort | null> {
     try {

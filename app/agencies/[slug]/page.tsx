@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import AgencyProfile from "./AgencyDetailCard";
 import CompanyGirls from "./CompanyGirls";
 import { getAgencyBySlug } from "@/actions/business.action";
+import { IAgency } from "@/types/agency.types";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -46,25 +47,22 @@ const BusinessPage = async ({ params, searchParams }: PageProps) => {
 
   const formattedSlug = slug.replace(/-/g, " ");
 
-  const res = await getAgencyBySlug(slug);
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_SITE_URL}/api/agencies/${slug}`,
+  );
+  const result = await response.json();
 
-  if (!res.success || !res.data) {
-    notFound(); // optional: redirect to 404
+  if (!result.success) {
+    return notFound();
   }
 
-  //   const agency = Array.isArray(res.data) ? res.data[0] : res.data;
-  const agency: any = res.data;
-  console.log("agency data ==>", agency);
-
-  if (!agency) {
-    notFound();
-  }
+  const agency: IAgency = result.data;
 
   return (
     <div className="w-full lg:max-w-7xl mx-auto p-4 md:p-8 lg:p-12">
       <Header
-        county={agency.county?.name || ""}
-        region={agency.region?.name || ""}
+        county={agency.county}
+        region={agency.region}
         name={agency.name}
       />
 
