@@ -99,7 +99,7 @@ const PhotoGallery = ({ photos, title = "Gallery" }: Prop) => {
         </Swiper>
 
         {/* Image Counter Badge */}
-        <div className="absolute top-4 right-4 z-10 bg-black/60 text-white text-sm px-3 py-1 rounded-full backdrop-blur-sm">
+        <div className="absolute top-4 hidden right-4 z-10 bg-black/60 text-white text-sm px-3 py-1 rounded-full backdrop-blur-sm">
           {currentIndex + 1} / {photos.length}
         </div>
       </div>
@@ -156,8 +156,10 @@ const PhotoGallery = ({ photos, title = "Gallery" }: Prop) => {
         /* Main Swiper Navigation */
         .swiper-button-next,
         .swiper-button-prev {
-          color: white;
-          background-color: rgba(0, 0, 0, 0.5);
+          // color: white;
+          // background-color: rgba(0, 0, 0, 0.5);
+          color: black;
+          background-color: oklch(96.7% 0.001 286.375);
           border-radius: 50%;
           width: 44px;
           height: 44px;
@@ -169,8 +171,10 @@ const PhotoGallery = ({ photos, title = "Gallery" }: Prop) => {
 
         .swiper-button-next:hover,
         .swiper-button-prev:hover {
-          background-color: rgba(0, 0, 0, 0.8);
-          color: white;
+          // background-color: rgba(0, 0, 0, 0.8);
+          // color: white;
+          color: black;
+          background-color: oklch(96.7% 0.001 286.375);
           transform: translateY(-50%) scale(1.05);
         }
 
