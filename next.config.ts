@@ -111,12 +111,6 @@ const nextConfig: NextConfig = {
     },
     allowedDevOrigins: ["local-origin.dev", "*.local-origin.dev"],
 
-    // Add server configuration for longer timeouts
-    serverRuntimeConfig: {
-        // Will be available on both server and client
-        maxDuration: 300, // 5 minutes for serverless functions
-    },
-
     // Add headers for better image caching
     async headers() {
         return [
