@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# KenyaDivas Site
 
-## Getting Started
+KenyaDivas is a modern web application built with **Next.js 15**, providing a platform for connecting users with
+services in Kenya. It features a robust administration dashboard, complex search capabilities, and integrations with
+multiple cloud services for media and data management.
 
-First, run the development server:
+## 🚀 Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Authentication**: [Clerk](https://clerk.com/)
+- **Database**:
+    - [MongoDB](https://www.mongodb.com/) (via Mongoose)
+    - [PostgreSQL](https://neon.tech/) (via Neon Serverless)
+- **Media Management**:
+    - [Cloudinary](https://cloudinary.com/) (Image hosting and optimization)
+    - [Mux](https://www.mux.com/) (Video processing and playback)
+    - [AWS S3](https://aws.amazon.com/s3/) (General storage)
+- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/), [Radix UI](https://www.radix-ui.com/)
+- **Email**: [Resend](https://resend.com/)
+- **Deployment**: [Firebase App Hosting](https://firebase.google.com/docs/app-hosting)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📋 Requirements
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Node.js**: 20.x or higher
+- **Package Manager**: npm (or yarn/pnpm/bun)
+- **Database Instances**:
+    - MongoDB instance (local or Atlas)
+    - Neon PostgreSQL instance
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Setup & Installation
 
-## Learn More
+1. **Clone the repository**:
+   ```bash
+   git clone git@github.com:jamesmogambi/escortKE.git
+   cd kenyadivas
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Environment Variables**:
+   Create a `.env.local` file in the root directory and populate it with the required keys (
+   see [Environment Variables](#-environment-variables) section).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Run development server**:
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:4000](http://localhost:4000) to view the application.
 
-## Deploy on Vercel
+## 📜 Available Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `npm run dev`: Starts the development server with Turbopack on port 4000.
+- `npm run build`: Builds the application for production.
+- `npm run start`: Starts the production server.
+- `npm run lint`: Runs ESLint to check for code quality.
+- `npm run fix-ages`: Runs a custom script to fix invalid ages in the database.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔑 Environment Variables
+
+The application requires several environment variables to function correctly. Refer to `.env.development` for a
+template.
+
+### Core
+
+- `NEXT_PUBLIC_SITE_URL`: Base URL of the site.
+- `MONGODB_URI`: Connection string for MongoDB.
+- `DATABASE_URL`: Connection string for Neon PostgreSQL.
+
+### Authentication (Clerk)
+
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+- `CLERK_SECRET_KEY`
+
+### Cloud Services
+
+- **Cloudinary**: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+- **Mux**: `MUX_TOKEN_ID`, `MUX_TOKEN_SECRET`, `MUX_SIGNING_SECRET`
+- **AWS**: `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_S3_BUCKET`
+- **Resend**: `RESEND_API_KEY`
+- **Firebase**: `NEXT_PUBLIC_FIREBASE_*` and `FIREBASE_ADMIN_*`
+
+## 📂 Project Structure
+
+- `app/`: Next.js App Router (pages, API routes, layouts).
+- `actions/` & `server-actions/`: Server-side logic and database operations.
+- `components/`: Reusable React components.
+- `lib/`: Utility functions, shared logic, and database client initializations.
+- `models/`: Mongoose schemas for MongoDB.
+- `hooks/`: Custom React hooks.
+- `scripts/`: Maintenance and utility scripts.
+- `public/`: Static assets.
+
+## 🧪 Testing
+
+- TODO: Add automated tests (found `@playwright/test` in dependencies, but no config file yet).
+
+## 📄 License
+
+This project is licensed under the **MIT License**. See the `package.json` for details.
