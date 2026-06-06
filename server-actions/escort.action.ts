@@ -135,9 +135,9 @@ export interface GetEscortsResponse {
 }
 
 // Helper function to convert Firestore DocumentSnapshot to Escort type (for single documents)
-const convertDocSnapshotToEscort = (
+export const convertDocSnapshotToEscort = async (
     doc: FirebaseFirestore.DocumentSnapshot,
-): Escort | null => {
+): Promise<Escort | null> => {
     if (!doc.exists) return null;
 
     const data = doc.data();
@@ -209,9 +209,9 @@ const convertDocSnapshotToEscort = (
     };
 };
 // Helper function to convert Firestore QueryDocumentSnapshot to Escort type (for collections)
-const convertQueryDocToEscort = (
+export const convertQueryDocToEscort = async (
     doc: FirebaseFirestore.QueryDocumentSnapshot,
-): Escort => {
+): Promise<Escort> => {
     const data = doc.data();
     return {
         id: doc.id,
@@ -472,7 +472,7 @@ export async function getEscorts(
                     .limit(validLimit)
                     .offset(startAt)
                     .get();
-                escorts = dataSnapshot.docs.map(convertQueryDocToEscort);
+                escorts = await Promise.all(dataSnapshot.docs.map(convertQueryDocToEscort));
             }
         } catch (countError: any) {
             console.error("Error with count query:", countError.message);
@@ -499,9 +499,9 @@ export async function getEscorts(
             }
 
             const fallbackSnapshot = await fallbackQuery.get();
-            let allEscorts: Escort[] = fallbackSnapshot.docs.map(
+            let allEscorts: Escort[] = await Promise.all(fallbackSnapshot.docs.map(
                 convertQueryDocToEscort,
-            );
+            ));
 
             // Apply array filters client-side
             if (region && region !== "all") {
@@ -629,7 +629,7 @@ export async function getEscortsWithClientFiltering(
 
         // Get all matching documents (limited to reasonable amount)
         const snapshot = await query.limit(1000).get();
-        let allEscorts: Escort[] = snapshot.docs.map(convertQueryDocToEscort);
+        let allEscorts: Escort[] = await Promise.all(snapshot.docs.map(convertQueryDocToEscort));
 
         // Apply all array filters client-side
         if (region && region !== "all") {
@@ -873,7 +873,7 @@ export async function getEscortById(id: string): Promise<Escort | null> {
                 console.error("Error incrementing view count:", error);
             });
 
-        return convertDocSnapshotToEscort(doc);
+        return await convertDocSnapshotToEscort(doc);
     } catch (error) {
         console.error("Error fetching escort:", error);
         throw new Error("Failed to fetch escort");
@@ -908,7 +908,7 @@ export async function getEscortByUsername(
                 console.error("Error incrementing view count:", error);
             });
 
-        return convertDocSnapshotToEscort(doc);
+        return await convertDocSnapshotToEscort(doc);
     } catch (error) {
         console.error("Error fetching escort by username:", error);
         throw new Error("Failed to fetch escort");
@@ -928,7 +928,7 @@ export async function getFeaturedEscorts(
             .limit(limit)
             .get();
 
-        return snapshot.docs.map(convertQueryDocToEscort);
+        return Promise.all(snapshot.docs.map(convertQueryDocToEscort));
     } catch (error) {
         console.error("Error fetching featured escorts:", error);
         throw new Error("Failed to fetch featured escorts");
@@ -947,7 +947,7 @@ export async function getTopRatedEscorts(
             .limit(limit)
             .get();
 
-        return snapshot.docs.map(convertQueryDocToEscort);
+        return Promise.all(snapshot.docs.map(convertQueryDocToEscort));
     } catch (error) {
         console.error("Error fetching top rated escorts:", error);
         throw new Error("Failed to fetch top rated escorts");
@@ -966,7 +966,7 @@ export async function getMostViewedEscorts(
             .limit(limit)
             .get();
 
-        return snapshot.docs.map(convertQueryDocToEscort);
+        return Promise.all(snapshot.docs.map(convertQueryDocToEscort));
     } catch (error) {
         console.error("Error fetching most viewed escorts:", error);
         throw new Error("Failed to fetch most viewed escorts");
@@ -983,7 +983,7 @@ export async function getRecentEscorts(limit: number = 10): Promise<Escort[]> {
             .limit(limit)
             .get();
 
-        return snapshot.docs.map(convertQueryDocToEscort);
+        return Promise.all(snapshot.docs.map(convertQueryDocToEscort));
     } catch (error) {
         console.error("Error fetching recent escorts:", error);
         throw new Error("Failed to fetch recent escorts");
@@ -1332,7 +1332,7 @@ export async function getEroticMassageEscortsClientSide(
 
         // Get all matching escorts (limit to reasonable amount)
         const snapshot = await query.limit(1000).get();
-        let allEscorts: Escort[] = snapshot.docs.map(convertQueryDocToEscort);
+        let allEscorts: Escort[] = await Promise.all(snapshot.docs.map(convertQueryDocToEscort));
 
         // Filter by region (if specified)
         if (region && region !== "all") {
@@ -1460,7 +1460,7 @@ export async function getBDSMEscortsClientSide(
 
         // Get all matching escorts (limit to reasonable amount)
         const snapshot = await query.limit(1000).get();
-        let allEscorts: Escort[] = snapshot.docs.map(convertQueryDocToEscort);
+        let allEscorts: Escort[] = await Promise.all(snapshot.docs.map(convertQueryDocToEscort));
 
         // Filter by region (if specified)
         if (region && region !== "all") {
