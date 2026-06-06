@@ -1,9 +1,9 @@
 import {MetadataRoute} from "next";
-import {getAllCounties, getAllRegions} from "../actions/region.action";
+import {getAllCounties, getAllRegions} from "../server-actions/region.action";
 
-import {fetchGirlEscorts} from "../actions/list-escort";
+import {fetchGirlEscorts} from "../server-actions/escort.action";
 import {EscortCardData} from "../types/escort.types";
-import {getBDSMTypes, getMassageTypes, getPractices,} from "@/actions/variantsetting.action";
+import {getMassageTypes, getPractices} from "@/server-actions/lookup.action";
 
 // const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kenyadivas.com";
 // Use port 4000 for local development
@@ -48,7 +48,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         console.log("\n⏳ Fetching practices...");
         const practicesStart = Date.now();
-        const practices = await getPractices();
+        const practicesRes = await getPractices();
+        const practices = practicesRes.data || [];
         const practicesTime = Date.now() - practicesStart;
         console.log(`✅ Practices fetched in ${practicesTime}ms`);
         console.log(`   - Practices count: ${practices.length}`);
@@ -63,7 +64,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         console.log("\n⏳ Fetching massage types...");
         const massageStart = Date.now();
-        const massageTypes = await getMassageTypes();
+        const massageRes = await getMassageTypes();
+        const massageTypes = massageRes.data || [];
         const massageTime = Date.now() - massageStart;
         console.log(`✅ Massage types fetched in ${massageTime}ms`);
         console.log(`   - Massage types count: ${massageTypes.length}`);
@@ -76,7 +78,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         console.log("\n⏳ Fetching BDSM types...");
         const bdsmStart = Date.now();
-        const bdsmTypes = await getBDSMTypes();
+        const bdsmRes = await getBDSM();
+        const bdsmTypes = bdsmRes.data || [];
         const bdsmTime = Date.now() - bdsmStart;
         console.log(`✅ BDSM types fetched in ${bdsmTime}ms`);
         console.log(`   - BDSM types count: ${bdsmTypes.length}`);
@@ -92,11 +95,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         const escortsRes = await fetchGirlEscorts({limit: 1000});
         const escortsTime = Date.now() - escortsStart;
         console.log(`✅ Escorts fetched in ${escortsTime}ms`);
-        console.log(`   - Escorts count: ${escortsRes?.escorts?.length || 0}`);
-        if (escortsRes?.escorts?.length > 0) {
+        const escortList = (escortsRes as any)?.escorts || [];
+        console.log(`   - Escorts count: ${escortList.length}`);
+        if (escortList.length > 0) {
             console.log(
                 "   - First 3 escort slugs:",
-                escortsRes.escorts.slice(0, 3).map((e: any) => e.slug),
+                escortList.slice(0, 3).map((e: any) => e.slug),
             );
         }
 
@@ -322,7 +326,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         // Profile URLs
         console.log("\n⏳ Generating profile URLs...");
         const profileUrls =
-            escortsRes?.escorts?.map((escort: EscortCardData) => {
+            escortList.map((escort: EscortCardData) => {
                 const url = `${baseUrl}/girl/${encodeURIComponent(escort.slug)}`;
                 console.log(`   - Adding: ${url}`);
                 return {
