@@ -194,7 +194,7 @@ const PhotoGallery = ({photos, title = "Gallery"}: Prop) => {
                     border-radius: 50%;
                     background-color: white;
                     color: black;
-                    opacity: 0.8;
+                    opacity: 0.5;
                     border: none;
                     cursor: pointer;
                     display: flex;
@@ -208,12 +208,12 @@ const PhotoGallery = ({photos, title = "Gallery"}: Prop) => {
 
                 .group:hover .custom-swiper-button-prev,
                 .group:hover .custom-swiper-button-next {
-                    opacity: 1;
+                    opacity: 0.5;
                 }
 
                 .custom-swiper-button-prev:hover,
                 .custom-swiper-button-next:hover {
-                    opacity: 1 !important;
+                    opacity: 0.5 !important;
                     background-color: white;
                     transform: translateY(-50%) scale(1.1);
                     color: #fe0032;

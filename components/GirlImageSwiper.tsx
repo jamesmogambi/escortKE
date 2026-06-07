@@ -114,12 +114,12 @@ const GirlImageSwiper = ({images}: Prop) => {
                     position: absolute;
                     top: 50%;
                     transform: translateY(-50%);
-                    width: 32px;
-                    height: 32px;
+                    width: 36px;
+                    height: 36px;
                     border-radius: 50%;
                     background-color: white;
                     color: black;
-                    opacity: 0.8;
+                    opacity: 0.4;
                     border: none;
                     cursor: pointer;
                     display: flex;
@@ -133,12 +133,12 @@ const GirlImageSwiper = ({images}: Prop) => {
 
                 .group:hover .custom-swiper-button-prev,
                 .group:hover .custom-swiper-button-next {
-                    opacity: 1;
+                    opacity: 0.5;
                 }
 
                 .custom-swiper-button-prev:hover,
                 .custom-swiper-button-next:hover {
-                    opacity: 1 !important;
+                    opacity: 0.5 !important;
                     background-color: white;
                     transform: translateY(-50%) scale(1.1);
                     color: #fe0032;
