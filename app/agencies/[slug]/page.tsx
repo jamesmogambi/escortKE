@@ -1,8 +1,6 @@
 import {notFound} from "next/navigation";
 import React from "react";
 import Header from "./Header";
-import {generateAgencyMetadata} from "@/lib/metadata";
-import type {Metadata} from "next";
 import AgencyProfile from "./AgencyDetailCard";
 import {IAgency} from "@/types/agency.types";
 
@@ -11,33 +9,6 @@ interface PageProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export async function generateMetadata({
-                                           params,
-                                       }: PageProps): Promise<Metadata> {
-    const {slug} = await params;
-
-    try {
-        // const res = await getAgencyBySlug(slug);
-        const res: any = null
-        if (!res.success || !res.data) {
-            return {
-                title: "Agency Not Found",
-                description: "The requested agency could not be found.",
-            };
-        }
-
-        return generateAgencyMetadata({
-            agency: res.data,
-            slug,
-        });
-    } catch (error) {
-        console.error("Error generating metadata:", error);
-        return {
-            title: "Agency Details",
-            description: "View agency details and services.",
-        };
-    }
-}
 
 const BusinessPage = async ({params, searchParams}: PageProps) => {
     // Await the params in Next.js 15
