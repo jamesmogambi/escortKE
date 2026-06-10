@@ -3,11 +3,11 @@ import React from "react";
 import {notFound} from "next/navigation";
 import Link from "next/link";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import {ClientPaginationWrapper} from "@/components/ClientPaginationWrapper";
 import SectionArticle from "./SectionArticle";
@@ -17,7 +17,7 @@ import {AgenciesResponse} from "@/types/agency.types";
 import {generateBreadcrumbList} from "../girls/seo-utils";
 
 // ============ CONSTANTS ============
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 24;
 const DEFAULT_TITLE = "Erotic Businesses";
 const DEFAULT_BREADCRUMB = "Erotic Privates";
 const SITE_NAME = "KENYADIVAS";
